@@ -1,0 +1,342 @@
+{
+  "banners": [
+    {
+      "id": "ban-1",
+      "image_url": "/images/products/hero-banner.jpg",
+      "title": "CraftByHanifa Studio Workshop",
+      "subtitle": "Kerajinan Lilin Aromaterapi & Souvenir Magetan, Jawa Timur",
+      "cta_text": "Lihat Koleksi Lilin",
+      "cta_link": "/produk",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "ban-2",
+      "image_url": "/images/products/gift-box.jpg",
+      "title": "Exclusive Hampers & Gift Box Set",
+      "subtitle": "Kemasan Rustic Cantik Berpita Satin Siap Dibagikan",
+      "cta_text": "Jelajahi Produk",
+      "cta_link": "/produk",
+      "sort_order": 2,
+      "is_active": true
+    },
+    {
+      "id": "ban-3",
+      "image_url": "/images/products/resin-keychain.jpg",
+      "title": "Gantungan Kunci Resin & Lilin Botol",
+      "subtitle": "Koleksi Terlaris 50.000+ Pcs Terkirim ke Seluruh Indonesia",
+      "cta_text": "Tentang Kami",
+      "cta_link": "/tentang-kami",
+      "sort_order": 3,
+      "is_active": true
+    }
+  ],
+  "siteContent": {
+    "tagline_beranda": {
+      "id": "cd95a79e-0323-4ef7-9b9a-3f16d211e0bb",
+      "section_key": "tagline_beranda",
+      "title": "Sentuhan Hangat Kerajinan Tangan untuk Setiap Momen",
+      "content": "Studio kerajinan lilin aromaterapi soy wax murni dan souvenir handmade estetik dari pengrajin Magetan, Jawa Timur untuk pernikahan, seminar, dan acara spesial Anda.",
+      "image_url": "/images/products/shop-cover.jpg",
+      "updated_at": "2026-09-02T12:31:20.471+00:00"
+    },
+    "visi_misi": {
+      "id": "4ebf151a-7de7-4837-86c7-59e907fe70a5",
+      "section_key": "visi_misi",
+      "title": "Visi & Misi Studio Kami",
+      "content": "Visi:\\nMenjadi studio kerajinan tangan dan lilin aromaterapi terpercaya di Indonesia yang menghadirkan keindahan estetik ramah lingkungan di setiap momen berharga.\\n\\nMisi:\\n1. Menggunakan 100% bahan alami soy wax nabati yang aman dan bebas racun parafin.\\n2. Memberdayakan pengrajin lokal berbakat di Kabupaten Magetan, Jawa Timur.\\n3. Memberikan layanan kustomisasi dan mockup desain gratis untuk setiap pelanggan.",
+      "image_url": "/images/products/avatar.jpg",
+      "updated_at": "2026-09-02T12:31:20.814+00:00"
+    },
+    "tentang_kami": {
+      "id": "360680f3-0199-47c1-9440-71710e2df037",
+      "section_key": "tentang_kami",
+      "title": "Dedikasi Menghadirkan Makna di Setiap Sentuhan Lilin & Kerajinan",
+      "content": "Berawal dari kecintaan pada seni kerajinan lilin aromaterapi dan dried flowers, CraftByHanifa hadir mendampingi ribuan momen bahagia pernikahan, wisuda, dan corporate gift di seluruh penjuru Indonesia. Kami percaya bahwa souvenir bukan sekadar pajangan, melainkan kenangan hangat yang membawa aroma ketenangan dan kegunaan nyata bagi penerimanya.\\n\\nSetiap lilin aromaterapi kami dibuat secara handmade dengan 100% natural soy wax nabati dan perpaduan minyak esensial terapeutik berkualitas. Kami melayani pengiriman bergaransi aman ke seluruh wilayah Nusantara.",
+      "image_url": "/images/products/studio-workshop.jpg",
+      "updated_at": "2026-09-02T12:31:21.138+00:00"
+    },
+    "profil_owner": {
+      "id": "a7df235f-5ebc-4227-a625-52eec68c906e",
+      "section_key": "profil_owner",
+      "title": "Hanifa Kumala — Founder & Lead Artisan",
+      "content": "Halo! Saya Hanifa Kumala, perajin dan penggagas di balik CraftByHanifa. Sejak awal berdiri di Magetan, saya mendedikasikan studio ini untuk meracik lilin aromaterapi 100% soy wax nabati alami yang menenangkan dan kerajinan souvenir estetik bermakna. Setiap detail karya lilin, resin, hingga jahitan pouch kami kerjakan secara handmade dengan penuh cinta dan ketelitian tinggi.",
+      "image_url": "/images/products/avatar.jpg",
+      "updated_at": "2026-09-02T12:31:21.437+00:00"
+    },
+    "keunggulan_features": {
+      "section_key": "keunggulan_features",
+      "title": "Mengapa Souvenir CraftByHanifa Selalu Berkesan?",
+      "content": "[{\"icon\":\"Flame\",\"title\":\"100% Sentuhan Tangan Berkelanjutan\",\"desc\":\"Setiap karya dibuat manual dengan penuh ketelitian oleh pengrajin lokal berbakat di Magetan, Jawa Timur, bukan produk cetakan massal pabrik biasa.\",\"linkText\":\"Standar Pengrajin Magetan\"},{\"icon\":\"Palette\",\"title\":\"Free Desain & Mockup Digital\",\"desc\":\"Bebas konsultasi tema warna acara, font inisial nama, hingga penyesuaian packaging sampai Anda merasa puas sebelum proses produksi dimulai.\",\"linkText\":\"Standar Pengrajin Magetan\"},{\"icon\":\"ShieldCheck\",\"title\":\"Quality Control Berlapis & Rapi\",\"desc\":\"Setiap produk dicek ketat: kejernihan resin tanpa gelembung berlebih, aroma lilin pekat merata, dan kerapian jahitan pouch.\",\"linkText\":\"Standar Pengrajin Magetan\"},{\"icon\":\"BadgeCheck\",\"title\":\"Harga Produsen Tangan Pertama\",\"desc\":\"Dapatkan penawaran harga terbaik langsung dari pengrajin tanpa perantara, dengan diskon kuantiti bertingkat untuk pesanan jumlah besar.\",\"linkText\":\"Standar Pengrajin Magetan\"}]",
+      "image_url": "Setiap karya dibuat manual dengan ketelitian tinggi oleh pengrajin lokal di Magetan, menghasilkan souvenir bermakna yang berguna dan membahagiakan para tamu."
+    }
+  },
+  "products": [
+    {
+      "id": "lilin-aromaterapi-amber",
+      "name": "Lilin Aromaterapi Soy Wax Amber Jar",
+      "description": "Lilin aromaterapi handmade premium terbuat dari 100% natural soy wax nabati ramah lingkungan dengan sumbu kayu/kapas murni. Dituang ke dalam jar kaca amber estetik dengan taburan dried botanicals alami.",
+      "price": 15000,
+      "stock": 250,
+      "image_url": "/images/products/aromatherapy-candle.jpg",
+      "is_active": true,
+      "category": "candle",
+      "category_label": "Lilin Aromaterapi",
+      "min_order": 20,
+      "lead_time": "5 - 10 Hari Kerja",
+      "material": "100% Natural Soy Wax, Amber Glass Jar, Cork Lid",
+      "size": "Volume 60ml & 100ml",
+      "shopee_url": "https://shopee.co.id/hanifakumala",
+      "rating": 4.9,
+      "sold_count": 2850,
+      "created_at": "2026-09-01T15:13:26.684842+00:00",
+      "original_price": 25000,
+      "options": []
+    },
+    {
+      "id": "gantungan-kunci-resin",
+      "name": "Gantungan Kunci Resin Floral Inisial",
+      "description": "Souvenir best seller terfavorit untuk pesta pernikahan dan wisuda. Terbuat dari epoxy resin crystal clear grade A dengan kombinasi dried flowers asli dan aksen foil emas mewah.",
+      "price": 8500,
+      "stock": 500,
+      "image_url": "/images/products/resin-keychain.jpg",
+      "is_active": true,
+      "category": "resin",
+      "category_label": "Gantungan Kunci Resin",
+      "min_order": 20,
+      "lead_time": "5 - 10 Hari Kerja",
+      "material": "Epoxy Resin Crystal Clear, Real Dried Flowers, Gold Flakes",
+      "size": "Tinggi huruf ~4 cm",
+      "shopee_url": "https://shopee.co.id/hanifakumala",
+      "rating": 4.9,
+      "sold_count": 4200,
+      "created_at": "2026-09-01T15:13:26.684842+00:00",
+      "original_price": 10000,
+      "options": []
+    },
+    {
+      "id": "exclusive-giftbox-hampers",
+      "name": "Exclusive Bridesmaid Candle Gift Box Set",
+      "description": "Paket hampers souvenir eksklusif berisi lilin aromaterapi soy wax amber, gantungan kunci resin floral, dan pouch blacu cantik dalam kemasan hardbox rigid berpita satin.",
+      "price": 45000,
+      "stock": 120,
+      "image_url": "/images/products/gift-box.jpg",
+      "is_active": true,
+      "category": "hampers",
+      "category_label": "Hampers & Gift Box",
+      "min_order": 10,
+      "lead_time": "7 - 14 Hari Kerja",
+      "material": "Hardbox Rigid, Silk Ribbon, Wax Stamp Seal",
+      "size": "18 x 18 x 8 cm",
+      "shopee_url": "https://shopee.co.id/hanifakumala",
+      "rating": 5,
+      "sold_count": 850,
+      "created_at": "2026-09-01T15:13:26.684842+00:00"
+    },
+    {
+      "id": "pouch-blacu-sablon",
+      "name": "Pouch Blacu & Kanvas Sablon Custom",
+      "description": "Pouch serbaguna bahan blacu katun lembut dengan sablon ilustrasi nama custom & resleting rapi. Sangat fungsional dan ramah lingkungan.",
+      "price": 6500,
+      "stock": 400,
+      "image_url": "/images/products/pouch-sablon.jpg",
+      "is_active": true,
+      "category": "pouch",
+      "category_label": "Pouch Sablon",
+      "min_order": 50,
+      "lead_time": "7 - 12 Hari Kerja",
+      "material": "Kain Blacu Katun Grade A / Kanvas Twill Halus",
+      "size": "15 x 20 cm",
+      "shopee_url": "https://shopee.co.id/hanifakumala",
+      "rating": 4.8,
+      "sold_count": 5100,
+      "created_at": "2026-09-01T15:13:26.684842+00:00"
+    },
+    {
+      "id": "totebag-kanvas-custom",
+      "name": "Totebag Kanvas Katun Sablon Estetik",
+      "description": "Totebag ramah lingkungan yang kuat, muat laptop & buku, dengan sablon karya line-art minimalis. Pilihan souvenir berkelas untuk seminar dan pesta.",
+      "price": 18000,
+      "stock": 180,
+      "image_url": "/images/products/totebag-kanvas.jpg",
+      "is_active": true,
+      "category": "totebag",
+      "category_label": "Totebag Kanvas",
+      "min_order": 30,
+      "lead_time": "7 - 14 Hari Kerja",
+      "material": "Kanvas Katun Organik",
+      "size": "30 x 40 cm",
+      "shopee_url": "https://shopee.co.id/hanifakumala",
+      "rating": 4.9,
+      "sold_count": 1950,
+      "created_at": "2026-09-01T15:13:26.684842+00:00"
+    },
+    {
+      "id": "buket-bunga-mini-kering",
+      "name": "Karangan Bunga & Buket Kering Mini Rustic",
+      "description": "Buket mini bunga abadi (dried flowers) dengan pembungkus kertas kraft rustic yang manis mengombinasikan edelweiss dan baby breath kering.",
+      "price": 7500,
+      "stock": 300,
+      "image_url": "/images/products/mini-bouquet.jpg",
+      "is_active": true,
+      "category": "bouquet",
+      "category_label": "Buket Mini & Botol",
+      "min_order": 25,
+      "lead_time": "5 - 10 Hari Kerja",
+      "material": "Natural Dried Flowers, Kraft Paper, Jute Twine",
+      "size": "Panjang 12 - 15 cm",
+      "shopee_url": "https://shopee.co.id/hanifakumala",
+      "rating": 4.8,
+      "sold_count": 3100,
+      "created_at": "2026-09-01T15:13:26.684842+00:00"
+    },
+    {
+      "id": "prod-1788450374133",
+      "name": "Cake",
+      "description": "Hanifa Craft",
+      "price": 15000,
+      "original_price": 20000,
+      "stock": 100,
+      "image_url": "https://glmipnvibbgpowueubjq.supabase.co/storage/v1/object/public/products/products-1788450424433-fcvn8.jpg",
+      "is_active": true,
+      "category": "candle",
+      "category_label": "Lilin Aromaterapi",
+      "min_order": 20,
+      "lead_time": "5 - 10 Hari Kerja",
+      "material": "100% Natural Soy Wax",
+      "size": "60ml & 100ml",
+      "options": [
+        {
+          "label": "Pilihan Varian Aroma",
+          "choices": ["White Blossom"]
+        }
+      ],
+      "shopee_url": "https://shopee.co.id/hanifakumala",
+      "rating": 5,
+      "sold_count": 0
+    }
+  ],
+  "galleryImages": [
+    {
+      "id": "gal-1",
+      "image_url": "/images/products/aromatherapy-candle.jpg",
+      "caption": "Lilin aromaterapi soy wax aroma lavender & vanilla",
+      "sort_order": 1,
+      "category": "candle",
+      "category_label": "Lilin Aromaterapi"
+    },
+    {
+      "id": "gal-2",
+      "image_url": "/images/products/resin-keychain.jpg",
+      "caption": "Gantungan kunci inisial resin bunga edelweiss & mawar",
+      "sort_order": 2,
+      "category": "resin",
+      "category_label": "Resin Floral"
+    },
+    {
+      "id": "gal-3",
+      "image_url": "/images/products/gift-box.jpg",
+      "caption": "Kemasan hampers bridesmaid hardbox dengan pita satin rose",
+      "sort_order": 3,
+      "category": "packaging",
+      "category_label": "Hampers VIP"
+    },
+    {
+      "id": "gal-4",
+      "image_url": "/images/products/pouch-sablon.jpg",
+      "caption": "Pouch katun blacu sablon inisial pengantin",
+      "sort_order": 4,
+      "category": "fabric",
+      "category_label": "Pouch Kain"
+    },
+    {
+      "id": "gal-5",
+      "image_url": "/images/products/totebag-kanvas.jpg",
+      "caption": "Totebag kanvas tebal untuk souvenir corporate & kampus",
+      "sort_order": 5,
+      "category": "fabric",
+      "category_label": "Totebag"
+    },
+    {
+      "id": "gal-6",
+      "image_url": "/images/products/mini-bouquet.jpg",
+      "caption": "Buket mini bunga kering abadi rustic wedding",
+      "sort_order": 6,
+      "category": "packaging",
+      "category_label": "Buket Mini"
+    },
+    {
+      "id": "gal-7",
+      "image_url": "/images/products/resin-casing.jpg",
+      "caption": "Casing smartphone resin custom bunga asli",
+      "sort_order": 7,
+      "category": "resin",
+      "category_label": "Aksesoris Resin"
+    },
+    {
+      "id": "gal-8",
+      "image_url": "/images/products/shop-cover.jpg",
+      "caption": "Suasana workshop studio CraftByHanifa di Magetan",
+      "sort_order": 8,
+      "category": "packaging",
+      "category_label": "Studio Magetan"
+    }
+  ],
+  "contactInfo": {
+    "id": "default",
+    "name": "CraftByHanifa",
+    "tagline": "Handmade Scented Candles & Thoughtful Souvenirs",
+    "address": "Studio CraftByHanifa, Jl. Diponegoro, Magetan, Jawa Timur, 63319",
+    "phone": "+62 812-3456-7890",
+    "whatsapp": "6281234567890",
+    "whatsapp_display": "+62 812-3456-7890",
+    "email": "craftbyhanifa@gmail.com",
+    "instagram_url": "https://instagram.com/craftbyhanifa",
+    "shopee_url": "https://shopee.co.id/hanifakumala",
+    "map_embed_url": "https://maps.google.com/?q=Magetan,+Jawa+Timur",
+    "operational_hours": "Senin - Sabtu: 08.00 - 17.00 WIB",
+    "updated_at": "2026-09-01T15:13:26.684842+00:00"
+  },
+  "siteConfig": {
+    "name": "CraftByHanifa",
+    "tagline": "Handmade Scented Candles & Thoughtful Souvenirs",
+    "description": "Spesialis souvenir lilin aromaterapi dan kerajinan tangan custom eksklusif dari Magetan, Jawa Timur untuk momen bahagia Anda.",
+    "owner": "Hanifa Kumala",
+    "location": "Kab. Magetan, Jawa Timur, Indonesia",
+    "fullAddress": "Studio CraftByHanifa, Magetan, Jawa Timur, 63319",
+    "whatsapp": "6281234567890",
+    "whatsappDisplay": "+62 812-3456-7890",
+    "instagram": "craftbyhanifa",
+    "instagramUrl": "https://instagram.com/craftbyhanifa",
+    "shopeeUrl": "https://shopee.co.id/hanifakumala",
+    "email": "craftbyhanifa@gmail.com",
+    "operationalHours": "Senin - Sabtu: 08.00 - 17.00 WIB",
+    "stats": {
+      "rating": 4.85,
+      "ratingCount": "1.500+",
+      "orderCompleted": "50.000+ pcs"
+    }
+  },
+  "hero": {
+    "badge": "★ 4.85 / 5.0 • Star+ Shopee (1.500+ Ulasan) • Magetan, Jatim",
+    "title": "Sentuhan Hangat Kerajinan Tangan untuk Setiap Momen",
+    "description": "Souvenir lilin aromaterapi dan kerajinan handmade elegan & fungsional untuk pernikahan, seminar, dan perayaan spesial Anda. Mulai dari lilin soy wax, gantungan resin floral, pouch sablon, hingga totebag kanvas custom.",
+    "slides": [
+      {
+        "image": "/images/products/hero-banner.jpg",
+        "title": "CraftByHanifa Studio Workshop",
+        "subtitle": "Kerajinan Lilin Aromaterapi & Souvenir Magetan"
+      },
+      {
+        "image": "/images/products/gift-box.jpg",
+        "title": "Exclusive Hampers & Gift Box",
+        "subtitle": "Kemasan Rustic Cantik Berpita Siap Dibagikan"
+      },
+      {
+        "image": "/images/products/resin-keychain.jpg",
+        "title": "Gantungan Kunci Resin Bunga Asli",
+        "subtitle": "Koleksi Terlaris 50.000+ Pcs Terkirim"
+      }
+    ]
+  }
+}
