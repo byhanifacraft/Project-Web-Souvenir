@@ -187,10 +187,10 @@ export default function WorkshopPageContent({
               </div>
 
               {/* Action CTA Buttons */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 pt-3 w-full">
                 <button
                   onClick={scrollToPackages}
-                  className="px-6 py-3.5 rounded-full bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#c45a76]/25 transition-all hover:scale-[1.02] cursor-pointer"
+                  className="w-full sm:w-auto text-center px-6 py-3.5 rounded-full bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#c45a76]/25 transition-all hover:scale-[1.02] cursor-pointer"
                 >
                   Lihat Jadwal & Paket Kelas
                 </button>
@@ -198,7 +198,7 @@ export default function WorkshopPageContent({
                   href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa, saya ingin tanya ketersediaan jadwal workshop lilin aromaterapi.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#128c7e] hover:bg-[#0e7065] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#128c7e]/20 transition-all hover:scale-[1.02] cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#128c7e] hover:bg-[#0e7065] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#128c7e]/20 transition-all hover:scale-[1.02] cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Konsultasi Slot via WhatsApp</span>
@@ -212,8 +212,8 @@ export default function WorkshopPageContent({
                 {/* Decorative glow */}
                 <div className="absolute -inset-2 rounded-3xl bg-gradient-to-tr from-[#df829b]/30 via-[#fde8ee]/40 to-transparent blur-xl -z-10" />
 
-                {/* Floating Rating Pill - Positioned cleanly at Top-Right so it never collides with photo text */}
-                <div className="absolute -top-4 -right-2 sm:-top-5 sm:-right-4 bg-white/95 backdrop-blur-md border border-[#ebdcd5] rounded-2xl px-4 py-2.5 shadow-lg flex items-center gap-3 z-10">
+                {/* Floating Rating Pill - Positioned cleanly inside bounds */}
+                <div className="absolute -top-3.5 right-2 sm:-top-5 sm:-right-4 bg-white/95 backdrop-blur-md border border-[#ebdcd5] rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg flex items-center gap-2.5 sm:gap-3 z-10 max-w-[90%]">
                   <div className="w-9 h-9 rounded-xl bg-[#fde8ee] text-[#c45a76] flex items-center justify-center shrink-0">
                     <Heart className="w-4 h-4 fill-[#c45a76]" />
                   </div>

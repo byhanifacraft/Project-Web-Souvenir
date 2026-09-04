@@ -443,7 +443,7 @@ export default function AdminTentangKamiPage() {
           <button
             type="submit"
             disabled={saving || uploading}
-            className="px-6 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors shadow-md shadow-[#e05d82]/20 flex items-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors shadow-md shadow-[#e05d82]/20 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
           >
             {saving || uploading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

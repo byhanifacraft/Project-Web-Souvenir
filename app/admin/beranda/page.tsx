@@ -319,7 +319,7 @@ export default function AdminBerandaPage() {
             });
             setIsNewBanner(true);
           }}
-          className="px-4 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors flex items-center gap-1.5 shadow-md shadow-[#e05d82]/20 cursor-pointer self-start sm:self-auto"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-[#e05d82]/20 cursor-pointer min-h-[44px]"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Banner Baru</span>
@@ -448,7 +448,7 @@ export default function AdminBerandaPage() {
           <button
             type="button"
             onClick={handleAddFeatureBox}
-            className="px-3.5 py-1.5 rounded-xl bg-[#fde8ee] text-[#e05d82] hover:bg-[#e05d82] hover:text-white transition-colors text-xs font-bold flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#fde8ee] text-[#e05d82] hover:bg-[#e05d82] hover:text-white transition-colors text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer min-h-[40px]"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah Box</span>
@@ -594,7 +594,7 @@ export default function AdminBerandaPage() {
             <button
               type="submit"
               disabled={savingFeatures}
-              className="px-6 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors shadow-md shadow-[#e05d82]/20 flex items-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors shadow-md shadow-[#e05d82]/20 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
             >
               {savingFeatures ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -607,16 +607,17 @@ export default function AdminBerandaPage() {
         </form>
       </div>
 
-      {/* 3. Tagline & Headline Beranda Form */}
+      {/* 3. Kelola Headline & Tagline Beranda */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#f3d7df] shadow-xs">
         <h2 className="text-base font-serif font-bold text-[#2e1c24] mb-1">
-          3. Headline & Deskripsi Hero Beranda
+          3. Headline & Tagline Utama Beranda (tagline_beranda)
         </h2>
         <p className="text-xs text-[#755562] mb-6">
           Tabel Supabase:{' '}
           <code className="bg-[#fde8ee] px-1.5 py-0.5 rounded text-[#e05d82]">
             site_content (tagline_beranda)
-          </code>
+          </code>{' '}
+          • Ubah kalimat promosi utama yang menyapa pengunjung di bawah navbar
         </p>
 
         <form onSubmit={handleSaveTagline} className="space-y-4">
@@ -668,7 +669,7 @@ export default function AdminBerandaPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors shadow-md shadow-[#e05d82]/20 flex items-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors shadow-md shadow-[#e05d82]/20 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               <span>Simpan Headline Hero</span>
@@ -679,16 +680,17 @@ export default function AdminBerandaPage() {
 
       {/* Modal Edit / Tambah Banner */}
       {editingBanner && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#f3d7df] my-8 animate-scaleUp">
-            <div className="flex items-center justify-between pb-4 border-b border-[#f3d7df] mb-6">
-              <h3 className="font-serif font-bold text-lg text-[#2e1c24]">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-4 sm:p-8 shadow-2xl border border-[#f3d7df] my-auto sm:my-8 max-h-[92vh] overflow-y-auto animate-scaleUp">
+            <div className="flex items-center justify-between pb-3 border-b border-[#f3d7df] mb-5">
+              <h3 className="font-serif font-bold text-base sm:text-lg text-[#2e1c24]">
                 {isNewBanner ? 'Tambah Banner Baru' : 'Edit Banner Slider'}
               </h3>
               <button
                 type="button"
                 onClick={() => setEditingBanner(null)}
-                className="w-8 h-8 rounded-full bg-[#fde8ee] text-[#755562] hover:bg-[#e05d82] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#fde8ee] text-[#755562] hover:bg-[#e05d82] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                aria-label="Tutup Modal"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -723,7 +725,7 @@ export default function AdminBerandaPage() {
                 <label className="block font-bold text-[#2e1c24] mb-1">
                   Foto Banner (Storage Bucket: banners)
                 </label>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <input
                     type="text"
                     required
@@ -731,9 +733,9 @@ export default function AdminBerandaPage() {
                     onChange={(e) =>
                       setEditingBanner({ ...editingBanner, image_url: e.target.value })
                     }
-                    className="flex-1 px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24]"
+                    className="flex-1 min-w-0 px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24]"
                   />
-                  <label className="px-4 py-2 rounded-xl bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20 font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0">
+                  <label className="px-3 sm:px-4 py-2 rounded-xl bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20 font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0 min-h-[40px]">
                     <Upload className="w-3.5 h-3.5" />
                     <span>Upload</span>
                     <input
@@ -753,7 +755,7 @@ export default function AdminBerandaPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block font-bold text-[#2e1c24] mb-1">Teks Tombol CTA</label>
                   <input
@@ -781,7 +783,7 @@ export default function AdminBerandaPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block font-bold text-[#2e1c24] mb-1">Urutan Tampil</label>
                   <input
@@ -794,7 +796,7 @@ export default function AdminBerandaPage() {
                   />
                 </div>
 
-                <div className="flex items-center gap-2 pt-6">
+                <div className="flex items-center gap-2 pt-1 sm:pt-6">
                   <input
                     type="checkbox"
                     id="bannerActiveCheck"
@@ -813,18 +815,18 @@ export default function AdminBerandaPage() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#f3d7df] flex justify-end gap-3">
+              <div className="pt-4 border-t border-[#f3d7df] flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setEditingBanner(null)}
-                  className="px-4 py-2 rounded-xl border border-[#f3d7df] text-xs font-bold text-[#755562] hover:bg-[#fff0f4] cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#f3d7df] text-xs font-bold text-[#755562] hover:bg-[#fff0f4] cursor-pointer min-h-[44px] flex items-center justify-center"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={saving || uploading}
-                  className="px-6 py-2 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] shadow-md shadow-[#e05d82]/20 flex items-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] shadow-md shadow-[#e05d82]/20 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
                 >
                   {saving || uploading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

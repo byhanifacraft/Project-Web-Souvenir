@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fff7f9] via-[#fde8ee] to-[#fff0f4] flex items-center justify-center p-4">
-      <div className="bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-[#f3d7df] max-w-md w-full animate-scaleUp">
+      <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-[#f3d7df] max-w-md w-full animate-scaleUp">
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#e05d82] to-[#ff7e67] text-white flex items-center justify-center mx-auto mb-4 shadow-md shadow-[#e05d82]/20">
             <Lock className="w-7 h-7" />

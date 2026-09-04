@@ -50,10 +50,10 @@ export default function Navbar({ config }: NavbarProps) {
           : 'bg-[#faf6f2]/90 backdrop-blur-md border-b border-[#ebdcd5]/70 py-3.5'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-6">
         {/* Brand Logo with Official Shopee Avatar */}
-        <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="w-10 h-10 rounded-full overflow-hidden relative border border-zinc-200 bg-white shadow-2xs group-hover:scale-105 transition-transform shrink-0">
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0 min-w-0">
+          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-full overflow-hidden relative border border-zinc-200 bg-white shadow-2xs group-hover:scale-105 transition-transform shrink-0">
             <Image
               src="/images/products/avatar.jpg"
               alt={brandName}
@@ -62,11 +62,11 @@ export default function Navbar({ config }: NavbarProps) {
               priority
             />
           </div>
-          <div>
-            <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 group-hover:text-[#c8476c] transition-colors leading-none block">
+          <div className="min-w-0">
+            <span className="font-serif text-lg sm:text-2xl font-bold tracking-tight text-zinc-900 group-hover:text-[#c8476c] transition-colors leading-none block truncate">
               {brandName}
             </span>
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 font-medium block mt-0.5">
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 font-medium block mt-0.5 truncate">
               Handmade Candles & Gifts
             </span>
           </div>
@@ -119,7 +119,7 @@ export default function Navbar({ config }: NavbarProps) {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2 text-zinc-700 hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
+          className="md:hidden w-10 h-10 flex items-center justify-center text-zinc-700 hover:bg-zinc-100 rounded-xl transition-colors cursor-pointer shrink-0"
           aria-label="Buka Menu"
         >
           {mobileOpen ? <X className="w-5 h-5 text-zinc-900" /> : <Menu className="w-5 h-5" />}
@@ -128,7 +128,7 @@ export default function Navbar({ config }: NavbarProps) {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="md:hidden bg-white border-b border-zinc-200 px-5 py-4 space-y-2 shadow-lg animate-fadeIn">
+        <div className="md:hidden bg-white/98 backdrop-blur-lg border-b border-zinc-200 px-4 py-3 space-y-1.5 shadow-xl animate-fadeIn">
           {navLinks.map((link) => {
             const active = isActive(link.href);
             return (
@@ -136,33 +136,33 @@ export default function Navbar({ config }: NavbarProps) {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`block py-2 text-sm font-medium border-b border-zinc-100 last:border-0 ${
+                className={`flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl min-h-[44px] transition-colors ${
                   active
-                    ? 'text-zinc-900 font-bold pl-2 bg-zinc-50 rounded-lg'
-                    : 'text-zinc-600 hover:text-zinc-900'
+                    ? 'text-[#c8476c] font-bold bg-[#fde8ee]'
+                    : 'text-zinc-700 hover:text-zinc-900 hover:bg-zinc-50'
                 }`}
               >
                 {link.label}
               </Link>
             );
           })}
-          <div className="pt-3 border-t border-zinc-100 flex gap-2">
+          <div className="pt-3 border-t border-zinc-100 flex gap-2.5">
             <a
               href={shopeeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 py-2 text-center text-xs font-medium rounded-full border border-zinc-200 text-zinc-800 flex items-center justify-center gap-1.5"
+              className="flex-1 min-h-[42px] py-2.5 text-center text-xs font-bold rounded-xl border border-zinc-200 text-zinc-800 flex items-center justify-center gap-1.5 hover:bg-zinc-50"
             >
-              <ShoppingBag className="w-3.5 h-3.5 text-[#ee4d2d]" />
-              <span>Shopee</span>
+              <ShoppingBag className="w-4 h-4 text-[#ee4d2d]" />
+              <span>Shopee Star+</span>
             </a>
             <a
               href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo ' + brandName + ', saya ingin konsultasi pemesanan souvenir.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 py-2 text-center text-xs font-medium rounded-full bg-[#128c7e] text-white flex items-center justify-center gap-1.5"
+              className="flex-1 min-h-[42px] py-2.5 text-center text-xs font-bold rounded-xl bg-[#128c7e] text-white flex items-center justify-center gap-1.5 hover:bg-[#0e7065] shadow-xs"
             >
-              <MessageCircle className="w-3.5 h-3.5" />
+              <MessageCircle className="w-4 h-4" />
               <span>WhatsApp</span>
             </a>
           </div>

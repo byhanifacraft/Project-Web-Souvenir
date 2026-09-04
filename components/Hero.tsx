@@ -122,10 +122,10 @@ export default function Hero({ config, hero }: HeroProps) {
             </div>
 
             {/* Action CTAs */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3">
               <a
                 href="/produk"
-                className="px-6 py-3 rounded-full bg-[#df829b] text-white font-medium text-xs sm:text-sm hover:bg-[#c96c85] shadow-sm transition-all flex items-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#df829b] text-white font-medium text-xs sm:text-sm hover:bg-[#c96c85] shadow-sm transition-all flex items-center justify-center gap-2 min-h-[44px]"
               >
                 <span>Katalog Souvenir</span>
                 <ArrowRight className="w-4 h-4" />
@@ -135,7 +135,7 @@ export default function Hero({ config, hero }: HeroProps) {
                 href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa (' + brandName + '), saya ingin konsultasi ide souvenir untuk acara kami.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-3 rounded-full bg-[#128c7e] text-white font-medium text-xs sm:text-sm hover:bg-[#0e7065] shadow-sm transition-all flex items-center gap-2"
+                className="flex-1 sm:flex-initial px-5 py-3 rounded-full bg-[#128c7e] text-white font-medium text-xs sm:text-sm hover:bg-[#0e7065] shadow-sm transition-all flex items-center justify-center gap-2 min-h-[44px]"
               >
                 <MessageCircle className="w-4 h-4 text-white" />
                 <span>Konsultasi WA</span>
@@ -145,7 +145,7 @@ export default function Hero({ config, hero }: HeroProps) {
                 href={shopeeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-3 rounded-full bg-[#ee4d2d] text-white font-medium text-xs sm:text-sm hover:bg-[#d73211] transition-all flex items-center gap-1.5 shadow-sm"
+                className="flex-1 sm:flex-initial px-4 py-3 rounded-full bg-[#ee4d2d] text-white font-medium text-xs sm:text-sm hover:bg-[#d73211] transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
               >
                 <ShoppingBag className="w-4 h-4 text-white" />
                 <span>Shopee</span>
@@ -185,14 +185,14 @@ export default function Hero({ config, hero }: HeroProps) {
                 <>
                   <button
                     onClick={prevSlide}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-xs text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 cursor-pointer"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 backdrop-blur-xs text-white flex items-center justify-center opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/70 cursor-pointer"
                     aria-label="Foto Sebelumnya"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={nextSlide}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-xs text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 backdrop-blur-xs text-white flex items-center justify-center opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/70 cursor-pointer"
                     aria-label="Foto Berikutnya"
                   >
                     <ChevronRight className="w-4 h-4" />

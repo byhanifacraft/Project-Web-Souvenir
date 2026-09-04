@@ -187,7 +187,7 @@ export default function About({ content, config }: AboutProps) {
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#128c7e] text-white text-xs font-medium hover:bg-[#0e7065] transition-all shadow-2xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#128c7e] text-white text-xs font-medium hover:bg-[#0e7065] transition-all shadow-2xs min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Diskusi Langsung dengan Kak Hanifa</span>

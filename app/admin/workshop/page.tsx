@@ -321,8 +321,8 @@ export default function AdminWorkshopPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-[#2e1c24] flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-[#e05d82]" />
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#2e1c24] flex items-center gap-2">
+            <Sparkles className="w-5 sm:w-6 h-5 sm:h-6 text-[#e05d82] shrink-0" />
             <span>Kelola Workshop Studio</span>
           </h1>
           <p className="text-xs text-[#755562] mt-1">
@@ -331,19 +331,19 @@ export default function AdminWorkshopPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           <a
             href="/workshop"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2.5 rounded-xl border border-[#ebdcd5] bg-white text-zinc-700 text-xs font-semibold hover:bg-zinc-50 transition-colors"
+            className="px-4 py-2.5 rounded-xl border border-[#ebdcd5] bg-white text-zinc-700 text-xs font-semibold hover:bg-zinc-50 transition-colors text-center"
           >
             Lihat Halaman Live
           </a>
           <button
             onClick={() => handleSaveAll()}
             disabled={saving}
-            className="px-5 py-2.5 rounded-xl bg-[#e05d82] hover:bg-[#c8476c] text-white text-xs font-bold transition-all shadow-md shadow-[#e05d82]/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-[#e05d82] hover:bg-[#c8476c] text-white text-xs font-bold transition-all shadow-md shadow-[#e05d82]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             <span>Simpan Semua Perubahan</span>
@@ -351,11 +351,11 @@ export default function AdminWorkshopPage() {
         </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 p-1.5 bg-white border border-[#f3d7df] rounded-2xl shadow-2xs overflow-x-auto">
+      {/* Tabs Navigation - Smooth Horizontal Swipe on Mobile */}
+      <div className="flex items-center gap-2 p-1.5 bg-white border border-[#f3d7df] rounded-2xl shadow-2xs overflow-x-auto scrollbar-none w-full">
         <button
           onClick={() => setActiveTab('packages')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer ${
             activeTab === 'packages'
               ? 'bg-[#fde8ee] text-[#c45a76] shadow-2xs'
               : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
@@ -367,7 +367,7 @@ export default function AdminWorkshopPage() {
 
         <button
           onClick={() => setActiveTab('curriculum')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer ${
             activeTab === 'curriculum'
               ? 'bg-[#fde8ee] text-[#c45a76] shadow-2xs'
               : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
@@ -379,7 +379,7 @@ export default function AdminWorkshopPage() {
 
         <button
           onClick={() => setActiveTab('reservation')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer ${
             activeTab === 'reservation'
               ? 'bg-[#fde8ee] text-[#c45a76] shadow-2xs'
               : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
@@ -391,7 +391,7 @@ export default function AdminWorkshopPage() {
 
         <button
           onClick={() => setActiveTab('gallery')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer ${
             activeTab === 'gallery'
               ? 'bg-[#fde8ee] text-[#c45a76] shadow-2xs'
               : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
@@ -849,15 +849,16 @@ export default function AdminWorkshopPage() {
 
       {/* ================= MODAL EDIT / TAMBAH PAKET ================= */}
       {editingPackage && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-[#ebdcd5] my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-100 mb-6">
-              <h3 className="font-serif font-bold text-lg text-zinc-900">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-4 sm:p-8 shadow-2xl border border-[#ebdcd5] my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-zinc-100 mb-4 sm:mb-6">
+              <h3 className="font-serif font-bold text-base sm:text-lg text-zinc-900 pr-2">
                 {isAddingPackage ? 'Tambah Paket Workshop Baru' : `Edit ${editingPackage.name}`}
               </h3>
               <button
                 onClick={() => setEditingPackage(null)}
-                className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center cursor-pointer transition-colors"
+                className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center cursor-pointer transition-colors shrink-0"
+                aria-label="Tutup"
               >
                 <X className="w-4 h-4" />
               </button>

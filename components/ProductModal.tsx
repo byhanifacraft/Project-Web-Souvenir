@@ -72,13 +72,13 @@ export default function ProductModal({
       onClick={onClose}
     >
       <div
-        className="relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden border border-[#f3d7df] my-6 animate-scaleUp"
+        className="relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden border border-[#f3d7df] my-auto animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
+        {/* Close Button - 44px touch target on mobile */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md text-[#2e1c24] hover:bg-[#fae1e8] hover:text-[#e05d82] transition-all flex items-center justify-center shadow-md cursor-pointer"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md text-[#2e1c24] hover:bg-[#fae1e8] hover:text-[#e05d82] transition-all flex items-center justify-center shadow-lg border border-black/5 cursor-pointer"
           aria-label="Tutup"
         >
           <X className="w-5 h-5" />
@@ -267,7 +267,7 @@ export default function ProductModal({
                 href={getWaOrderLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3 px-4 rounded-xl bg-[#128c7e] text-white font-semibold text-xs sm:text-sm hover:bg-[#0e7065] shadow-md shadow-[#128c7e]/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full sm:flex-1 min-h-[46px] py-3 px-4 rounded-xl bg-[#128c7e] text-white font-bold text-xs sm:text-sm hover:bg-[#0e7065] shadow-md shadow-[#128c7e]/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Pesan Custom via WhatsApp</span>
@@ -278,7 +278,7 @@ export default function ProductModal({
                   href={product.shopeeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-3 px-4 rounded-xl bg-[#ee4d2d] text-white font-semibold text-xs sm:text-sm hover:bg-[#d73211] flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm"
+                  className="w-full sm:w-auto min-h-[46px] py-3 px-4 rounded-xl bg-[#ee4d2d] text-white font-bold text-xs sm:text-sm hover:bg-[#d73211] flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm"
                 >
                   <ShoppingBag className="w-4 h-4 text-white" />
                   <span>Beli di Shopee</span>

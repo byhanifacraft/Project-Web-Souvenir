@@ -345,7 +345,7 @@ export default function AdminProdukPage() {
             setIsCustomCategory(false);
             setNewChoiceInputs({});
           }}
-          className="px-4 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors flex items-center gap-1.5 shadow-md shadow-[#e05d82]/20 cursor-pointer self-start sm:self-auto"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-[#e05d82]/20 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Produk Baru</span>
@@ -353,7 +353,7 @@ export default function AdminProdukPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-[#f3d7df] shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between">
+      <div className="bg-white p-4 rounded-2xl border border-[#f3d7df] shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 text-[#9d7c8b] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -361,17 +361,17 @@ export default function AdminProdukPage() {
             placeholder="Cari nama produk..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-xs text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#e05d82]"
+            className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-xs text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#e05d82]"
           />
         </div>
 
         {/* Dynamic Category Filter Pills */}
-        <div className="flex gap-2 overflow-x-auto w-full sm:w-auto scrollbar-none">
+        <div className="flex gap-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
           <button
             onClick={() => setSelectedCat('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 min-h-[36px] transition-all cursor-pointer ${
               selectedCat === 'all'
-                ? 'bg-[#e05d82] text-white'
+                ? 'bg-[#e05d82] text-white shadow-xs'
                 : 'bg-[#fff7f9] text-[#755562] hover:bg-[#fde8ee]'
             }`}
           >
@@ -534,13 +534,13 @@ export default function AdminProdukPage() {
       {/* Modal Edit / Tambah Produk */}
       {editingProduct && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border border-[#f3d7df] my-8 animate-scaleUp max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-[#f3d7df] mb-6">
-              <div>
-                <h3 className="font-serif font-bold text-lg text-[#2e1c24]">
-                  {isNewProduct ? 'Tambah Produk Baru' : `Edit Produk: ${editingProduct.name}`}
+          <div className="bg-white rounded-3xl max-w-3xl w-full p-4 sm:p-8 shadow-2xl border border-[#f3d7df] my-auto animate-scaleUp max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-[#f3d7df] mb-4 sm:mb-6">
+              <div className="pr-2 min-w-0">
+                <h3 className="font-serif font-bold text-base sm:text-lg text-[#2e1c24] truncate">
+                  {isNewProduct ? 'Tambah Produk Baru' : `Edit: ${editingProduct.name}`}
                 </h3>
-                <p className="text-xs text-[#755562] mt-0.5">
+                <p className="text-[11px] sm:text-xs text-[#755562] mt-0.5">
                   Atur informasi produk, harga promo & coret, serta pilihan kustomisasi yang
                   tersedia.
                 </p>
@@ -548,7 +548,8 @@ export default function AdminProdukPage() {
               <button
                 type="button"
                 onClick={() => setEditingProduct(null)}
-                className="w-8 h-8 rounded-full bg-[#fde8ee] text-[#755562] hover:bg-[#e05d82] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="w-9 h-9 rounded-full bg-[#fde8ee] text-[#755562] hover:bg-[#e05d82] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                aria-label="Tutup"
               >
                 <X className="w-4 h-4" />
               </button>

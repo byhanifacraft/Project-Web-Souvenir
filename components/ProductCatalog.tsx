@@ -293,7 +293,7 @@ export default function ProductCatalog({
                     <button
                       type="button"
                       onClick={handleOpenModal}
-                      className="flex-1 py-2 rounded-full bg-[#df829b] text-white font-medium text-xs text-center hover:bg-[#c96c85] transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+                      className="flex-1 py-2.5 rounded-full bg-[#df829b] text-white font-medium text-xs text-center hover:bg-[#c96c85] transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer min-h-[40px]"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>Detail & Custom</span>
@@ -303,7 +303,7 @@ export default function ProductCatalog({
                       href={getWaLink(p)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-2 rounded-full bg-[#128c7e] text-white font-medium text-xs text-center hover:bg-[#0e7065] transition-all flex items-center justify-center gap-1 shadow-2xs"
+                      className="px-3.5 py-2.5 rounded-full bg-[#128c7e] text-white font-medium text-xs text-center hover:bg-[#0e7065] transition-all flex items-center justify-center gap-1 shadow-2xs min-h-[40px]"
                       title="Pesan Langsung via WhatsApp"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />
@@ -314,7 +314,7 @@ export default function ProductCatalog({
                         href={p.shopee_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-2 rounded-full bg-[#ee4d2d] text-white font-medium text-xs text-center hover:bg-[#d73211] transition-colors flex items-center justify-center gap-1 shadow-2xs"
+                        className="px-3.5 py-2.5 rounded-full bg-[#ee4d2d] text-white font-medium text-xs text-center hover:bg-[#d73211] transition-colors flex items-center justify-center gap-1 shadow-2xs min-h-[40px]"
                         title="Beli Sampel di Shopee"
                       >
                         <ShoppingBag className="w-3.5 h-3.5 text-white" />

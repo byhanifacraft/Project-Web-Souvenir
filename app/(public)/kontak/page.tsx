@@ -100,7 +100,7 @@ export default async function KontakPage() {
                 href={shopeeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-xl bg-[#ee4d2d] text-white text-xs font-bold hover:bg-[#d83f20] transition-colors flex items-center gap-1.5 shadow-2xs"
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#ee4d2d] text-white text-xs font-bold hover:bg-[#d83f20] transition-colors flex items-center justify-center gap-1.5 shadow-2xs min-h-[44px]"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
                 <span>Shopee Star+</span>
@@ -109,7 +109,7 @@ export default async function KontakPage() {
                 href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-xl bg-[#e1306c] text-white text-xs font-bold hover:bg-[#c8245c] transition-colors flex items-center gap-1.5 shadow-2xs"
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#e1306c] text-white text-xs font-bold hover:bg-[#c8245c] transition-colors flex items-center justify-center gap-1.5 shadow-2xs min-h-[44px]"
               >
                 <InstagramIcon className="w-3.5 h-3.5" />
                 <span>Instagram</span>
