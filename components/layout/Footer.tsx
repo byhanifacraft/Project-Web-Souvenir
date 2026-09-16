@@ -59,7 +59,7 @@ export default function Footer({ config }: FooterProps) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-zinc-800/80">
           {/* Col 1: Brand */}
-          <div className="md:col-span-5">
+          <div className="md:col-span-7">
             <Link href="/" className="flex items-center gap-3 mb-3.5 group">
               <div className="w-8 h-8 rounded-full overflow-hidden relative border border-white/20 bg-white group-hover:scale-105 transition-transform shrink-0">
                 <Image
@@ -73,7 +73,7 @@ export default function Footer({ config }: FooterProps) {
                 {brandName}
               </span>
             </Link>
-            <p className="text-xs text-zinc-400 leading-relaxed mb-6 max-w-sm">{description}</p>
+            <p className="text-xs text-zinc-400 leading-relaxed mb-6 max-w-md">{description}</p>
             <div className="flex items-center gap-2.5">
               <a
                 href={shopeeUrl}
@@ -112,42 +112,8 @@ export default function Footer({ config }: FooterProps) {
             </div>
           </div>
 
-          {/* Col 2: Navigation */}
-          <div className="md:col-span-3">
-            <h4 className="font-serif font-bold text-white text-xs uppercase tracking-widest mb-3.5">
-              Navigasi Halaman
-            </h4>
-            <ul className="space-y-2.5 text-xs text-zinc-400">
-              <li>
-                <Link href="/" className="hover:text-white transition-colors">
-                  Beranda
-                </Link>
-              </li>
-              <li>
-                <Link href="/produk" className="hover:text-white transition-colors">
-                  Koleksi Produk
-                </Link>
-              </li>
-              <li>
-                <Link href="/workshop" className="hover:text-white transition-colors">
-                  Workshop Studio
-                </Link>
-              </li>
-              <li>
-                <Link href="/tentang-kami" className="hover:text-white transition-colors">
-                  Tentang Kami & Visi Misi
-                </Link>
-              </li>
-              <li>
-                <Link href="/kontak" className="hover:text-white transition-colors">
-                  Kontak Studio & Maps
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Workshop Details */}
-          <div className="md:col-span-4">
+          {/* Col 2: Workshop Details */}
+          <div className="md:col-span-5">
             <h4 className="font-serif font-bold text-white text-xs uppercase tracking-widest mb-3.5">
               Studio Workshop
             </h4>
