@@ -1,87 +1,96 @@
 @import 'tailwindcss';
 
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'SF Pro', var(--font-inter),
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'SF Pro', var(--font-inter),
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
 :root {
-  --primary-artisan: #e05d82;
-  --primary-hover: #c8476c;
-  --primary-light: #fde8ee;
-  --accent-peach: #ff7e67;
-  --accent-gold: #f59e0b;
-  --accent-mint: #4d8b74;
-  --accent-lavender: #9d7fe3;
-  --bg-cream: #fff7f9;
+  --primary-artisan: #1d1d1f;
+  --primary-hover: #333336;
+  --primary-rose: #be4d69;
+  --primary-rose-hover: #a8445e;
+  --bg-apple: #fbfbfd;
   --bg-card: #ffffff;
-  --text-dark: #2e1c24;
-  --text-muted: #755562;
-  --border-artisan: #f3d7df;
+  --text-dark: #1d1d1f;
+  --text-muted: #6e6e73;
+  --border-subtle: rgba(0, 0, 0, 0.08);
 }
 
 html {
   scroll-behavior: smooth;
   font-family:
-    var(--font-jakarta),
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'SF Pro', var(--font-inter),
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
 body {
-  background-color: var(--bg-cream);
+  background-color: var(--bg-apple);
   color: var(--text-dark);
   overflow-x: hidden;
 }
 
-/* Glassmorphism effects */
+/* Headings Apple-style typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.022em;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Glassmorphism effects - Apple frosted glass */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(243, 215, 223, 0.8);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .glass-pink {
-  background: rgba(253, 240, 244, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(224, 93, 130, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(190, 77, 105, 0.15);
 }
 
 .glass-dark {
-  background: rgba(46, 28, 36, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(29, 29, 31, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Texture patterns */
+/* Clean patterns */
 .artisan-pattern {
-  background-color: #fff7f9;
-  background-image:
-    radial-gradient(#f0d2db 0.8px, transparent 0.8px), radial-gradient(#f0d2db 0.8px, #fff7f9 0.8px);
-  background-size: 28px 28px;
-  background-position:
-    0 0,
-    14px 14px;
+  background-color: #fbfbfd;
 }
 
-/* Custom scrollbar */
+/* Minimalist scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #fdf2f5;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #eab4c3;
-  border-radius: 4px;
+  background: #d1d1d6;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e05d82;
+  background: #a1a1a6;
 }
 
 /* Subtle animations */
@@ -91,17 +100,17 @@ body {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
   }
 }
 
 @keyframes pulseGlow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(224, 93, 130, 0.4);
+    box-shadow: 0 0 0 0 rgba(29, 29, 31, 0.15);
   }
   50% {
-    box-shadow: 0 0 0 12px rgba(224, 93, 130, 0);
+    box-shadow: 0 0 0 8px rgba(29, 29, 31, 0);
   }
 }
 
@@ -126,7 +135,7 @@ body {
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 50%,
     rgba(255, 255, 255, 0) 100%
   );
   background-size: 200% 100%;

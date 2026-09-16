@@ -96,27 +96,27 @@ export default function About({ content, config }: AboutProps) {
 
           {/* Right: Story Text */}
           <div className="lg:col-span-6 space-y-5">
-            <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#a85267]">
+            <p className="text-xs uppercase tracking-widest text-zinc-400 font-medium">
               Our Studio & Craft
             </p>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-[#2a2123] tracking-tight leading-[1.2]">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900 tracking-tight leading-[1.2]">
               {storyTitle}
             </h2>
-            <div className="text-sm sm:text-base text-[#5e4e52] leading-relaxed space-y-4 font-normal">
+            <div className="text-sm sm:text-base text-zinc-600 leading-relaxed space-y-4 font-normal">
               {formattedStory.split('\n\n').map((paragraph, pIdx) => (
                 <p key={pIdx} className="leading-relaxed">
                   {paragraph.trim()}
                 </p>
               ))}
               {formattedVisionMission && (
-                <div className="pt-4 border-t border-[#ebdcd5] space-y-2">
-                  <p className="text-xs uppercase tracking-wider font-semibold text-[#2a2123]">
+                <div className="pt-4 border-t border-zinc-200/70 space-y-2">
+                  <p className="text-xs uppercase tracking-wider font-semibold text-zinc-900">
                     {visionMissionTitle}
                   </p>
                   {formattedVisionMission.split('\n\n').map((vPara, vIdx) => (
                     <p
                       key={vIdx}
-                      className="text-xs sm:text-sm text-[#736064] leading-relaxed whitespace-pre-line"
+                      className="text-xs sm:text-sm text-zinc-500 leading-relaxed whitespace-pre-line"
                     >
                       {vPara.trim()}
                     </p>
@@ -128,69 +128,65 @@ export default function About({ content, config }: AboutProps) {
         </div>
       </section>
 
-      {/* 2. Values / Commitments - Clean Editorial 3 Columns (NO AI Gimmicks) */}
-      <section className="border-y border-[#ebdcd5] py-14 md:py-18 bg-[#faf4ef]">
+      {/* 2. Values / Commitments - Clean Apple 3 Columns */}
+      <section className="border-y border-zinc-200/60 py-16 md:py-22 bg-[#f5f5f7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center max-w-xl mx-auto mb-12">
-            <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#a85267] mb-2">
+            <p className="text-xs uppercase tracking-widest text-zinc-400 font-medium mb-2">
               Our Commitments
             </p>
-            <h3 className="text-2xl sm:text-3xl font-serif text-[#2a2123]">
+            <h3 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">
               Nilai di Balik Setiap Karya
             </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
             {values.map((v) => (
-              <div key={v.num} className="space-y-3">
-                <span className="font-serif text-2xl text-[#c26d83] block leading-none">
+              <div key={v.num} className="space-y-2.5">
+                <span className="text-2xl text-zinc-900 font-bold tracking-tight block leading-none">
                   {v.num}
                 </span>
-                <h4 className="font-serif font-bold text-lg text-[#2a2123] leading-snug">
-                  {v.title}
-                </h4>
-                <p className="text-xs sm:text-sm text-[#5e4e52] leading-relaxed">{v.desc}</p>
+                <h4 className="font-semibold text-base text-zinc-900 leading-snug">{v.title}</h4>
+                <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed">{v.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 3. Meet the Founder - Warm Intimate Studio Profile */}
+      {/* 3. Meet the Founder - Clean Minimalist Studio Profile */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="bg-white p-8 sm:p-12 rounded-3xl border border-[#ebdcd5] shadow-xs">
+        <div className="bg-white p-8 sm:p-12 rounded-3xl border border-zinc-200/80 shadow-xs">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
             {/* Founder Portrait */}
             <div className="md:col-span-4 flex flex-col items-center text-center">
-              <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden relative border-2 border-[#ebdcd5] bg-[#f5ece6] mb-3.5 shadow-xs">
+              <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden relative border border-zinc-200/80 bg-zinc-100 mb-3.5 shadow-2xs">
                 <Image src={ownerImage} alt={brandOwner} fill className="object-cover" />
               </div>
-              <h4 className="font-serif font-bold text-lg text-[#2a2123]">{brandOwner}</h4>
-              <p className="text-[11px] uppercase tracking-widest text-[#8c7873] mt-0.5">
-                {ownerTitle}
-              </p>
+              <h4 className="font-semibold text-lg text-zinc-900">{brandOwner}</h4>
+              <p className="text-xs text-zinc-500 mt-0.5">{ownerTitle}</p>
             </div>
 
             {/* Founder Note */}
             <div className="md:col-span-8 space-y-4 text-center md:text-left">
-              <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#a85267]">
+              <p className="text-xs uppercase tracking-widest text-zinc-400 font-medium">
                 A Note From The Founder
               </p>
-              <blockquote className="font-serif italic text-base sm:text-lg text-[#33282b] leading-relaxed border-l-0 md:border-l-2 md:border-[#c26d83] md:pl-5 whitespace-pre-line">
+              <blockquote className="text-base sm:text-lg text-zinc-700 leading-relaxed border-l-0 md:border-l-2 md:border-zinc-300 md:pl-5 whitespace-pre-line font-normal">
                 &ldquo;{formattedBio}&rdquo;
               </blockquote>
               <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
                 <a
                   href={getWhatsAppLink(
                     whatsappNum,
-                    'Halo Kak Hanifa, saya membaca profil studio dan ingin konsultasi seputar souvenir.'
+                    `Halo Kak ${brandOwner}, saya ingin konsultasi seputar souvenir CraftByHanifa.`
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#128c7e] text-white text-xs font-medium hover:bg-[#0e7065] transition-all shadow-2xs min-h-[44px]"
+                  className="px-5 py-2.5 rounded-full bg-[#1d1d1f] hover:bg-zinc-800 text-white text-xs font-medium transition-all shadow-xs flex items-center gap-2"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Diskusi Langsung dengan Kak Hanifa</span>
+                  <MessageCircle className="w-4 h-4 text-emerald-400" />
+                  <span>Kirim Pesan ke Founder</span>
                 </a>
               </div>
             </div>

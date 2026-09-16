@@ -43,22 +43,22 @@ export default function Features({ features, title, subtitle }: FeaturesProps) {
     'Setiap karya dibuat manual dengan ketelitian tinggi oleh pengrajin lokal di Magetan, menghasilkan souvenir bermakna yang berguna dan membahagiakan para tamu.';
 
   return (
-    <section id="keunggulan" className="py-16 md:py-22 bg-white border-y border-zinc-200/70">
+    <section id="keunggulan" className="py-16 md:py-24 bg-white border-y border-zinc-200/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Section Title with Editorial Elegance */}
+        {/* Section Title */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-widest text-[#a85267] font-semibold mb-2.5">
+          <p className="text-xs uppercase tracking-widest text-zinc-400 font-medium mb-2.5">
             Standar Kualitas Studio
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-zinc-900 tracking-tight mb-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 tracking-tight mb-3">
             {displayTitle}
           </h2>
-          <p className="text-zinc-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+          <p className="text-zinc-500 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             {displaySubtitle}
           </p>
         </div>
 
-        {/* 4 Grid Cards - Clean Boutique Aesthetic */}
+        {/* 4 Grid Cards - Apple Minimalist Aesthetic */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
           {displayFeatures.map((feature: FeatureItem, idx: number) => {
             const isCustomImg =
@@ -72,12 +72,12 @@ export default function Features({ features, title, subtitle }: FeaturesProps) {
             return (
               <div
                 key={idx}
-                className="p-6 sm:p-7 rounded-2xl bg-[#faf9f6] border border-[#ebdcd5] hover:border-[#df829b]/60 hover:shadow-sm transition-all duration-200 flex flex-col justify-between group"
+                className="p-6 sm:p-7 rounded-2xl bg-[#fbfbfd] border border-zinc-200/80 hover:border-zinc-300 hover:bg-white hover:shadow-xs transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="w-11 h-11 rounded-xl bg-[#fdf0f3] text-[#c45a76] border border-[#f3ccd6]/60 flex items-center justify-center mb-5 shadow-2xs overflow-hidden relative">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-4 overflow-hidden relative">
                     {isCustomImg ? (
-                      <div className="relative w-6 h-6">
+                      <div className="relative w-5 h-5">
                         <Image
                           src={feature.icon}
                           alt={feature.title}
@@ -86,16 +86,16 @@ export default function Features({ features, title, subtitle }: FeaturesProps) {
                         />
                       </div>
                     ) : (
-                      <Icon icon={solarIcon} className="w-6 h-6 text-[#c45a76]" />
+                      <Icon icon={solarIcon} className="w-5 h-5 text-zinc-700" />
                     )}
                   </div>
-                  <h3 className="text-base font-serif font-bold text-zinc-900 group-hover:text-[#df829b] transition-colors mb-2 leading-snug">
+                  <h3 className="text-[15px] font-semibold text-zinc-900 mb-1.5 leading-snug">
                     {feature.title}
                   </h3>
-                  <p className="text-xs text-zinc-600 leading-relaxed">{feature.desc}</p>
+                  <p className="text-xs text-zinc-500 leading-relaxed">{feature.desc}</p>
                 </div>
 
-                <div className="pt-4 mt-5 border-t border-[#ebdcd5]/70 flex items-center gap-1 text-[11px] font-medium text-[#a85267]">
+                <div className="pt-3 mt-4 border-t border-zinc-200/60 flex items-center gap-1 text-[11px] font-medium text-zinc-500">
                   <span>{feature.linkText || 'Standar Pengrajin Magetan'}</span>
                 </div>
               </div>

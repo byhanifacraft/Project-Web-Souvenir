@@ -83,11 +83,11 @@ export default function WorkshopNewsSlider({
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fde8ee] text-[#c45a76] text-[10px] font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 text-zinc-700 text-[10px] font-medium uppercase tracking-wider mb-2">
               <Flame className="w-3.5 h-3.5" />
               <span>Agenda & Berita Studio</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">
               Kabar Workshop & Promo Terkini
             </h2>
             <p className="text-xs sm:text-sm text-zinc-500 mt-1">
@@ -98,7 +98,7 @@ export default function WorkshopNewsSlider({
 
           <Link
             href="/workshop"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#c45a76] hover:text-[#a8445e] transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-zinc-900 hover:text-zinc-600 transition-colors shrink-0"
           >
             <span>Semua Paket Workshop</span>
             <ArrowRight className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function WorkshopNewsSlider({
         </div>
 
         {/* Carousel Slider Card */}
-        <div className="relative rounded-3xl overflow-hidden border border-[#ebdcd5] bg-zinc-900 shadow-md aspect-[16/10] sm:aspect-[21/9] group">
+        <div className="relative rounded-3xl overflow-hidden border border-zinc-200/80 bg-zinc-900 shadow-md aspect-[16/10] sm:aspect-[21/9] group">
           {activeNews.map((item, idx) => {
             const badge = getStatusBadge(item.status, item.status_label);
             const BadgeIcon = badge.icon;

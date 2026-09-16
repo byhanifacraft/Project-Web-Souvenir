@@ -89,45 +89,45 @@ export default function Hero({ config, hero }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Left Text Column */}
           <div className="lg:col-span-7 text-center lg:text-left">
-            {/* Subtle Editorial Badge */}
-            <div className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 tracking-wide mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            {/* Apple-style Pill Badge */}
+            <div className="inline-flex items-center gap-2 text-[11px] font-medium text-zinc-600 bg-white/80 backdrop-blur-xs px-3.5 py-1 rounded-full border border-zinc-200/80 shadow-2xs mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               <span>{badge}</span>
             </div>
 
-            {/* Dynamic Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-serif font-bold text-zinc-900 tracking-tight leading-[1.16] mb-5 whitespace-pre-line">
+            {/* Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.15rem] font-bold text-zinc-900 tracking-tight leading-[1.15] mb-4 whitespace-pre-line">
               {title}
             </h1>
 
-            {/* Dynamic Description */}
-            <p className="text-sm sm:text-base text-zinc-600 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 whitespace-pre-line">
+            {/* Description */}
+            <p className="text-sm sm:text-base text-zinc-500 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-7 whitespace-pre-line">
               {description}
             </p>
 
             {/* Clean Value Highlights (Minimalist) */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 mb-8 text-xs text-zinc-600 font-medium">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 mb-8 text-xs text-zinc-500 font-medium">
               <div className="flex items-center gap-1.5">
-                <span className="text-[#df829b]">✦</span>
+                <span className="text-zinc-400">•</span>
                 <span>Free Mockup Desain</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[#df829b]">✦</span>
+                <span className="text-zinc-400">•</span>
                 <span>Kemasan Pita & Kartu Ucapan</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[#df829b]">✦</span>
+                <span className="text-zinc-400">•</span>
                 <span>Garansi Pengiriman Seluruh RI</span>
               </div>
             </div>
 
-            {/* Action CTAs */}
+            {/* Action CTAs - Apple Minimalist Pills */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3">
               <a
                 href="/produk"
-                className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#df829b] text-white font-medium text-xs sm:text-sm hover:bg-[#c96c85] shadow-sm transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#1d1d1f] text-white font-medium text-xs sm:text-sm hover:bg-zinc-800 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px]"
               >
-                <span>Katalog Souvenir</span>
+                <span>Jelajahi Produk</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
 
@@ -135,9 +135,9 @@ export default function Hero({ config, hero }: HeroProps) {
                 href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa (' + brandName + '), saya ingin konsultasi ide souvenir untuk acara kami.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial px-5 py-3 rounded-full bg-[#128c7e] text-white font-medium text-xs sm:text-sm hover:bg-[#0e7065] shadow-sm transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                className="flex-1 sm:flex-initial px-5 py-3 rounded-full bg-white text-zinc-800 border border-zinc-200/90 font-medium text-xs sm:text-sm hover:bg-zinc-50 hover:border-zinc-300 shadow-2xs transition-all flex items-center justify-center gap-2 min-h-[44px]"
               >
-                <MessageCircle className="w-4 h-4 text-white" />
+                <MessageCircle className="w-4 h-4 text-emerald-600" />
                 <span>Konsultasi WA</span>
               </a>
 
@@ -145,9 +145,9 @@ export default function Hero({ config, hero }: HeroProps) {
                 href={shopeeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial px-4 py-3 rounded-full bg-[#ee4d2d] text-white font-medium text-xs sm:text-sm hover:bg-[#d73211] transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
+                className="flex-1 sm:flex-initial px-4 py-3 rounded-full bg-zinc-100 text-zinc-700 font-medium text-xs sm:text-sm hover:bg-zinc-200 hover:text-zinc-900 transition-all flex items-center justify-center gap-1.5 min-h-[44px]"
               >
-                <ShoppingBag className="w-4 h-4 text-white" />
+                <ShoppingBag className="w-4 h-4 text-[#ee4d2d]" />
                 <span>Shopee</span>
               </a>
             </div>

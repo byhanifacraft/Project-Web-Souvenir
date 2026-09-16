@@ -120,22 +120,22 @@ export default function WorkshopPageContent({
   return (
     <div className="space-y-20 pb-16">
       {/* 1. HERO BANNER */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#fdf4f7] via-[#faf6f2] to-white pt-8 pb-16 md:pt-14 md:pb-24 border-b border-[#ebdcd5]/60">
+      <section className="relative overflow-hidden bg-[#fbfbfd] pt-8 pb-16 md:pt-14 md:pb-24 border-b border-zinc-200/60">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left: Text & CTA */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#fde8ee] border border-[#f3d7df] text-[#c45a76] text-xs font-semibold tracking-wide">
-                <Sparkles className="w-3.5 h-3.5 text-[#e05d82]" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium tracking-wide">
+                <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
                 <span>Studio Kerajinan Lilin Aromaterapi Magetan</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] font-serif font-bold text-zinc-900 leading-[1.15] tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] font-bold text-zinc-900 leading-[1.15] tracking-tight">
                 Rasakan Ketenangan Meracik{' '}
-                <span className="text-[#c45a76] italic font-normal">Lilin Aromaterapi</span> Sendiri
+                <span className="text-zinc-900 font-bold">Lilin Aromaterapi</span> Sendiri
               </h1>
 
-              <p className="text-sm sm:text-base text-zinc-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-sm sm:text-base text-zinc-500 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 Ajak orang tersayang atau nikmati momen me-time berharga di studio {brandName}.
                 Pelajari seni meramu 100% soy wax nabati murni, perpaduan fragrance oil mewah, dan
                 hiasan botanical dried flowers yang menenangkan jiwa.
@@ -143,8 +143,8 @@ export default function WorkshopPageContent({
 
               {/* 4 Value Badges */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                <div className="p-3 rounded-2xl bg-white border border-[#ebdcd5] shadow-2xs text-left">
-                  <div className="text-xs font-bold text-zinc-800 flex items-center gap-1.5 mb-1">
+                <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
+                  <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                     <span>100% Soy Wax</span>
                   </div>
@@ -153,9 +153,9 @@ export default function WorkshopPageContent({
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-white border border-[#ebdcd5] shadow-2xs text-left">
-                  <div className="text-xs font-bold text-zinc-800 flex items-center gap-1.5 mb-1">
-                    <Droplets className="w-3.5 h-3.5 text-[#c45a76]" />
+                <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
+                  <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
+                    <Droplets className="w-3.5 h-3.5 text-rose-500" />
                     <span>12+ Signature Oil</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 leading-tight">
@@ -163,9 +163,9 @@ export default function WorkshopPageContent({
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-white border border-[#ebdcd5] shadow-2xs text-left">
-                  <div className="text-xs font-bold text-zinc-800 flex items-center gap-1.5 mb-1">
-                    <Gift className="w-3.5 h-3.5 text-amber-600" />
+                <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
+                  <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
+                    <Gift className="w-3.5 h-3.5 text-amber-500" />
                     <span>Bawa Pulang Karya</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 leading-tight">
@@ -173,9 +173,9 @@ export default function WorkshopPageContent({
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-white border border-[#ebdcd5] shadow-2xs text-left">
-                  <div className="text-xs font-bold text-zinc-800 flex items-center gap-1.5 mb-1">
-                    <Award className="w-3.5 h-3.5 text-indigo-600" />
+                <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
+                  <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
+                    <Award className="w-3.5 h-3.5 text-indigo-500" />
                     <span>Sertifikat Resmi</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 leading-tight">
@@ -188,7 +188,7 @@ export default function WorkshopPageContent({
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 pt-3 w-full">
                 <button
                   onClick={scrollToPackages}
-                  className="w-full sm:w-auto text-center px-6 py-3.5 rounded-full bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#c45a76]/25 transition-all hover:scale-[1.02] cursor-pointer"
+                  className="w-full sm:w-auto text-center px-6 py-3.5 rounded-full bg-[#1d1d1f] hover:bg-zinc-800 text-white text-xs sm:text-sm font-medium shadow-xs transition-all cursor-pointer"
                 >
                   Lihat Jadwal & Paket Kelas
                 </button>
@@ -196,9 +196,9 @@ export default function WorkshopPageContent({
                   href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa, saya ingin tanya ketersediaan jadwal workshop lilin aromaterapi.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#128c7e] hover:bg-[#0e7065] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#128c7e]/20 transition-all hover:scale-[1.02] cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-zinc-800 border border-zinc-200/90 hover:bg-zinc-50 hover:border-zinc-300 text-xs sm:text-sm font-medium shadow-2xs transition-all cursor-pointer"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="w-4 h-4 text-emerald-600" />
                   <span>Konsultasi Slot via WhatsApp</span>
                 </a>
               </div>
@@ -207,11 +207,8 @@ export default function WorkshopPageContent({
             {/* Right: Studio Photo Showcase Card */}
             <div className="lg:col-span-5">
               <div className="relative mx-auto max-w-md lg:max-w-none">
-                {/* Decorative glow */}
-                <div className="absolute -inset-2 rounded-3xl bg-gradient-to-tr from-[#df829b]/30 via-[#fde8ee]/40 to-transparent blur-xl -z-10" />
-
                 {/* Floating Rating Pill - Positioned cleanly inside bounds */}
-                <div className="absolute -top-3.5 right-2 sm:-top-5 sm:-right-4 bg-white/95 backdrop-blur-md border border-[#ebdcd5] rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg flex items-center gap-2.5 sm:gap-3 z-10 max-w-[90%]">
+                <div className="absolute -top-3.5 right-2 sm:-top-5 sm:-right-4 bg-white/95 backdrop-blur-md border border-zinc-200/80 rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-md flex items-center gap-2.5 sm:gap-3 z-10 max-w-[90%]">
                   <div className="w-9 h-9 rounded-xl bg-[#fde8ee] text-[#c45a76] flex items-center justify-center shrink-0">
                     <Heart className="w-4 h-4 fill-[#c45a76]" />
                   </div>

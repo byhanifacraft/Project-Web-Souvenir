@@ -1,17 +1,11 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/data/siteConfig';
 
-const jakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-jakarta',
-  display: 'swap',
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
+  variable: '--font-inter',
   display: 'swap',
 });
 
@@ -58,8 +52,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${jakarta.variable} ${playfair.variable} scroll-smooth`}>
-      <body className="font-sans antialiased text-[#2e1c24] bg-[#fff7f9] selection:bg-[#e05d82]/20 selection:text-[#e05d82]">
+    <html lang="id" className={`${inter.variable} scroll-smooth`}>
+      <body className="font-sans antialiased text-[#1d1d1f] bg-[#fbfbfd] selection:bg-[#1d1d1f] selection:text-white">
         {children}
       </body>
     </html>
