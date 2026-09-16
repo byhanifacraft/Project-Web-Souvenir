@@ -204,16 +204,36 @@ export async function POST(request: Request) {
       ...(hero ? { hero } : {}),
     };
 
-    fs.writeFileSync(dataFilePath, JSON.stringify(fullLocalPayload, null, 2), 'utf-8');
+    // Coba simpan ke file lokal (akan di-skip secara aman jika di lingkungan serverless seperti Vercel yang read-only)
+    try {
+      fs.writeFileSync(dataFilePath, JSON.stringify(fullLocalPayload, null, 2), 'utf-8');
+    } catch (fsErr) {
+      console.warn('Local fs write skipped (serverless read-only filesystem):', fsErr);
+    }
 
     // Jika Supabase aktif, simpan juga ke Supabase PostgreSQL
     if (isSupabaseConfigured && supabase) {
       try {
         // 1. Simpan Banners
         if (banners && Array.isArray(banners)) {
-          for (const b of banners as BannerItem[]) {
-            await supabase.from('banners').upsert({
-              id: b.id && b.id.length === 36 ? b.id : undefined,
+          const bannerList = banners as BannerItem[];
+          const currentIds = bannerList.map((b) => b.id).filter(Boolean);
+          if (currentIds.length > 0) {
+            const { data: existingBanners } = await supabase.from('banners').select('id');
+            if (existingBanners && Array.isArray(existingBanners)) {
+              const toDelete = (existingBanners as { id: string }[])
+                .filter((eb) => !currentIds.includes(eb.id))
+                .map((eb) => eb.id);
+              if (toDelete.length > 0) {
+                await supabase.from('banners').delete().in('id', toDelete);
+              }
+            }
+          }
+
+          for (const b of bannerList) {
+            const isUUID =
+              b.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(b.id);
+            const bannerPayload: Record<string, unknown> = {
               image_url: b.image_url,
               title: b.title,
               subtitle: b.subtitle,
@@ -221,7 +241,11 @@ export async function POST(request: Request) {
               cta_link: b.cta_link || null,
               sort_order: b.sort_order,
               is_active: b.is_active ?? true,
-            });
+            };
+            if (isUUID) {
+              bannerPayload.id = b.id;
+            }
+            await supabase.from('banners').upsert(bannerPayload);
           }
         }
 
@@ -304,15 +328,34 @@ export async function POST(request: Request) {
 
         // 4. Simpan Gallery Images
         if (galleryImages && Array.isArray(galleryImages)) {
-          for (const g of galleryImages as GalleryImageItem[]) {
-            await supabase.from('gallery_images').upsert({
-              id: g.id && g.id.length === 36 ? g.id : undefined,
+          const galList = galleryImages as GalleryImageItem[];
+          const currentIds = galList.map((g) => g.id).filter(Boolean);
+          if (currentIds.length > 0) {
+            const { data: existingGal } = await supabase.from('gallery_images').select('id');
+            if (existingGal && Array.isArray(existingGal)) {
+              const toDelete = (existingGal as { id: string }[])
+                .filter((eg) => !currentIds.includes(eg.id))
+                .map((eg) => eg.id);
+              if (toDelete.length > 0) {
+                await supabase.from('gallery_images').delete().in('id', toDelete);
+              }
+            }
+          }
+
+          for (const g of galList) {
+            const isUUID =
+              g.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(g.id);
+            const galPayload: Record<string, unknown> = {
               image_url: g.image_url,
               caption: g.caption,
               sort_order: g.sort_order,
               category: g.category || 'all',
               category_label: g.category_label || 'Karya Studio',
-            });
+            };
+            if (isUUID) {
+              galPayload.id = g.id;
+            }
+            await supabase.from('gallery_images').upsert(galPayload);
           }
         }
 

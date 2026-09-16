@@ -76,6 +76,11 @@ export default function AdminProdukPage() {
 
   const handleUploadFile = async (file: File, onSuccess: (url: string) => void) => {
     try {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
+        return;
+      }
+
       setUploading(true);
       const formData = new FormData();
       formData.append('file', file);
@@ -89,11 +94,12 @@ export default function AdminProdukPage() {
       const data = await res.json();
       if (res.ok && data.url) {
         onSuccess(data.url);
+        showNotification('Foto produk berhasil diunggah! Lengkapi form lalu klik Simpan.');
       } else {
         alert(data.error || 'Gagal mengunggah foto');
       }
     } catch {
-      alert('Terjadi kesalahan saat mengunggah foto.');
+      alert('Terjadi kesalahan jaringan saat mengunggah foto.');
     } finally {
       setUploading(false);
     }
@@ -112,10 +118,11 @@ export default function AdminProdukPage() {
         setProducts(updatedProducts);
         showNotification('Data produk berhasil diperbarui!');
       } else {
-        alert('Gagal menyimpan produk.');
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Gagal menyimpan produk.');
       }
     } catch {
-      alert('Terjadi kesalahan.');
+      alert('Terjadi kesalahan koneksi saat menyimpan.');
     } finally {
       setSaving(false);
     }
@@ -939,36 +946,73 @@ export default function AdminProdukPage() {
               {/* Upload Foto Produk */}
               <div>
                 <label className="block font-bold text-[#2e1c24] mb-1">
-                  Foto Produk (Bucket: products)
+                  Foto Produk (Storage Bucket: products)
                 </label>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 mb-2">
                   <input
                     type="text"
+                    required
                     value={editingProduct.image_url}
                     onChange={(e) =>
-                      setEditingProduct({ ...editingProduct, image_url: e.target.value })
+                      setEditingProduct((prev) =>
+                        prev ? { ...prev, image_url: e.target.value } : null
+                      )
                     }
-                    placeholder="/images/products/..."
-                    className="flex-1 px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24]"
+                    placeholder="https://... atau /images/products/..."
+                    className="flex-1 px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#e05d82]"
                   />
-                  <label className="px-4 py-2 rounded-xl bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20 font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0">
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Upload</span>
+                  <label
+                    className={`px-4 py-2 rounded-xl font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0 min-h-[40px] ${
+                      uploading
+                        ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed pointer-events-none'
+                        : 'bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20'
+                    }`}
+                  >
+                    {uploading ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5" />
+                    )}
+                    <span>{uploading ? 'Mengunggah...' : 'Upload'}</span>
                     <input
                       type="file"
                       accept="image/*"
+                      disabled={uploading}
                       className="hidden"
+                      onClick={(e) => {
+                        (e.currentTarget as HTMLInputElement).value = '';
+                      }}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           handleUploadFile(file, (url) => {
-                            setEditingProduct({ ...editingProduct, image_url: url });
+                            setEditingProduct((prev) =>
+                              prev ? { ...prev, image_url: url } : null
+                            );
                           });
                         }
                       }}
                     />
                   </label>
                 </div>
+
+                {/* Preview Thumbnail Foto Produk */}
+                {editingProduct.image_url && (
+                  <div className="relative w-28 h-24 rounded-xl border border-[#f3d7df] overflow-hidden bg-[#fff7f9] shadow-2xs mt-2 group">
+                    <Image
+                      src={editingProduct.image_url}
+                      alt="Preview Foto Produk"
+                      fill
+                      className="object-cover"
+                    />
+                    <span className="absolute bottom-1 left-1 right-1 text-[9px] font-bold text-center bg-black/60 text-white rounded px-1 py-0.5 backdrop-blur-xs">
+                      Preview Foto
+                    </span>
+                  </div>
+                )}
+                <p className="text-[11px] text-[#755562] mt-1">
+                  Format gambar JPG, PNG, WEBP (maks. 10MB). Tersimpan otomatis ke Supabase Storage.
+                </p>
               </div>
 
               {/* Material & Lead Time */}

@@ -30,6 +30,11 @@ export default function AdminTentangKamiPage() {
 
   const handleUploadOwnerPhoto = async (file: File) => {
     try {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
+        return;
+      }
+
       setUploading(true);
       const formData = new FormData();
       formData.append('file', file);
@@ -52,12 +57,12 @@ export default function AdminTentangKamiPage() {
             image_url: data.url,
           },
         }));
-        showNotification('Foto owner berhasil diunggah!');
+        showNotification('Foto owner berhasil diunggah! Jangan lupa klik Simpan.');
       } else {
         alert(data.error || 'Gagal mengunggah foto');
       }
     } catch {
-      alert('Terjadi kesalahan saat mengunggah foto.');
+      alert('Terjadi kesalahan jaringan saat mengunggah foto.');
     } finally {
       setUploading(false);
     }
@@ -65,6 +70,11 @@ export default function AdminTentangKamiPage() {
 
   const handleUploadStoryPhoto = async (file: File) => {
     try {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
+        return;
+      }
+
       setUploadingStory(true);
       const formData = new FormData();
       formData.append('file', file);
@@ -87,12 +97,12 @@ export default function AdminTentangKamiPage() {
             image_url: data.url,
           },
         }));
-        showNotification('Foto banner studio berhasil diunggah!');
+        showNotification('Foto banner studio berhasil diunggah! Jangan lupa klik Simpan.');
       } else {
         alert(data.error || 'Gagal mengunggah foto banner studio');
       }
     } catch {
-      alert('Terjadi kesalahan saat mengunggah foto.');
+      alert('Terjadi kesalahan jaringan saat mengunggah foto.');
     } finally {
       setUploadingStory(false);
     }
@@ -186,6 +196,9 @@ export default function AdminTentangKamiPage() {
                   accept="image/*"
                   disabled={uploading}
                   className="hidden"
+                  onClick={(e) => {
+                    (e.currentTarget as HTMLInputElement).value = '';
+                  }}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) handleUploadOwnerPhoto(file);
@@ -344,6 +357,9 @@ export default function AdminTentangKamiPage() {
                     accept="image/*"
                     disabled={uploadingStory}
                     className="hidden"
+                    onClick={(e) => {
+                      (e.currentTarget as HTMLInputElement).value = '';
+                    }}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleUploadStoryPhoto(file);

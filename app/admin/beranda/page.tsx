@@ -123,6 +123,11 @@ export default function AdminBerandaPage() {
 
   const handleUploadFile = async (file: File, onSuccess: (url: string) => void) => {
     try {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
+        return;
+      }
+
       setUploading(true);
       const formData = new FormData();
       formData.append('file', file);
@@ -136,11 +141,12 @@ export default function AdminBerandaPage() {
       const data = await res.json();
       if (res.ok && data.url) {
         onSuccess(data.url);
+        showNotification('Foto banner berhasil diunggah! Klik "Simpan Banner" di bawah.');
       } else {
         alert(data.error || 'Gagal mengunggah foto');
       }
     } catch {
-      alert('Terjadi kesalahan saat mengunggah foto.');
+      alert('Terjadi kesalahan jaringan saat mengunggah foto.');
     } finally {
       setUploading(false);
     }
@@ -159,10 +165,11 @@ export default function AdminBerandaPage() {
         setBanners(updatedBanners);
         showNotification('Daftar banner berhasil diperbarui!');
       } else {
-        alert('Gagal menyimpan banner.');
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Gagal menyimpan banner.');
       }
     } catch {
-      alert('Terjadi kesalahan.');
+      alert('Terjadi kesalahan koneksi saat menyimpan.');
     } finally {
       setSaving(false);
     }
@@ -203,10 +210,11 @@ export default function AdminBerandaPage() {
       if (res.ok) {
         showNotification('Headline Hero Beranda berhasil disimpan!');
       } else {
-        alert('Gagal menyimpan headline.');
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Gagal menyimpan headline.');
       }
     } catch {
-      alert('Terjadi kesalahan.');
+      alert('Terjadi kesalahan koneksi.');
     } finally {
       setSaving(false);
     }
@@ -237,10 +245,11 @@ export default function AdminBerandaPage() {
         setSiteContent(updatedSiteContent);
         showNotification(`${featuresList.length} Box Standar Mutu Kerajinan berhasil disimpan!`);
       } else {
-        alert('Gagal menyimpan keunggulan.');
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Gagal menyimpan keunggulan.');
       }
     } catch {
-      alert('Terjadi kesalahan saat menyimpan.');
+      alert('Terjadi kesalahan koneksi saat menyimpan.');
     } finally {
       setSavingFeatures(false);
     }
@@ -725,34 +734,69 @@ export default function AdminBerandaPage() {
                 <label className="block font-bold text-[#2e1c24] mb-1">
                   Foto Banner (Storage Bucket: banners)
                 </label>
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2">
                   <input
                     type="text"
                     required
                     value={editingBanner.image_url}
                     onChange={(e) =>
-                      setEditingBanner({ ...editingBanner, image_url: e.target.value })
+                      setEditingBanner((prev) =>
+                        prev ? { ...prev, image_url: e.target.value } : null
+                      )
                     }
-                    className="flex-1 min-w-0 px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24]"
+                    placeholder="https://... atau /images/products/..."
+                    className="flex-1 min-w-0 px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#e05d82]"
                   />
-                  <label className="px-3 sm:px-4 py-2 rounded-xl bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20 font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0 min-h-[40px]">
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Upload</span>
+                  <label
+                    className={`px-3 sm:px-4 py-2 rounded-xl font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0 min-h-[40px] ${
+                      uploading
+                        ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed pointer-events-none'
+                        : 'bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20'
+                    }`}
+                  >
+                    {uploading ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5" />
+                    )}
+                    <span>{uploading ? 'Mengunggah...' : 'Upload'}</span>
                     <input
                       type="file"
                       accept="image/*"
+                      disabled={uploading}
                       className="hidden"
+                      onClick={(e) => {
+                        (e.currentTarget as HTMLInputElement).value = '';
+                      }}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           handleUploadFile(file, (url) => {
-                            setEditingBanner({ ...editingBanner, image_url: url });
+                            setEditingBanner((prev) => (prev ? { ...prev, image_url: url } : null));
                           });
                         }
                       }}
                     />
                   </label>
                 </div>
+
+                {/* Preview Thumbnail Foto Banner */}
+                {editingBanner.image_url && (
+                  <div className="relative aspect-[16/9] w-full max-w-xs rounded-xl border border-[#f3d7df] overflow-hidden bg-[#fff7f9] shadow-2xs mt-2">
+                    <Image
+                      src={editingBanner.image_url}
+                      alt="Preview Banner Slider"
+                      fill
+                      className="object-cover"
+                    />
+                    <span className="absolute bottom-1.5 left-1.5 text-[10px] font-bold bg-black/65 text-white rounded-md px-2 py-0.5 backdrop-blur-xs">
+                      Preview Slider 16:9
+                    </span>
+                  </div>
+                )}
+                <p className="text-[11px] text-[#755562] mt-1">
+                  Format gambar JPG, PNG, WEBP (maks. 10MB). Tersimpan otomatis ke Supabase Storage.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

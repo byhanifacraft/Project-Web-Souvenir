@@ -248,6 +248,11 @@ export default function AdminWorkshopPage() {
   // --- GALLERY ACTIONS ---
   const handleUploadGalleryPhoto = async (file: File) => {
     try {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
+        return;
+      }
+
       setUploadingGallery(true);
       const formData = new FormData();
       formData.append('file', file);
@@ -802,6 +807,9 @@ export default function AdminWorkshopPage() {
                   accept="image/*"
                   className="hidden"
                   disabled={uploadingGallery}
+                  onClick={(e) => {
+                    (e.currentTarget as HTMLInputElement).value = '';
+                  }}
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       handleUploadGalleryPhoto(e.target.files[0]);

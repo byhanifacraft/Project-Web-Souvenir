@@ -3,6 +3,18 @@ import fs from 'fs';
 import path from 'path';
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
+const MIME_MAP: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  jfif: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  svg: 'image/svg+xml',
+  avif: 'image/avif',
+  bmp: 'image/bmp',
+};
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -13,25 +25,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Tidak ada file yang diunggah' }, { status: 400 });
     }
 
+    // Validasi ukuran maksimal (15MB)
+    const maxSizeBytes = 15 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      return NextResponse.json(
+        { error: 'Ukuran file terlalu besar. Maksimal 15MB.' },
+        { status: 400 }
+      );
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
     const originalName = file.name || 'image.jpg';
-    const ext = originalName.split('.').pop()?.toLowerCase() || 'jpg';
-    const validExt = ['jpg', 'jpeg', 'png', 'webp'].includes(ext) ? ext : 'jpg';
-    const fileName = `${bucket}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${validExt}`;
+    const rawExt = originalName.split('.').pop()?.toLowerCase() || 'jpg';
+    const validExt = MIME_MAP[rawExt] ? rawExt : 'jpg';
+    const contentType = file.type || MIME_MAP[validExt] || 'image/jpeg';
+    const sanitizedBucket = bucket.replace(/[^a-z0-9-_]/gi, '').toLowerCase() || 'souvenir-images';
+    const fileName = `${sanitizedBucket}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${validExt}`;
 
     // 1. Jika Supabase sudah dikonfigurasi, simpan ke Supabase Storage
     if (isSupabaseConfigured && supabase) {
       try {
         const targetBucket = ['banners', 'products', 'gallery', 'site', 'souvenir-images'].includes(
-          bucket
+          sanitizedBucket
         )
-          ? bucket
+          ? sanitizedBucket
           : 'souvenir-images';
 
-        const contentType =
-          validExt === 'jpg' || validExt === 'jpeg' ? 'image/jpeg' : `image/${validExt}`;
         const { error: uploadError } = await supabase.storage
           .from(targetBucket)
           .upload(fileName, buffer, {
