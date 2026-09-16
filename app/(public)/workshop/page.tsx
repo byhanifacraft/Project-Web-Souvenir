@@ -68,6 +68,7 @@ export default async function WorkshopPage() {
         initialPackages={packages}
         initialCurriculum={curriculum}
         initialReservationSteps={reservationSteps}
+        initialWorkshopNews={storeData?.workshopNews}
       />
     </main>
   );

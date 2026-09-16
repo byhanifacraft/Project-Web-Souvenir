@@ -9,7 +9,9 @@ import {
   ProductItem,
   ContactInfoItem,
   GalleryImageItem,
+  WorkshopNewsItem,
 } from '@/types/store';
+import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 
 const dataFilePath = path.join(process.cwd(), 'data', 'storeData.json');
 
@@ -121,12 +123,26 @@ export async function GET() {
           }
         );
 
+        // Ambil data berita & event workshop
+        let workshopNews: WorkshopNewsItem[] = DEFAULT_WORKSHOP_NEWS;
+        if (siteContentRecord['workshop_news']?.content) {
+          try {
+            const parsed = JSON.parse(siteContentRecord['workshop_news'].content);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              workshopNews = parsed;
+            }
+          } catch (e) {
+            console.warn('Error parsing workshop_news in GET /api/store:', e);
+          }
+        }
+
         return NextResponse.json(
           {
             banners: (bannersRes.data as BannerItem[]) || [],
             siteContent: siteContentRecord,
             products: mergedProducts,
             galleryImages: (galleryRes.data as GalleryImageItem[]) || [],
+            workshopNews,
             contactInfo,
             siteConfig,
             hero,
@@ -148,7 +164,11 @@ export async function GET() {
   const localData = getLocalStoreData();
   if (localData) {
     return NextResponse.json(
-      { ...localData, source: 'local' },
+      {
+        ...localData,
+        workshopNews: localData.workshopNews || DEFAULT_WORKSHOP_NEWS,
+        source: 'local',
+      },
       {
         headers: {
           'Cache-Control': 'no-store, max-age=0',
@@ -163,6 +183,7 @@ export async function GET() {
       siteContent: {},
       products: [],
       galleryImages: [],
+      workshopNews: DEFAULT_WORKSHOP_NEWS,
       contactInfo: defaultFallbackContact,
       source: 'local',
     },
@@ -177,7 +198,16 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { banners, siteContent, products, galleryImages, contactInfo, siteConfig, hero } = body;
+    const {
+      banners,
+      siteContent,
+      products,
+      galleryImages,
+      workshopNews,
+      contactInfo,
+      siteConfig,
+      hero,
+    } = body;
 
     // Baca data lokal saat ini
     const currentData = getLocalStoreData() || {
@@ -185,15 +215,32 @@ export async function POST(request: Request) {
       siteContent: {},
       products: [],
       galleryImages: [],
+      workshopNews: DEFAULT_WORKSHOP_NEWS,
       contactInfo: defaultFallbackContact,
+    };
+
+    // Sinkronkan workshopNews ke siteContent['workshop_news'] jika diberikan
+    const mergedSiteContent = {
+      ...(siteContent || {}),
+      ...(workshopNews
+        ? {
+            workshop_news: {
+              section_key: 'workshop_news',
+              title: 'Berita & Event Promosi Workshop',
+              content: JSON.stringify(workshopNews),
+              updated_at: new Date().toISOString(),
+            },
+          }
+        : {}),
     };
 
     const updatedLocalData: FullStoreData = {
       ...currentData,
       ...(banners ? { banners } : {}),
-      ...(siteContent ? { siteContent } : {}),
+      ...(Object.keys(mergedSiteContent).length > 0 ? { siteContent: mergedSiteContent } : {}),
       ...(products ? { products } : {}),
       ...(galleryImages ? { galleryImages } : {}),
+      ...(workshopNews ? { workshopNews } : {}),
       ...(contactInfo ? { contactInfo } : {}),
     };
 

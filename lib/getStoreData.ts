@@ -7,7 +7,9 @@ import {
   BannerItem,
   ProductItem,
   ContactInfoItem,
+  WorkshopNewsItem,
 } from '@/types/store';
+import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 
 const defaultContactInfo: ContactInfoItem = {
   name: 'CraftByHanifa',
@@ -100,11 +102,25 @@ export async function getStoreData(): Promise<FullStoreData> {
           }
         );
 
+        // Ambil data berita & event workshop
+        let workshopNews: WorkshopNewsItem[] = DEFAULT_WORKSHOP_NEWS;
+        if (siteContentRecord['workshop_news']?.content) {
+          try {
+            const parsed = JSON.parse(siteContentRecord['workshop_news'].content);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              workshopNews = parsed;
+            }
+          } catch (e) {
+            console.warn('Error parsing workshop_news in getStoreData:', e);
+          }
+        }
+
         return {
           banners: (bannersRes.data as BannerItem[]) || [],
           siteContent: siteContentRecord,
           products: mergedProducts,
           galleryImages: galleryRes.data || [],
+          workshopNews,
           contactInfo,
           siteConfig,
           hero,
@@ -121,7 +137,12 @@ export async function getStoreData(): Promise<FullStoreData> {
     const filePath = path.join(process.cwd(), 'data', 'storeData.json');
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, 'utf-8');
-      return JSON.parse(content);
+      const parsed = JSON.parse(content);
+      return {
+        ...parsed,
+        workshopNews: parsed.workshopNews || DEFAULT_WORKSHOP_NEWS,
+        source: 'local',
+      };
     }
   } catch (error) {
     console.error('Error reading storeData.json in getStoreData:', error);
@@ -132,6 +153,7 @@ export async function getStoreData(): Promise<FullStoreData> {
     siteContent: {},
     products: [],
     galleryImages: [],
+    workshopNews: DEFAULT_WORKSHOP_NEWS,
     contactInfo: defaultContactInfo,
     source: 'local',
   };

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getStoreData } from '@/lib/getStoreData';
 import Hero from '@/components/Hero';
 import Features, { FeatureItem } from '@/components/Features';
+import WorkshopNewsSlider from '@/components/WorkshopNewsSlider';
 import { Sparkles, ArrowRight, MessageCircle, CheckCircle2, Flame } from 'lucide-react';
 import { formatRupiah, calculateDiscount, getWhatsAppLink } from '@/lib/utils';
 
@@ -50,6 +51,9 @@ export default async function HomePage() {
     <div className="space-y-12 pb-16">
       {/* 1. Hero Section with Banner Slider & CTA */}
       <Hero config={siteConfig} hero={heroData} />
+
+      {/* 1.5 Slider Foto Bergeser: Agenda & Berita Workshop Promosi */}
+      <WorkshopNewsSlider newsList={storeData?.workshopNews} whatsappNum={siteConfig?.whatsapp} />
 
       {/* 2. Standar Mutu Kerajinan (Features) Dinamis */}
       <Features features={customFeatures} title={featuresTitle} subtitle={featuresSubtitle} />

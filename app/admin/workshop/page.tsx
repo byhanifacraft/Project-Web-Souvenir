@@ -22,19 +22,30 @@ import {
   Gift,
   Check,
   X,
+  Megaphone,
+  Flame,
+  MapPin,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
-import { GalleryImageItem, SiteContentItem } from '@/types/store';
+import {
+  GalleryImageItem,
+  SiteContentItem,
+  WorkshopNewsItem,
+  WorkshopNewsStatus,
+} from '@/types/store';
 import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
   DEFAULT_RESERVATION_STEPS,
 } from '@/lib/workshopDefaults';
+import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 
 export default function AdminWorkshopPage() {
-  const [activeTab, setActiveTab] = useState<'packages' | 'curriculum' | 'reservation' | 'gallery'>(
-    'packages'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'packages' | 'curriculum' | 'reservation' | 'gallery' | 'news'
+  >('packages');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
@@ -45,6 +56,7 @@ export default function AdminWorkshopPage() {
   const [reservationSteps, setReservationSteps] =
     useState<ReservationStep[]>(DEFAULT_RESERVATION_STEPS);
   const [galleryImages, setGalleryImages] = useState<GalleryImageItem[]>([]);
+  const [workshopNews, setWorkshopNews] = useState<WorkshopNewsItem[]>(DEFAULT_WORKSHOP_NEWS);
   const [siteContent, setSiteContent] = useState<Record<string, SiteContentItem>>({});
 
   // 2. Modal States for Package Editing / Adding
@@ -56,6 +68,11 @@ export default function AdminWorkshopPage() {
   const [newGalleryCaption, setNewGalleryCaption] = useState('');
   const newGalleryCategory = 'workshop';
   const [newGalleryCategoryLabel, setNewGalleryCategoryLabel] = useState('Workshop Studio');
+
+  // 4. Modal / Upload State for Workshop News & Promotion
+  const [editingNews, setEditingNews] = useState<WorkshopNewsItem | null>(null);
+  const [isAddingNews, setIsAddingNews] = useState(false);
+  const [uploadingNewsPhoto, setUploadingNewsPhoto] = useState(false);
 
   useEffect(() => {
     fetch('/api/store', { cache: 'no-store' })
@@ -98,6 +115,18 @@ export default function AdminWorkshopPage() {
         if (data.galleryImages && Array.isArray(data.galleryImages)) {
           setGalleryImages(data.galleryImages);
         }
+
+        // Parse Workshop News
+        if (data.workshopNews && Array.isArray(data.workshopNews) && data.workshopNews.length > 0) {
+          setWorkshopNews(data.workshopNews);
+        } else if (data.siteContent?.['workshop_news']?.content) {
+          try {
+            const parsed = JSON.parse(data.siteContent['workshop_news'].content);
+            if (Array.isArray(parsed) && parsed.length > 0) setWorkshopNews(parsed);
+          } catch (e) {
+            console.warn('Error parsing workshop_news:', e);
+          }
+        }
       })
       .catch((err) => console.error('Error fetching workshop data:', err))
       .finally(() => setLoading(false));
@@ -113,7 +142,8 @@ export default function AdminWorkshopPage() {
     customPackages?: WorkshopPackage[],
     customCurriculum?: CurriculumStep[],
     customReservation?: ReservationStep[],
-    customGallery?: GalleryImageItem[]
+    customGallery?: GalleryImageItem[],
+    customNews?: WorkshopNewsItem[]
   ) => {
     try {
       setSaving(true);
@@ -121,6 +151,7 @@ export default function AdminWorkshopPage() {
       const currToSave = customCurriculum || curriculum;
       const resToSave = customReservation || reservationSteps;
       const galToSave = customGallery || galleryImages;
+      const newsToSave = customNews || workshopNews;
 
       const updatedSiteContent = {
         ...siteContent,
@@ -139,6 +170,11 @@ export default function AdminWorkshopPage() {
           title: 'Langkah Reservasi Workshop',
           content: JSON.stringify(resToSave),
         },
+        workshop_news: {
+          section_key: 'workshop_news',
+          title: 'Berita & Event Promosi Workshop',
+          content: JSON.stringify(newsToSave),
+        },
       };
 
       const res = await fetch('/api/store', {
@@ -147,12 +183,15 @@ export default function AdminWorkshopPage() {
         body: JSON.stringify({
           siteContent: updatedSiteContent,
           galleryImages: galToSave,
+          workshopNews: newsToSave,
         }),
       });
 
       if (res.ok) {
         setSiteContent(updatedSiteContent);
-        showNotification('Perubahan Workshop berhasil disimpan ke database & live website!');
+        showNotification(
+          'Perubahan Workshop & Berita berhasil disimpan ke database & live website!'
+        );
       } else {
         alert('Gagal menyimpan perubahan ke server.');
       }
@@ -296,6 +335,66 @@ export default function AdminWorkshopPage() {
     }
   };
 
+  // --- NEWS & EVENT ACTIONS ---
+  const handleSaveNewsModal = async (newsItem: WorkshopNewsItem) => {
+    let updated: WorkshopNewsItem[];
+    if (isAddingNews) {
+      updated = [newsItem, ...workshopNews];
+    } else {
+      updated = workshopNews.map((n) => (n.id === newsItem.id ? newsItem : n));
+    }
+    setWorkshopNews(updated);
+    setEditingNews(null);
+    setIsAddingNews(false);
+    await handleSaveAll(undefined, undefined, undefined, undefined, updated);
+  };
+
+  const handleDeleteNews = async (id: string) => {
+    if (confirm('Hapus berita atau promosi event workshop ini?')) {
+      const updated = workshopNews.filter((n) => n.id !== id);
+      setWorkshopNews(updated);
+      await handleSaveAll(undefined, undefined, undefined, undefined, updated);
+    }
+  };
+
+  const handleToggleActiveNews = async (id: string) => {
+    const updated = workshopNews.map((n) => (n.id === id ? { ...n, is_active: !n.is_active } : n));
+    setWorkshopNews(updated);
+    await handleSaveAll(undefined, undefined, undefined, undefined, updated);
+  };
+
+  const handleUploadNewsImage = async (file: File) => {
+    if (!editingNews) return;
+    try {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
+        return;
+      }
+
+      setUploadingNewsPhoto(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('bucket', 'gallery');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setEditingNews((prev) => (prev ? { ...prev, image_url: data.url } : null));
+        showNotification('Foto promosi berhasil diunggah!');
+      } else {
+        alert(data.error || 'Gagal mengunggah foto.');
+      }
+    } catch {
+      alert('Terjadi kesalahan jaringan saat upload foto.');
+    } finally {
+      setUploadingNewsPhoto(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
@@ -404,6 +503,18 @@ export default function AdminWorkshopPage() {
         >
           <Images className="w-4 h-4" />
           <span>4. Foto Dokumentasi ({galleryImages.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('news')}
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer ${
+            activeTab === 'news'
+              ? 'bg-[#fde8ee] text-[#c45a76] shadow-2xs'
+              : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+          }`}
+        >
+          <Megaphone className="w-4 h-4" />
+          <span>5. Berita & Event Promosi ({workshopNews.length})</span>
         </button>
       </div>
 
@@ -855,6 +966,166 @@ export default function AdminWorkshopPage() {
         </div>
       )}
 
+      {/* ================= TAB 5: BERITA & EVENT PROMOSI ================= */}
+      {activeTab === 'news' && (
+        <div className="space-y-6">
+          <div className="bg-white p-5 sm:p-6 rounded-3xl border border-[#ebdcd5] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-base font-bold text-zinc-900 flex items-center gap-2">
+                <Flame className="w-5 h-5 text-[#e05d82]" />
+                <span>Berita, Pengumuman & Event Promosi Workshop</span>
+              </h2>
+              <p className="text-xs text-zinc-500 mt-1 max-w-2xl leading-relaxed">
+                Kelola pengumuman <em>Coming Soon</em>, pembukaan registrasi kelas akhir pekan, atau
+                dokumentasi kegiatan. Daftar ini ditampilkan otomatis pada{' '}
+                <strong>slider beranda</strong> dan sebagai <strong>berita interaktif</strong> saat
+                foto di halaman workshop diklik.
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsAddingNews(true);
+                setEditingNews({
+                  id: `news-${Date.now()}`,
+                  title: 'Judul Pengumuman Workshop Baru',
+                  image_url: '/images/products/studio-workshop.jpg',
+                  summary:
+                    'Ringkasan singkat mengenai acara atau informasi terbaru workshop yang menarik perhatian...',
+                  content:
+                    'Tuliskan deskripsi lengkap acara di sini. Misalnya materi belajar yang akan diajarkan, profil instruktur, alat & bahan yang disediakan, serta benefit yang didapatkan peserta...',
+                  date: 'Coming Soon - November 2026',
+                  location: 'Studio CraftByHanifa, Magetan',
+                  status: 'coming_soon',
+                  status_label: 'Segera Hadir',
+                  category_label: 'Agenda Workshop',
+                  wa_message: 'Halo Kak Hanifa, saya ingin info pendaftaran acara workshop ini.',
+                  sort_order: workshopNews.length + 1,
+                  is_active: true,
+                });
+              }}
+              className="px-4 py-2.5 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Berita / Event Baru</span>
+            </button>
+          </div>
+
+          {/* List of News Items */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {workshopNews.map((item) => {
+              const statusColors: Record<string, string> = {
+                coming_soon: 'bg-amber-100 text-amber-800 border-amber-200',
+                open_registration: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                completed: 'bg-zinc-100 text-zinc-700 border-zinc-200',
+                special_event: 'bg-purple-100 text-purple-800 border-purple-200',
+              };
+
+              return (
+                <div
+                  key={item.id}
+                  className={`bg-white rounded-3xl border overflow-hidden shadow-2xs flex flex-col justify-between transition-all hover:shadow-md ${
+                    item.is_active ? 'border-[#ebdcd5]' : 'border-zinc-200 opacity-70 bg-zinc-50/50'
+                  }`}
+                >
+                  <div>
+                    {/* Thumbnail Image */}
+                    <div className="relative aspect-[16/9] w-full bg-zinc-100 overflow-hidden">
+                      <Image src={item.image_url} alt={item.title} fill className="object-cover" />
+                      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                        <span
+                          className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs uppercase tracking-wider ${
+                            statusColors[item.status] || 'bg-zinc-100 text-zinc-700 border-zinc-200'
+                          }`}
+                        >
+                          {item.status_label || item.status}
+                        </span>
+                        {!item.is_active && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800/80 text-white shadow-2xs">
+                            Nonaktif
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                        <button
+                          onClick={() => handleToggleActiveNews(item.id)}
+                          className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer shadow-xs ${
+                            item.is_active
+                              ? 'bg-white/90 text-emerald-700 hover:bg-white'
+                              : 'bg-zinc-800/80 text-zinc-300 hover:bg-zinc-800'
+                          }`}
+                          title={item.is_active ? 'Sembunyikan dari publik' : 'Tampilkan ke publik'}
+                        >
+                          {item.is_active ? (
+                            <Eye className="w-3.5 h-3.5" />
+                          ) : (
+                            <EyeOff className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNews(item.id)}
+                          className="w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-rose-600 transition-colors cursor-pointer shadow-xs"
+                          title="Hapus berita"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Content preview */}
+                    <div className="p-4 sm:p-5 space-y-3">
+                      <div className="flex items-center gap-2 text-[11px] text-[#8e5264] font-semibold">
+                        <Calendar className="w-3.5 h-3.5 shrink-0 text-[#e05d82]" />
+                        <span className="truncate">{item.date}</span>
+                      </div>
+
+                      <h3 className="font-serif font-bold text-sm text-zinc-900 line-clamp-2 leading-snug">
+                        {item.title}
+                      </h3>
+
+                      <p className="text-xs text-zinc-600 line-clamp-2 leading-relaxed">
+                        {item.summary}
+                      </p>
+
+                      <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 pt-1">
+                        <MapPin className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <span className="truncate">{item.location}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Footer Actions */}
+                  <div className="p-4 pt-0">
+                    <button
+                      onClick={() => {
+                        setIsAddingNews(false);
+                        setEditingNews({ ...item });
+                      }}
+                      className="w-full py-2.5 px-3 rounded-xl bg-[#fdf2f4] hover:bg-[#fce5ea] text-[#c45a76] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-[#f3d7df]"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span>Edit Rincian Berita & Event</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="pt-4 flex justify-end">
+            <button
+              onClick={() => handleSaveAll()}
+              disabled={saving}
+              className="px-6 py-3 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold transition-all shadow-md shadow-[#c45a76]/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span>Simpan Perubahan Berita & Event</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ================= MODAL EDIT / TAMBAH PAKET ================= */}
       {editingPackage && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
@@ -1034,6 +1305,237 @@ export default function AdminWorkshopPage() {
               >
                 <Save className="w-4 h-4" />
                 <span>Simpan Paket</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL EDIT / TAMBAH BERITA & EVENT ================= */}
+      {editingNews && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-4 sm:p-8 shadow-2xl border border-[#ebdcd5] my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-zinc-100 mb-4 sm:mb-6">
+              <h3 className="font-serif font-bold text-base sm:text-lg text-zinc-900 pr-2 flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-[#e05d82]" />
+                <span>
+                  {isAddingNews
+                    ? 'Tambah Berita & Event Baru'
+                    : `Edit Berita: ${editingNews.title}`}
+                </span>
+              </h3>
+              <button
+                onClick={() => setEditingNews(null)}
+                className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center cursor-pointer transition-colors shrink-0"
+                aria-label="Tutup"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-zinc-700 mb-1">Judul Berita / Event:</label>
+                <input
+                  type="text"
+                  value={editingNews.title}
+                  onChange={(e) => setEditingNews({ ...editingNews, title: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] font-semibold"
+                  placeholder="Contoh: Coming Soon: Kelas Spesial Pembuatan Lilin Aromaterapi"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Status Acara:</label>
+                  <select
+                    value={editingNews.status}
+                    onChange={(e) => {
+                      const val = e.target.value as WorkshopNewsStatus;
+                      const labelMap: Record<WorkshopNewsStatus, string> = {
+                        coming_soon: 'Segera Hadir',
+                        open_registration: 'Pendaftaran Dibuka',
+                        completed: 'Dokumentasi',
+                        special_event: 'Event Spesial',
+                      };
+                      setEditingNews({
+                        ...editingNews,
+                        status: val,
+                        status_label: labelMap[val] || 'Info Acara',
+                      });
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] bg-white font-medium"
+                  >
+                    <option value="coming_soon">⏳ Coming Soon (Segera Hadir)</option>
+                    <option value="open_registration">
+                      ✅ Pendaftaran Dibuka (Open Registration)
+                    </option>
+                    <option value="completed">📸 Dokumentasi Acara Selesai</option>
+                    <option value="special_event">✨ Event Spesial / Kolaborasi</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">Label Status Kustom:</label>
+                  <input
+                    type="text"
+                    value={editingNews.status_label}
+                    onChange={(e) =>
+                      setEditingNews({ ...editingNews, status_label: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
+                    placeholder="Contoh: Segera Hadir, Slot Terbatas"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">
+                    Jadwal / Waktu Pelaksanaan:
+                  </label>
+                  <input
+                    type="text"
+                    value={editingNews.date}
+                    onChange={(e) => setEditingNews({ ...editingNews, date: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
+                    placeholder="Contoh: Minggu, 28 Oktober 2026 • 10.00 WIB"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-zinc-700 mb-1">
+                    Lokasi / Venue Studio:
+                  </label>
+                  <input
+                    type="text"
+                    value={editingNews.location}
+                    onChange={(e) => setEditingNews({ ...editingNews, location: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
+                    placeholder="Contoh: Studio CraftByHanifa, Magetan"
+                  />
+                </div>
+              </div>
+
+              {/* Image upload & preview */}
+              <div>
+                <label className="block font-bold text-zinc-700 mb-1">
+                  Foto Banner / Poster Berita:
+                </label>
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                  <div className="relative aspect-[16/9] w-36 bg-zinc-100 rounded-xl overflow-hidden border border-[#ebdcd5] shrink-0">
+                    <Image
+                      src={editingNews.image_url || '/images/products/studio-workshop.jpg'}
+                      alt="Preview"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="space-y-2 flex-1 w-full">
+                    <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold cursor-pointer transition-colors shadow-xs">
+                      {uploadingNewsPhoto ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Upload className="w-3.5 h-3.5" />
+                      )}
+                      <span>{uploadingNewsPhoto ? 'Mengunggah...' : 'Upload Foto Baru'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploadingNewsPhoto}
+                        onClick={(e) => {
+                          (e.currentTarget as HTMLInputElement).value = '';
+                        }}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleUploadNewsImage(e.target.files[0]);
+                          }
+                        }}
+                      />
+                    </label>
+                    <input
+                      type="text"
+                      value={editingNews.image_url}
+                      onChange={(e) =>
+                        setEditingNews({ ...editingNews, image_url: e.target.value })
+                      }
+                      className="w-full px-3 py-1.5 rounded-lg border border-[#ebdcd5] text-[11px] text-zinc-600 focus:outline-hidden focus:border-[#c45a76]"
+                      placeholder="Atau masukkan URL gambar..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-700 mb-1">
+                  Ringkasan Berita (Tampil di Slider & Cuplikan):
+                </label>
+                <textarea
+                  rows={2}
+                  value={editingNews.summary}
+                  onChange={(e) => setEditingNews({ ...editingNews, summary: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] leading-relaxed"
+                  placeholder="Ringkasan singkat 1-2 kalimat..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-700 mb-1">
+                  Isi Lengkap Berita & Pengumuman:
+                </label>
+                <textarea
+                  rows={6}
+                  value={editingNews.content}
+                  onChange={(e) => setEditingNews({ ...editingNews, content: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] leading-relaxed"
+                  placeholder="Tuliskan isi berita selengkapnya, penjelasan materi, benefit, dsb (dukung multi paragraf)..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-700 mb-1">
+                  Template Pesan WhatsApp Otomatis:
+                </label>
+                <textarea
+                  rows={2}
+                  value={editingNews.wa_message || ''}
+                  onChange={(e) => setEditingNews({ ...editingNews, wa_message: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
+                  placeholder="Halo Kak Hanifa, saya tertarik mendaftar workshop ini..."
+                />
+              </div>
+
+              <div className="flex items-center gap-6 pt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={editingNews.is_active}
+                    onChange={(e) =>
+                      setEditingNews({ ...editingNews, is_active: e.target.checked })
+                    }
+                    className="w-4 h-4 rounded text-[#c45a76] focus:ring-[#c45a76] accent-[#c45a76]"
+                  />
+                  <span className="font-bold text-zinc-700">Tampilkan di Website (Aktif)</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setEditingNews(null)}
+                className="px-4 py-2.5 rounded-xl border border-zinc-200 text-zinc-600 font-semibold hover:bg-zinc-50 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSaveNewsModal(editingNews)}
+                className="px-6 py-2.5 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white font-bold transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
+              >
+                <Save className="w-4 h-4" />
+                <span>Simpan Berita</span>
               </button>
             </div>
           </div>

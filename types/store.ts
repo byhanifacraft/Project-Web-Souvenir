@@ -57,6 +57,26 @@ export interface GalleryImageItem {
   created_at?: string;
 }
 
+export type WorkshopNewsStatus =
+  'coming_soon' | 'open_registration' | 'completed' | 'special_event';
+
+export interface WorkshopNewsItem {
+  id: string;
+  title: string;
+  image_url: string;
+  summary: string;
+  content: string;
+  date: string;
+  location: string;
+  status: WorkshopNewsStatus;
+  status_label: string;
+  category_label?: string;
+  wa_message?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at?: string;
+}
+
 export interface ContactInfoItem {
   id?: string;
   name: string;
@@ -114,6 +134,7 @@ export interface FullStoreData {
   siteContent: Record<string, SiteContentItem>;
   products: ProductItem[];
   galleryImages: GalleryImageItem[];
+  workshopNews?: WorkshopNewsItem[];
   contactInfo: ContactInfoItem;
   siteConfig?: Partial<SiteConfig>;
   hero?: HeroData;

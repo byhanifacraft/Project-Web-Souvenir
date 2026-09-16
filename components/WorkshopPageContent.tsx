@@ -18,15 +18,16 @@ import {
   ShieldCheck,
   ArrowRight,
   Eye,
-  X,
 } from 'lucide-react';
-import { GalleryImageItem } from '@/types/store';
+import { GalleryImageItem, WorkshopNewsItem } from '@/types/store';
 import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
 import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
   DEFAULT_RESERVATION_STEPS,
 } from '@/lib/workshopDefaults';
+import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
+import WorkshopNewsModal from '@/components/WorkshopNewsModal';
 
 interface WorkshopPageContentProps {
   whatsappNum: string;
@@ -35,6 +36,7 @@ interface WorkshopPageContentProps {
   initialPackages?: WorkshopPackage[];
   initialCurriculum?: CurriculumStep[];
   initialReservationSteps?: ReservationStep[];
+  initialWorkshopNews?: WorkshopNewsItem[];
 }
 
 const CURATED_WORKSHOP_GALLERY = [
@@ -83,6 +85,7 @@ export default function WorkshopPageContent({
   initialPackages,
   initialCurriculum,
   initialReservationSteps,
+  initialWorkshopNews,
 }: WorkshopPageContentProps) {
   const packages =
     initialPackages && initialPackages.length > 0 ? initialPackages : DEFAULT_WORKSHOP_PACKAGES;
@@ -94,20 +97,57 @@ export default function WorkshopPageContent({
     initialReservationSteps && initialReservationSteps.length > 0
       ? initialReservationSteps
       : DEFAULT_RESERVATION_STEPS;
+  const newsList =
+    initialWorkshopNews && initialWorkshopNews.length > 0
+      ? initialWorkshopNews
+      : DEFAULT_WORKSHOP_NEWS;
 
   const [selectedPackage, setSelectedPackage] = useState<string>(packages[0]?.id || 'premium');
-  const [activeLightbox, setActiveLightbox] = useState<string | null>(null);
+  const [selectedNews, setSelectedNews] = useState<WorkshopNewsItem | null>(null);
 
   // Combine curated workshop photos with any uploaded studio photos
   const displayPhotos = [
     ...CURATED_WORKSHOP_GALLERY,
-    ...(galleryImages || []).slice(0, 4).map((g, i) => ({
+    ...(galleryImages || []).slice(0, 6).map((g, i) => ({
       url: g.image_url,
       title: g.caption || `Karya Studio #${i + 1}`,
       caption: g.caption || 'Dokumentasi kegiatan dan karya studio CraftByHanifa',
       tag: g.category_label || 'Dokumentasi',
     })),
   ];
+
+  const handleOpenPhotoNews = (
+    item: { url: string; title: string; caption: string; tag: string },
+    idx: number
+  ) => {
+    // Cari apakah foto ini cocok dengan berita yang ada di newsList
+    const matched = newsList.find(
+      (n) => n.image_url === item.url || n.title.toLowerCase() === item.title.toLowerCase()
+    );
+    if (matched) {
+      setSelectedNews(matched);
+      return;
+    }
+
+    // Jika tidak ada berita persis, buatkan artikel promosi & berita detail dinamis
+    const isComingSoon =
+      item.tag.toLowerCase().includes('soon') || item.title.toLowerCase().includes('soon');
+    setSelectedNews({
+      id: `gallery-news-${idx}`,
+      title: item.title,
+      image_url: item.url,
+      summary: item.caption,
+      content: `${item.caption}\n\nIngin mengikuti sesi kreasi dan workshop lilin aromaterapi seperti dokumentasi ini? Kami membuka pendaftaran kelas privat maupun grup untuk umum, komunitas, dan instansi di Magetan & sekitarnya.\n\nFasilitas sudah lengkap: 100% natural soy wax, essential oil terapeutik, dried botanicals, jar kaca amber, apron, dan bimbingan langsung dari tim pengrajin CraftByHanifa. Hasil karya Anda langsung bisa dibawa pulang!\n\nHubungi kami via WhatsApp untuk mendapatkan jadwal batch terdekat atau konsultasi private session.`,
+      date: isComingSoon ? 'Coming Soon' : 'Sesi Reguler & Privat',
+      location: 'Studio CraftByHanifa, Magetan, Jawa Timur',
+      status: isComingSoon ? 'coming_soon' : 'open_registration',
+      status_label: item.tag || 'Dokumentasi & Info',
+      category_label: item.tag || 'Workshop Studio',
+      wa_message: `Halo Kak Hanifa, saya tertarik dengan kegiatan "${item.title}". Boleh minta info pendaftaran sesi workshop ini?`,
+      sort_order: idx + 1,
+      is_active: true,
+    });
+  };
 
   const handleBooking = (pkg: WorkshopPackage) => {
     const url = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(pkg.waMessage)}`;
@@ -485,7 +525,7 @@ export default function WorkshopPageContent({
           {displayPhotos.map((item, idx) => (
             <div
               key={idx}
-              onClick={() => setActiveLightbox(item.url)}
+              onClick={() => handleOpenPhotoNews(item, idx)}
               className="group relative rounded-3xl overflow-hidden bg-zinc-100 border border-[#ebdcd5] aspect-[4/3] cursor-pointer shadow-2xs hover:shadow-md transition-all"
             >
               <Image
@@ -494,53 +534,37 @@ export default function WorkshopPageContent({
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
 
               <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md text-zinc-800 flex items-center justify-center">
-                  <Eye className="w-4 h-4" />
+                <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
+                  <Eye className="w-3.5 h-3.5 text-[#e05d82]" />
+                  <span>Baca Berita & Info</span>
                 </div>
               </div>
 
               <div className="absolute bottom-4 left-4 right-4 text-white">
-                <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#c45a76]/80 backdrop-blur-xs text-[10px] font-bold uppercase tracking-wider mb-1">
+                <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#c45a76]/90 backdrop-blur-xs text-[10px] font-bold uppercase tracking-wider mb-1.5 shadow-2xs">
                   {item.tag}
                 </span>
-                <h4 className="font-serif font-bold text-sm sm:text-base leading-tight mb-0.5">
+                <h4 className="font-serif font-bold text-sm sm:text-base leading-tight mb-1 group-hover:text-amber-200 transition-colors">
                   {item.title}
                 </h4>
-                <p className="text-[11px] text-zinc-200 line-clamp-1">{item.caption}</p>
+                <p className="text-[11px] text-zinc-200 line-clamp-2 leading-relaxed">
+                  {item.caption}
+                </p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Lightbox Modal */}
-        {activeLightbox && (
-          <div
-            onClick={() => setActiveLightbox(null)}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="relative max-w-4xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl"
-            >
-              <button
-                onClick={() => setActiveLightbox(null)}
-                className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <div className="relative aspect-[16/10] w-full">
-                <Image
-                  src={activeLightbox}
-                  alt="Dokumentasi Workshop"
-                  fill
-                  className="object-contain bg-zinc-950"
-                />
-              </div>
-            </div>
-          </div>
+        {/* Detail Popup Modal Berita & Promosi Event */}
+        {selectedNews && (
+          <WorkshopNewsModal
+            news={selectedNews}
+            onClose={() => setSelectedNews(null)}
+            whatsappNum={whatsappNum}
+          />
         )}
       </section>
 
