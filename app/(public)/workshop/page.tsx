@@ -26,8 +26,30 @@ export default async function WorkshopPage() {
   const storeData = await getStoreData();
   const contactInfo = storeData?.contactInfo;
   const siteConfig = storeData?.siteConfig;
-  const galleryImages = storeData?.galleryImages || [];
   const siteContent = storeData?.siteContent || {};
+  let galleryImages = storeData?.galleryImages || [];
+  if (siteContent['workshop_gallery']?.content) {
+    try {
+      const parsed = JSON.parse(siteContent['workshop_gallery'].content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        galleryImages = parsed;
+      }
+    } catch {
+      // keep fallback
+    }
+  }
+
+  let workshopNews = storeData?.workshopNews;
+  if (siteContent['workshop_news']?.content) {
+    try {
+      const parsed = JSON.parse(siteContent['workshop_news'].content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        workshopNews = parsed;
+      }
+    } catch {
+      // keep fallback
+    }
+  }
 
   let packages: WorkshopPackage[] | undefined;
   if (siteContent['workshop_packages']?.content) {
@@ -68,7 +90,7 @@ export default async function WorkshopPage() {
         initialPackages={packages}
         initialCurriculum={curriculum}
         initialReservationSteps={reservationSteps}
-        initialWorkshopNews={storeData?.workshopNews}
+        initialWorkshopNews={workshopNews}
       />
     </main>
   );

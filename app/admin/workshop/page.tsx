@@ -39,6 +39,7 @@ import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
   DEFAULT_RESERVATION_STEPS,
+  DEFAULT_WORKSHOP_GALLERY,
 } from '@/lib/workshopDefaults';
 import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 
@@ -55,7 +56,7 @@ export default function AdminWorkshopPage() {
   const [curriculum, setCurriculum] = useState<CurriculumStep[]>(DEFAULT_CURRICULUM_STEPS);
   const [reservationSteps, setReservationSteps] =
     useState<ReservationStep[]>(DEFAULT_RESERVATION_STEPS);
-  const [galleryImages, setGalleryImages] = useState<GalleryImageItem[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImageItem[]>(DEFAULT_WORKSHOP_GALLERY);
   const [workshopNews, setWorkshopNews] = useState<WorkshopNewsItem[]>(DEFAULT_WORKSHOP_NEWS);
   const [siteContent, setSiteContent] = useState<Record<string, SiteContentItem>>({});
 
@@ -65,6 +66,7 @@ export default function AdminWorkshopPage() {
 
   // 3. Modal / Upload State for Gallery Photo
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [editingGalleryItem, setEditingGalleryItem] = useState<GalleryImageItem | null>(null);
   const [newGalleryCaption, setNewGalleryCaption] = useState('');
   const newGalleryCategory = 'workshop';
   const [newGalleryCategoryLabel, setNewGalleryCategoryLabel] = useState('Workshop Studio');
@@ -112,7 +114,19 @@ export default function AdminWorkshopPage() {
           }
         }
 
-        if (data.galleryImages && Array.isArray(data.galleryImages)) {
+        // Parse Workshop Gallery
+        if (data.siteContent?.['workshop_gallery']?.content) {
+          try {
+            const parsed = JSON.parse(data.siteContent['workshop_gallery'].content);
+            if (Array.isArray(parsed) && parsed.length > 0) setGalleryImages(parsed);
+          } catch (e) {
+            console.warn('Error parsing workshop_gallery:', e);
+          }
+        } else if (
+          data.galleryImages &&
+          Array.isArray(data.galleryImages) &&
+          data.galleryImages.length > 0
+        ) {
           setGalleryImages(data.galleryImages);
         }
 
@@ -169,6 +183,11 @@ export default function AdminWorkshopPage() {
           section_key: 'workshop_reservation_steps',
           title: 'Langkah Reservasi Workshop',
           content: JSON.stringify(resToSave),
+        },
+        workshop_gallery: {
+          section_key: 'workshop_gallery',
+          title: 'Foto Dokumentasi Workshop Studio',
+          content: JSON.stringify(galToSave),
         },
         workshop_news: {
           section_key: 'workshop_news',
@@ -944,13 +963,22 @@ export default function AdminWorkshopPage() {
                     fill
                     className="object-cover"
                   />
-                  <button
-                    onClick={() => handleDeleteGalleryImage(item.id)}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-rose-600 transition-colors cursor-pointer"
-                    title="Hapus foto"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+                    <button
+                      onClick={() => setEditingGalleryItem({ ...item })}
+                      className="w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-[#c45a76] transition-colors cursor-pointer shadow-xs"
+                      title="Edit keterangan foto"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteGalleryImage(item.id)}
+                      className="w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-rose-600 transition-colors cursor-pointer shadow-xs"
+                      title="Hapus foto"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
                 <div className="p-3">
                   <span className="inline-block text-[10px] font-bold text-[#c45a76] bg-[#fde8ee] px-2 py-0.5 rounded-full mb-1">
@@ -1536,6 +1564,94 @@ export default function AdminWorkshopPage() {
               >
                 <Save className="w-4 h-4" />
                 <span>Simpan Berita</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ================= MODAL EDIT FOTO DOKUMENTASI ================= */}
+      {editingGalleryItem && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-[#ebdcd5] my-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 mb-4">
+              <h3 className="font-serif font-bold text-base text-zinc-900 flex items-center gap-2">
+                <Images className="w-4 h-4 text-[#e05d82]" />
+                <span>Edit Keterangan Foto Dokumentasi</span>
+              </h3>
+              <button
+                onClick={() => setEditingGalleryItem(null)}
+                className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center cursor-pointer transition-colors"
+                aria-label="Tutup"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-zinc-100 mb-3 border border-[#ebdcd5]">
+                <Image
+                  src={editingGalleryItem.image_url}
+                  alt={editingGalleryItem.caption || 'Foto'}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-700 mb-1">
+                  Caption / Keterangan Foto:
+                </label>
+                <textarea
+                  rows={3}
+                  value={editingGalleryItem.caption || ''}
+                  onChange={(e) =>
+                    setEditingGalleryItem({ ...editingGalleryItem, caption: e.target.value })
+                  }
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
+                  placeholder="Keterangan foto suasana atau hasil karya studio..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-700 mb-1">Label Tag Kategori:</label>
+                <input
+                  type="text"
+                  value={editingGalleryItem.category_label || ''}
+                  onChange={(e) =>
+                    setEditingGalleryItem({
+                      ...editingGalleryItem,
+                      category_label: e.target.value,
+                    })
+                  }
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
+                  placeholder="Contoh: Suasana Studio, Hasil Karya Peserta"
+                />
+              </div>
+            </div>
+
+            <div className="pt-4 mt-4 border-t border-zinc-100 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setEditingGalleryItem(null)}
+                className="px-4 py-2 rounded-xl border border-zinc-200 text-zinc-600 font-semibold hover:bg-zinc-50 cursor-pointer text-xs"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const updated = galleryImages.map((g) =>
+                    g.id === editingGalleryItem.id ? editingGalleryItem : g
+                  );
+                  setGalleryImages(updated);
+                  setEditingGalleryItem(null);
+                  await handleSaveAll(undefined, undefined, undefined, updated);
+                  showNotification('Keterangan foto dokumentasi berhasil diperbarui!');
+                }}
+                className="px-5 py-2 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white font-bold transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer text-xs"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Simpan Perubahan</span>
               </button>
             </div>
           </div>

@@ -18,6 +18,10 @@ import {
   ShieldCheck,
   ArrowRight,
   Eye,
+  Calendar,
+  MapPin,
+  Megaphone,
+  Images,
 } from 'lucide-react';
 import { GalleryImageItem, WorkshopNewsItem } from '@/types/store';
 import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
@@ -25,6 +29,7 @@ import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
   DEFAULT_RESERVATION_STEPS,
+  DEFAULT_WORKSHOP_GALLERY,
 } from '@/lib/workshopDefaults';
 import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 import WorkshopNewsModal from '@/components/WorkshopNewsModal';
@@ -38,45 +43,6 @@ interface WorkshopPageContentProps {
   initialReservationSteps?: ReservationStep[];
   initialWorkshopNews?: WorkshopNewsItem[];
 }
-
-const CURATED_WORKSHOP_GALLERY = [
-  {
-    url: '/images/products/studio-workshop.jpg',
-    title: 'Suasana Studio & Meja Kerja',
-    caption: 'Suasana belajar santai dan hangat di studio CraftByHanifa Magetan',
-    tag: 'Studio Atmosphere',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80',
-    title: 'Praktik Penuangan Wax Cair',
-    caption: 'Peserta mempraktikkan pouring lilin soy wax pada suhu yang presisi',
-    tag: 'Pouring Technique',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1585652757173-57de8b1b744b?auto=format&fit=crop&w=800&q=80',
-    title: 'Peracikan Scent Oil & Aroma',
-    caption: 'Mencampurkan essential oil pilihan untuk menciptakan signature aroma unik',
-    tag: 'Scent Blending',
-  },
-  {
-    url: '/images/products/aromatherapy-candle.jpg',
-    title: 'Kreasi Lilin Jar Aromaterapi',
-    caption: 'Hasil lilin kaca amber karya peserta dengan dried floral botanicals',
-    tag: 'Finished Product',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80',
-    title: 'Sesi Belajar Bersama (Group Session)',
-    caption: 'Keseruan interaksi dan tawa peserta selama workshop berlangsung',
-    tag: 'Group Activity',
-  },
-  {
-    url: '/images/products/gift-box.jpg',
-    title: 'Packaging Hampers Siap Bawa Pulang',
-    caption: 'Kemasan hardbox estetik berpita satin untuk melindungi hasil kreasi Anda',
-    tag: 'Gift Packaging',
-  },
-];
 
 export default function WorkshopPageContent({
   whatsappNum,
@@ -102,49 +68,41 @@ export default function WorkshopPageContent({
       ? initialWorkshopNews
       : DEFAULT_WORKSHOP_NEWS;
 
+  const activeNews = newsList.filter((n) => n.is_active !== false);
+  const galleryList: GalleryImageItem[] =
+    galleryImages && galleryImages.length > 0 ? galleryImages : DEFAULT_WORKSHOP_GALLERY;
+
   const [selectedPackage, setSelectedPackage] = useState<string>(packages[0]?.id || 'premium');
   const [selectedNews, setSelectedNews] = useState<WorkshopNewsItem | null>(null);
+  const [galleryTab, setGalleryTab] = useState<'all' | 'news' | 'gallery'>('all');
 
-  // Combine curated workshop photos with any uploaded studio photos
-  const displayPhotos = [
-    ...CURATED_WORKSHOP_GALLERY,
-    ...(galleryImages || []).slice(0, 6).map((g, i) => ({
-      url: g.image_url,
-      title: g.caption || `Karya Studio #${i + 1}`,
-      caption: g.caption || 'Dokumentasi kegiatan dan karya studio CraftByHanifa',
-      tag: g.category_label || 'Dokumentasi',
-    })),
-  ];
-
-  const handleOpenPhotoNews = (
-    item: { url: string; title: string; caption: string; tag: string },
-    idx: number
-  ) => {
-    // Cari apakah foto ini cocok dengan berita yang ada di newsList
-    const matched = newsList.find(
-      (n) => n.image_url === item.url || n.title.toLowerCase() === item.title.toLowerCase()
+  const handleOpenGalleryPhoto = (photo: GalleryImageItem) => {
+    // Cek apakah foto ini terhubung dengan suatu berita di activeNews
+    const matched = activeNews.find(
+      (n) =>
+        n.image_url === photo.image_url ||
+        n.title.toLowerCase() === (photo.caption || '').toLowerCase()
     );
     if (matched) {
       setSelectedNews(matched);
       return;
     }
 
-    // Jika tidak ada berita persis, buatkan artikel promosi & berita detail dinamis
-    const isComingSoon =
-      item.tag.toLowerCase().includes('soon') || item.title.toLowerCase().includes('soon');
+    // Tampilkan modal detail informatif untuk foto dokumentasi studio
     setSelectedNews({
-      id: `gallery-news-${idx}`,
-      title: item.title,
-      image_url: item.url,
-      summary: item.caption,
-      content: `${item.caption}\n\nIngin mengikuti sesi kreasi dan workshop lilin aromaterapi seperti dokumentasi ini? Kami membuka pendaftaran kelas privat maupun grup untuk umum, komunitas, dan instansi di Magetan & sekitarnya.\n\nFasilitas sudah lengkap: 100% natural soy wax, essential oil terapeutik, dried botanicals, jar kaca amber, apron, dan bimbingan langsung dari tim pengrajin CraftByHanifa. Hasil karya Anda langsung bisa dibawa pulang!\n\nHubungi kami via WhatsApp untuk mendapatkan jadwal batch terdekat atau konsultasi private session.`,
-      date: isComingSoon ? 'Coming Soon' : 'Sesi Reguler & Privat',
+      id: photo.id,
+      title: photo.caption || 'Dokumentasi Workshop Studio CraftByHanifa',
+      image_url: photo.image_url,
+      summary:
+        photo.caption || 'Dokumentasi suasana dan kreasi workshop lilin aromaterapi CraftByHanifa.',
+      content: `${photo.caption || 'Dokumentasi suasana dan hasil karya workshop lilin aromaterapi CraftByHanifa.'}\n\nIngin merasakan langsung pengalaman meracik lilin aromaterapi berkualitas di studio kami? Kelas workshop kami terbuka untuk umum, pemula, couple, maupun group private session di Magetan & sekitarnya.\n\nFasilitas lengkap: 100% natural soy wax murni tanpa jelaga, pilihan essential oil terapeutik, dried botanical flowers, jar kaca amber, apron kanvas studio, dan bimbingan langsung dari tim pengrajin CraftByHanifa. Hasil karya Anda langsung bisa dibawa pulang!\n\nHubungi WhatsApp admin kami untuk info ketersediaan slot sesi terdekat!`,
+      date: 'Dokumentasi Studio',
       location: 'Studio CraftByHanifa, Magetan, Jawa Timur',
-      status: isComingSoon ? 'coming_soon' : 'open_registration',
-      status_label: item.tag || 'Dokumentasi & Info',
-      category_label: item.tag || 'Workshop Studio',
-      wa_message: `Halo Kak Hanifa, saya tertarik dengan kegiatan "${item.title}". Boleh minta info pendaftaran sesi workshop ini?`,
-      sort_order: idx + 1,
+      status: 'completed',
+      status_label: photo.category_label || 'Dokumentasi Studio',
+      category_label: photo.category_label || 'Workshop Studio',
+      wa_message: `Halo Kak Hanifa, saya tertarik dengan foto dokumentasi workshop "${photo.caption || 'Studio'}". Boleh minta info pendaftaran kelas terdekat?`,
+      sort_order: photo.sort_order,
       is_active: true,
     });
   };
@@ -498,64 +456,198 @@ export default function WorkshopPageContent({
         </div>
       </section>
 
-      {/* 5. DOKUMENTASI KEGIATAN & KARYA WORKSHOP (PHOTO SHOWCASE) */}
+      {/* 5. DOKUMENTASI KEGIATAN & EVENT PROMOSI WORKSHOP */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#c45a76] mb-1">
-              Studio Atmosphere
-            </p>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fde8ee] border border-[#f3d7df] text-[#c45a76] text-[11px] font-bold uppercase tracking-wider mb-2">
+              <Sparkles className="w-3 h-3 text-[#e05d82]" />
+              <span>Dokumentasi Studio & Agenda Event</span>
+            </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-900 tracking-tight">
-              Dokumentasi Suasana & Hasil Karya Peserta
+              Galeri Dokumentasi & Jadwal Event Promosi
             </h2>
+            <p className="text-xs sm:text-sm text-zinc-600 mt-1 max-w-2xl">
+              Klik pada foto untuk membaca pengumuman jadwal terdekat (Coming Soon), rincian
+              pendaftaran kelas terbuka, atau melihat karya studio kami.
+            </p>
           </div>
-          <a
-            href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa, saya ingin melihat dokumentasi kegiatan workshop lainnya.')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c45a76] hover:text-[#a8445e] transition-colors"
-          >
-            <span>Tanya Jadwal Sesi Selanjutnya</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </a>
+
+          {/* Filter Pills */}
+          <div className="flex items-center gap-2 p-1.5 bg-white border border-[#ebdcd5] rounded-2xl shadow-2xs self-start md:self-auto shrink-0 overflow-x-auto">
+            <button
+              onClick={() => setGalleryTab('all')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                galleryTab === 'all'
+                  ? 'bg-[#c45a76] text-white shadow-2xs'
+                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+              }`}
+            >
+              Semua ({activeNews.length + galleryList.length})
+            </button>
+            <button
+              onClick={() => setGalleryTab('news')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                galleryTab === 'news'
+                  ? 'bg-[#c45a76] text-white shadow-2xs'
+                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+              }`}
+            >
+              <Megaphone className="w-3.5 h-3.5" />
+              <span>Event & Promosi ({activeNews.length})</span>
+            </button>
+            <button
+              onClick={() => setGalleryTab('gallery')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                galleryTab === 'gallery'
+                  ? 'bg-[#c45a76] text-white shadow-2xs'
+                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+              }`}
+            >
+              <Images className="w-3.5 h-3.5" />
+              <span>Foto Studio ({galleryList.length})</span>
+            </button>
+          </div>
         </div>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayPhotos.map((item, idx) => (
-            <div
-              key={idx}
-              onClick={() => handleOpenPhotoNews(item, idx)}
-              className="group relative rounded-3xl overflow-hidden bg-zinc-100 border border-[#ebdcd5] aspect-[4/3] cursor-pointer shadow-2xs hover:shadow-md transition-all"
-            >
-              <Image
-                src={item.url}
-                alt={item.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
+        {/* Dynamic Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* 1. Show Event & Promosi Cards */}
+          {(galleryTab === 'all' || galleryTab === 'news') &&
+            activeNews.map((item) => {
+              const statusColors: Record<string, { bg: string; text: string; border: string }> = {
+                coming_soon: {
+                  bg: 'bg-amber-50',
+                  text: 'text-amber-800',
+                  border: 'border-amber-200',
+                },
+                open_registration: {
+                  bg: 'bg-emerald-50',
+                  text: 'text-emerald-800',
+                  border: 'border-emerald-200',
+                },
+                completed: { bg: 'bg-zinc-50', text: 'text-zinc-700', border: 'border-zinc-200' },
+                special_event: {
+                  bg: 'bg-purple-50',
+                  text: 'text-purple-800',
+                  border: 'border-purple-200',
+                },
+              };
+              const sc = statusColors[item.status] || {
+                bg: 'bg-[#fde8ee]',
+                text: 'text-[#c45a76]',
+                border: 'border-[#f3d7df]',
+              };
 
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
-                  <Eye className="w-3.5 h-3.5 text-[#e05d82]" />
-                  <span>Baca Berita & Info</span>
+              return (
+                <div
+                  key={`news-${item.id}`}
+                  onClick={() => setSelectedNews(item)}
+                  className="group relative rounded-3xl overflow-hidden bg-white border border-[#ebdcd5] shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                >
+                  <div>
+                    <div className="relative aspect-[16/10] w-full bg-zinc-100 overflow-hidden">
+                      <Image
+                        src={item.image_url}
+                        alt={item.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                      <div className="absolute top-3 left-3 z-10">
+                        <span
+                          className={`text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-xs uppercase tracking-wider backdrop-blur-md ${sc.bg} ${sc.text} ${sc.border}`}
+                        >
+                          {item.status_label || item.status}
+                        </span>
+                      </div>
+
+                      <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
+                          <Eye className="w-3.5 h-3.5 text-[#e05d82]" />
+                          <span>Baca Berita</span>
+                        </div>
+                      </div>
+
+                      <div className="absolute bottom-3 left-3 right-3 text-white flex items-center gap-2 text-[11px] font-medium drop-shadow-sm">
+                        <Calendar className="w-3.5 h-3.5 text-rose-300 shrink-0" />
+                        <span className="truncate">{item.date}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-5 space-y-2.5">
+                      <h3 className="font-serif font-bold text-base text-zinc-900 leading-snug group-hover:text-[#c45a76] transition-colors line-clamp-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs text-zinc-600 line-clamp-2 leading-relaxed">
+                        {item.summary}
+                      </p>
+                      <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 pt-1">
+                        <MapPin className="w-3.5 h-3.5 text-[#e05d82] shrink-0" />
+                        <span className="truncate">{item.location}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-5 pt-0">
+                    <div className="w-full py-2.5 px-3 rounded-xl bg-[#fdf2f4] group-hover:bg-[#c45a76] text-[#c45a76] group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-[#f3d7df] group-hover:border-transparent">
+                      <span>Lihat Rincian & Reservasi</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+          {/* 2. Show Foto Dokumentasi Cards */}
+          {(galleryTab === 'all' || galleryTab === 'gallery') &&
+            galleryList.map((photo, idx) => (
+              <div
+                key={`photo-${photo.id || idx}`}
+                onClick={() => handleOpenGalleryPhoto(photo)}
+                className="group relative rounded-3xl overflow-hidden bg-white border border-[#ebdcd5] shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer"
+              >
+                <div>
+                  <div className="relative aspect-[16/10] w-full bg-zinc-100 overflow-hidden">
+                    <Image
+                      src={photo.image_url}
+                      alt={photo.caption || 'Foto Dokumentasi Studio'}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity" />
+
+                    <div className="absolute top-3 left-3 z-10">
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 shadow-xs uppercase tracking-wider">
+                        {photo.category_label || 'Dokumentasi Studio'}
+                      </span>
+                    </div>
+
+                    <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
+                        <Eye className="w-3.5 h-3.5 text-[#e05d82]" />
+                        <span>Lihat Foto</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-5 space-y-2">
+                    <p className="font-serif font-bold text-sm text-zinc-900 line-clamp-2 leading-snug group-hover:text-[#c45a76] transition-colors">
+                      {photo.caption || 'Dokumentasi kegiatan & karya studio'}
+                    </p>
+                    <p className="text-[11px] text-zinc-500">Studio CraftByHanifa Magetan</p>
+                  </div>
+                </div>
+
+                <div className="p-5 pt-0">
+                  <div className="w-full py-2 px-3 rounded-xl bg-zinc-50 group-hover:bg-[#fde8ee] text-zinc-700 group-hover:text-[#c45a76] text-xs font-semibold transition-all flex items-center justify-center gap-1.5 border border-zinc-200 group-hover:border-[#f3d7df]">
+                    <span>Info & Tanya Jadwal Serupa</span>
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
                 </div>
               </div>
-
-              <div className="absolute bottom-4 left-4 right-4 text-white">
-                <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#c45a76]/90 backdrop-blur-xs text-[10px] font-bold uppercase tracking-wider mb-1.5 shadow-2xs">
-                  {item.tag}
-                </span>
-                <h4 className="font-serif font-bold text-sm sm:text-base leading-tight mb-1 group-hover:text-amber-200 transition-colors">
-                  {item.title}
-                </h4>
-                <p className="text-[11px] text-zinc-200 line-clamp-2 leading-relaxed">
-                  {item.caption}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         {/* Detail Popup Modal Berita & Promosi Event */}

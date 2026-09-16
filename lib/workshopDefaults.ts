@@ -1,4 +1,49 @@
 import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
+import { GalleryImageItem } from '@/types/store';
+
+export const DEFAULT_WORKSHOP_GALLERY: GalleryImageItem[] = [
+  {
+    id: 'wg-1',
+    image_url: '/images/products/studio-workshop.jpg',
+    caption: 'Suasana meja kerja & perlengkapan studio saat sesi pembuatan lilin aromaterapi',
+    sort_order: 1,
+    category: 'workshop',
+    category_label: 'Suasana Studio',
+  },
+  {
+    id: 'wg-2',
+    image_url: '/images/products/aromatherapy-candle.jpg',
+    caption:
+      'Hasil kreasi lilin aromaterapi jar amber dengan dried botanical flowers karya peserta',
+    sort_order: 2,
+    category: 'workshop',
+    category_label: 'Karya Peserta',
+  },
+  {
+    id: 'wg-3',
+    image_url: '/images/products/hero-banner.jpg',
+    caption: 'Praktik pouring dan peracikan fragrance oil signature bersama pengrajin studio',
+    sort_order: 3,
+    category: 'workshop',
+    category_label: 'Praktik Workshop',
+  },
+  {
+    id: 'wg-4',
+    image_url: '/images/products/gift-box.jpg',
+    caption: 'Kemasan hardbox estetik berpita satin & sertifikat resmi yang siap dibawa pulang',
+    sort_order: 4,
+    category: 'workshop',
+    category_label: 'Packaging & Sertifikat',
+  },
+  {
+    id: 'wg-5',
+    image_url: '/images/products/shop-cover.jpg',
+    caption: 'Koleksi lilin aromaterapi ramah lingkungan dan souvenir buatan pengrajin Magetan',
+    sort_order: 5,
+    category: 'workshop',
+    category_label: 'Koleksi Studio',
+  },
+];
 
 export const DEFAULT_WORKSHOP_PACKAGES: WorkshopPackage[] = [
   {

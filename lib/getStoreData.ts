@@ -7,9 +7,11 @@ import {
   BannerItem,
   ProductItem,
   ContactInfoItem,
+  GalleryImageItem,
   WorkshopNewsItem,
 } from '@/types/store';
 import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
+import { DEFAULT_WORKSHOP_GALLERY } from '@/lib/workshopDefaults';
 
 const defaultContactInfo: ContactInfoItem = {
   name: 'CraftByHanifa',
@@ -102,6 +104,30 @@ export async function getStoreData(): Promise<FullStoreData> {
           }
         );
 
+        // Ambil data foto dokumentasi workshop (prioritas: site_content['workshop_gallery'] -> tabel gallery_images -> default)
+        let galleryImagesList: GalleryImageItem[] = [];
+        if (siteContentRecord['workshop_gallery']?.content) {
+          try {
+            const parsed = JSON.parse(siteContentRecord['workshop_gallery'].content);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              galleryImagesList = parsed;
+            }
+          } catch (e) {
+            console.warn('Error parsing workshop_gallery in getStoreData:', e);
+          }
+        }
+        if (
+          galleryImagesList.length === 0 &&
+          galleryRes.data &&
+          Array.isArray(galleryRes.data) &&
+          galleryRes.data.length > 0
+        ) {
+          galleryImagesList = galleryRes.data as GalleryImageItem[];
+        }
+        if (galleryImagesList.length === 0) {
+          galleryImagesList = DEFAULT_WORKSHOP_GALLERY;
+        }
+
         // Ambil data berita & event workshop
         let workshopNews: WorkshopNewsItem[] = DEFAULT_WORKSHOP_NEWS;
         if (siteContentRecord['workshop_news']?.content) {
@@ -119,7 +145,7 @@ export async function getStoreData(): Promise<FullStoreData> {
           banners: (bannersRes.data as BannerItem[]) || [],
           siteContent: siteContentRecord,
           products: mergedProducts,
-          galleryImages: galleryRes.data || [],
+          galleryImages: galleryImagesList,
           workshopNews,
           contactInfo,
           siteConfig,
@@ -140,6 +166,10 @@ export async function getStoreData(): Promise<FullStoreData> {
       const parsed = JSON.parse(content);
       return {
         ...parsed,
+        galleryImages:
+          parsed.galleryImages && parsed.galleryImages.length > 0
+            ? parsed.galleryImages
+            : DEFAULT_WORKSHOP_GALLERY,
         workshopNews: parsed.workshopNews || DEFAULT_WORKSHOP_NEWS,
         source: 'local',
       };
@@ -152,7 +182,7 @@ export async function getStoreData(): Promise<FullStoreData> {
     banners: [],
     siteContent: {},
     products: [],
-    galleryImages: [],
+    galleryImages: DEFAULT_WORKSHOP_GALLERY,
     workshopNews: DEFAULT_WORKSHOP_NEWS,
     contactInfo: defaultContactInfo,
     source: 'local',

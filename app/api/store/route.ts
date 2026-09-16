@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { randomUUID } from 'crypto';
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import {
   FullStoreData,
@@ -12,6 +13,7 @@ import {
   WorkshopNewsItem,
 } from '@/types/store';
 import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
+import { DEFAULT_WORKSHOP_GALLERY } from '@/lib/workshopDefaults';
 
 const dataFilePath = path.join(process.cwd(), 'data', 'storeData.json');
 
@@ -123,6 +125,30 @@ export async function GET() {
           }
         );
 
+        // Ambil data galeri foto workshop (prioritas: site_content['workshop_gallery'] -> tabel gallery_images -> default)
+        let galleryImagesList: GalleryImageItem[] = [];
+        if (siteContentRecord['workshop_gallery']?.content) {
+          try {
+            const parsed = JSON.parse(siteContentRecord['workshop_gallery'].content);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              galleryImagesList = parsed;
+            }
+          } catch (e) {
+            console.warn('Error parsing workshop_gallery in GET /api/store:', e);
+          }
+        }
+        if (
+          galleryImagesList.length === 0 &&
+          galleryRes.data &&
+          Array.isArray(galleryRes.data) &&
+          galleryRes.data.length > 0
+        ) {
+          galleryImagesList = galleryRes.data as GalleryImageItem[];
+        }
+        if (galleryImagesList.length === 0) {
+          galleryImagesList = DEFAULT_WORKSHOP_GALLERY;
+        }
+
         // Ambil data berita & event workshop
         let workshopNews: WorkshopNewsItem[] = DEFAULT_WORKSHOP_NEWS;
         if (siteContentRecord['workshop_news']?.content) {
@@ -141,7 +167,7 @@ export async function GET() {
             banners: (bannersRes.data as BannerItem[]) || [],
             siteContent: siteContentRecord,
             products: mergedProducts,
-            galleryImages: (galleryRes.data as GalleryImageItem[]) || [],
+            galleryImages: galleryImagesList,
             workshopNews,
             contactInfo,
             siteConfig,
@@ -219,7 +245,7 @@ export async function POST(request: Request) {
       contactInfo: defaultFallbackContact,
     };
 
-    // Sinkronkan workshopNews ke siteContent['workshop_news'] jika diberikan
+    // Sinkronkan workshopNews & workshop_gallery ke siteContent jika diberikan
     const mergedSiteContent = {
       ...(siteContent || {}),
       ...(workshopNews
@@ -228,6 +254,16 @@ export async function POST(request: Request) {
               section_key: 'workshop_news',
               title: 'Berita & Event Promosi Workshop',
               content: JSON.stringify(workshopNews),
+              updated_at: new Date().toISOString(),
+            },
+          }
+        : {}),
+      ...(galleryImages
+        ? {
+            workshop_gallery: {
+              section_key: 'workshop_gallery',
+              title: 'Foto Dokumentasi Workshop Studio',
+              content: JSON.stringify(galleryImages),
               updated_at: new Date().toISOString(),
             },
           }
@@ -376,33 +412,22 @@ export async function POST(request: Request) {
         // 4. Simpan Gallery Images
         if (galleryImages && Array.isArray(galleryImages)) {
           const galList = galleryImages as GalleryImageItem[];
-          const currentIds = galList.map((g) => g.id).filter(Boolean);
-          if (currentIds.length > 0) {
-            const { data: existingGal } = await supabase.from('gallery_images').select('id');
-            if (existingGal && Array.isArray(existingGal)) {
-              const toDelete = (existingGal as { id: string }[])
-                .filter((eg) => !currentIds.includes(eg.id))
-                .map((eg) => eg.id);
-              if (toDelete.length > 0) {
-                await supabase.from('gallery_images').delete().in('id', toDelete);
-              }
-            }
-          }
-
           for (const g of galList) {
             const isUUID =
               g.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(g.id);
             const galPayload: Record<string, unknown> = {
+              id: isUUID ? g.id : randomUUID(),
               image_url: g.image_url,
               caption: g.caption,
-              sort_order: g.sort_order,
-              category: g.category || 'all',
-              category_label: g.category_label || 'Karya Studio',
+              sort_order: g.sort_order || 1,
+              category: g.category || 'workshop',
+              category_label: g.category_label || 'Workshop Studio',
             };
-            if (isUUID) {
-              galPayload.id = g.id;
+            try {
+              await supabase.from('gallery_images').upsert(galPayload);
+            } catch (galErr) {
+              console.warn('Error upserting gallery item to supabase:', galErr);
             }
-            await supabase.from('gallery_images').upsert(galPayload);
           }
         }
 
