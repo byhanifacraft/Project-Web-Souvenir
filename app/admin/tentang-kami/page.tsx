@@ -28,6 +28,32 @@ export default function AdminTentangKamiPage() {
     setTimeout(() => setSaveSuccess(null), 4000);
   };
 
+  const handleSaveAbout = async (
+    e?: React.FormEvent,
+    customContent?: Record<string, SiteContentItem>
+  ) => {
+    if (e) e.preventDefault();
+    try {
+      setSaving(true);
+      const payload = customContent || siteContent;
+      const res = await fetch('/api/store', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteContent: payload }),
+      });
+
+      if (res.ok) {
+        showNotification('Perubahan Tentang Kami berhasil disimpan ke live website!');
+      } else {
+        alert('Gagal menyimpan perubahan.');
+      }
+    } catch {
+      alert('Terjadi kesalahan jaringan saat menyimpan.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleUploadOwnerPhoto = async (file: File) => {
     try {
       if (file.size > 10 * 1024 * 1024) {
@@ -47,17 +73,20 @@ export default function AdminTentangKamiPage() {
 
       const data = await res.json();
       if (res.ok && data.url) {
-        setSiteContent((prev) => ({
-          ...prev,
+        const updatedContent = {
+          ...siteContent,
           profil_owner: {
-            ...prev['profil_owner'],
+            ...siteContent['profil_owner'],
             section_key: 'profil_owner',
-            title: prev['profil_owner']?.title || 'Hanifa Kumala — Founder & Lead Artisan',
-            content: prev['profil_owner']?.content || '',
+            title: siteContent['profil_owner']?.title || 'Hanifa Kumala — Founder & Lead Artisan',
+            content: siteContent['profil_owner']?.content || '',
             image_url: data.url,
           },
-        }));
-        showNotification('Foto owner berhasil diunggah! Jangan lupa klik Simpan.');
+        };
+        setSiteContent(updatedContent);
+        // Otomatis simpan ke database
+        await handleSaveAbout(undefined, updatedContent);
+        showNotification('Foto owner berhasil diunggah dan disimpan otomatis!');
       } else {
         alert(data.error || 'Gagal mengunggah foto');
       }
@@ -87,17 +116,20 @@ export default function AdminTentangKamiPage() {
 
       const data = await res.json();
       if (res.ok && data.url) {
-        setSiteContent((prev) => ({
-          ...prev,
+        const updatedContent = {
+          ...siteContent,
           tentang_kami: {
-            ...prev['tentang_kami'],
+            ...siteContent['tentang_kami'],
             section_key: 'tentang_kami',
-            title: prev['tentang_kami']?.title || '',
-            content: prev['tentang_kami']?.content || '',
+            title: siteContent['tentang_kami']?.title || '',
+            content: siteContent['tentang_kami']?.content || '',
             image_url: data.url,
           },
-        }));
-        showNotification('Foto banner studio berhasil diunggah! Jangan lupa klik Simpan.');
+        };
+        setSiteContent(updatedContent);
+        // Otomatis simpan ke database
+        await handleSaveAbout(undefined, updatedContent);
+        showNotification('Foto banner studio berhasil diunggah dan disimpan otomatis!');
       } else {
         alert(data.error || 'Gagal mengunggah foto banner studio');
       }
@@ -105,28 +137,6 @@ export default function AdminTentangKamiPage() {
       alert('Terjadi kesalahan jaringan saat mengunggah foto.');
     } finally {
       setUploadingStory(false);
-    }
-  };
-
-  const handleSaveAbout = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setSaving(true);
-      const res = await fetch('/api/store', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ siteContent }),
-      });
-
-      if (res.ok) {
-        showNotification('Cerita Brand, Visi Misi & Profil Owner berhasil disimpan!');
-      } else {
-        alert('Gagal menyimpan.');
-      }
-    } catch {
-      alert('Terjadi kesalahan saat menyimpan.');
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -153,16 +163,27 @@ export default function AdminTentangKamiPage() {
       )}
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-serif font-bold text-[#2e1c24]">
-          Kelola Tentang Kami, Visi Misi & Profil Owner
-        </h1>
-        <p className="text-xs text-[#755562] mt-1">
-          Tabel Supabase:{' '}
-          <code className="bg-[#fde8ee] px-1.5 py-0.5 rounded text-[#e05d82]">
-            site_content (tentang_kami, visi_misi, profil_owner)
-          </code>
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-serif font-bold text-[#2e1c24]">
+            Kelola Tentang Kami, Visi Misi & Profil Owner
+          </h1>
+          <p className="text-xs text-[#755562] mt-1">
+            Tabel Supabase:{' '}
+            <code className="bg-[#fde8ee] px-1.5 py-0.5 rounded text-[#e05d82]">
+              site_content (tentang_kami, visi_misi, profil_owner)
+            </code>
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => handleSaveAbout()}
+          disabled={saving || uploading || uploadingStory}
+          className="px-5 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
+        >
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          <span>Simpan Perubahan</span>
+        </button>
       </div>
 
       <form onSubmit={handleSaveAbout} className="space-y-6">
@@ -388,6 +409,19 @@ export default function AdminTentangKamiPage() {
                     }
                     className="w-full px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-xs text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#df829b]"
                   />
+                </div>
+                <div className="flex items-center justify-between gap-3 pt-1">
+                  <p className="text-[11px] text-[#755562]">
+                    *Foto otomatis tersimpan ke live website saat diunggah.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveAbout()}
+                    disabled={saving || uploadingStory}
+                    className="px-3.5 py-1.5 rounded-lg bg-[#2e1c24] text-white hover:bg-[#4a303c] text-[11px] font-bold cursor-pointer transition-colors shrink-0"
+                  >
+                    Simpan Foto & Teks
+                  </button>
                 </div>
               </div>
             </div>
