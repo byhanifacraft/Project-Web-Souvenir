@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getStoreData } from '@/lib/getStoreData';
 import WorkshopPageContent from '@/components/WorkshopPageContent';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR 5 menit (di-revalidate instan saat admin simpan perubahan)
 
 export const metadata: Metadata = {
   title: 'Workshop Lilin Aromaterapi & Kerajinan Studio | CraftByHanifa Magetan',

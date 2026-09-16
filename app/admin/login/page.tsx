@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, ArrowLeft, Loader2, Mail, KeyRound, ShieldCheck } from 'lucide-react';
 
 export default function AdminLoginPage() {
-  const [emailInput, setEmailInput] = useState('craftbyhanifa@gmail.com');
+  const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
     setErrorMsg('');
 
     try {
-      // 1. Verifikasi kredensial aman di sisi server via API
+      // Verifikasi kredensial secara aman di sisi server via API
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -31,31 +31,12 @@ export default function AdminLoginPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        sessionStorage.setItem('craftbyhanifa_admin_auth', 'true');
-        sessionStorage.setItem('craftbyhanifa_admin_email', emailInput);
-        router.push('/admin');
-        return;
-      }
-
-      // 2. Fallback check langsung jika API mengembalikan kendala
-      const cleanEmail = emailInput.trim().toLowerCase();
-      if (cleanEmail === 'craftbyhanifa@gmail.com' && passwordInput === 'Bogem241') {
-        sessionStorage.setItem('craftbyhanifa_admin_auth', 'true');
-        sessionStorage.setItem('craftbyhanifa_admin_email', emailInput);
         router.push('/admin');
         return;
       }
 
       setErrorMsg(data.error || 'Email atau password salah.');
     } catch {
-      // Fallback offline/network
-      const cleanEmail = emailInput.trim().toLowerCase();
-      if (cleanEmail === 'craftbyhanifa@gmail.com' && passwordInput === 'Bogem241') {
-        sessionStorage.setItem('craftbyhanifa_admin_auth', 'true');
-        sessionStorage.setItem('craftbyhanifa_admin_email', emailInput);
-        router.push('/admin');
-        return;
-      }
       setErrorMsg('Gagal terhubung ke server. Silakan coba beberapa saat lagi.');
     } finally {
       setLoading(false);

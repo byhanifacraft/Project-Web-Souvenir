@@ -2,7 +2,7 @@ import React from 'react';
 import { getStoreData } from '@/lib/getStoreData';
 import ProductCatalog from '@/components/ProductCatalog';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR 5 menit (di-revalidate instan saat admin simpan perubahan)
 
 export default async function ProdukPage() {
   const storeData = await getStoreData();

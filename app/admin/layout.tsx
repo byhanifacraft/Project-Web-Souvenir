@@ -48,23 +48,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             setAdminEmail(data.user.email);
           }
         } else {
-          checkFallback();
+          setIsAuthenticated(false);
         }
       })
       .catch(() => {
-        checkFallback();
-      });
-
-    function checkFallback() {
-      const authStatus = sessionStorage.getItem('craftbyhanifa_admin_auth');
-      if (authStatus === 'true') {
-        setIsAuthenticated(true);
-        const storedEmail = sessionStorage.getItem('craftbyhanifa_admin_email');
-        if (storedEmail) setAdminEmail(storedEmail);
-      } else {
         setIsAuthenticated(false);
-      }
-    }
+      });
   }, [pathname, isLoginPage]);
 
   // Protect all non-login admin routes
@@ -85,8 +74,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       await supabase.auth.signOut().catch(() => {});
     }
 
-    sessionStorage.removeItem('craftbyhanifa_admin_auth');
-    sessionStorage.removeItem('craftbyhanifa_admin_email');
     setIsAuthenticated(false);
     router.push('/admin/login');
   };

@@ -8,7 +8,7 @@ import WorkshopNewsSlider from '@/components/WorkshopNewsSlider';
 import { Icon } from '@iconify/react';
 import { formatRupiah, calculateDiscount, getWhatsAppLink } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR 5 menit (di-revalidate instan saat admin simpan perubahan)
 
 export default async function HomePage() {
   const storeData = await getStoreData();

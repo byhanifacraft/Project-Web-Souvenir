@@ -22,7 +22,7 @@ function InstagramIcon({ className = 'w-4 h-4' }: { className?: string }) {
   );
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR 5 menit (di-revalidate instan saat admin simpan perubahan)
 
 export default async function KontakPage() {
   const storeData = await getStoreData();

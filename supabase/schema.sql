@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS public.contact_info (
 );
 
 -- ================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
+-- ROW LEVEL SECURITY (RLS) POLICIES - LEAST PRIVILEGE
 -- ================================================================
 
 ALTER TABLE public.banners ENABLE ROW LEVEL SECURITY;
@@ -87,19 +87,37 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gallery_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_info ENABLE ROW LEVEL SECURITY;
 
--- Izinkan Publik Membaca Semua Tabel (Public Read)
+-- 1. Hapus Kebijakan Rentan Lama (Allow All) jika Ada
+DROP POLICY IF EXISTS "Allow all banners" ON public.banners;
+DROP POLICY IF EXISTS "Allow all site_content" ON public.site_content;
+DROP POLICY IF EXISTS "Allow all products" ON public.products;
+DROP POLICY IF EXISTS "Allow all gallery_images" ON public.gallery_images;
+DROP POLICY IF EXISTS "Allow all contact_info" ON public.contact_info;
+DROP POLICY IF EXISTS "Allow upload to storage" ON storage.objects;
+DROP POLICY IF EXISTS "Allow update to storage" ON storage.objects;
+DROP POLICY IF EXISTS "Allow delete from storage" ON storage.objects;
+
+-- 2. Kebijakan Akses Baca Publik (SELECT Only untuk Publik & Anon)
+DROP POLICY IF EXISTS "Public read banners" ON public.banners;
 CREATE POLICY "Public read banners" ON public.banners FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public read site_content" ON public.site_content;
 CREATE POLICY "Public read site_content" ON public.site_content FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public read products" ON public.products;
 CREATE POLICY "Public read products" ON public.products FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public read gallery_images" ON public.gallery_images;
 CREATE POLICY "Public read gallery_images" ON public.gallery_images FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public read contact_info" ON public.contact_info;
 CREATE POLICY "Public read contact_info" ON public.contact_info FOR SELECT USING (true);
 
--- Izinkan Aksi Write/Update/Delete untuk Pengelolaan CMS
-CREATE POLICY "Allow all banners" ON public.banners FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all site_content" ON public.site_content FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all products" ON public.products FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all gallery_images" ON public.gallery_images FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all contact_info" ON public.contact_info FOR ALL USING (true) WITH CHECK (true);
+-- Catatan Keamanan Arsitektur:
+-- Tanpa policy INSERT/UPDATE/DELETE untuk role 'anon', database secara default MENOLAK
+-- semua manipulasi data langsung dari browser/anon key.
+-- Semua operasi tulis/ubah/hapus hanya dapat dilakukan oleh endpoint Next.js terproteksi
+-- menggunakan SUPABASE_SERVICE_ROLE_KEY di server.
 
 -- ================================================================
 -- SUPABASE STORAGE BUCKETS
@@ -114,17 +132,24 @@ VALUES
   ('souvenir-images', 'souvenir-images', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Izinkan Public Read pada Semua Buckets
+-- Kebijakan Akses Baca Publik pada Storage (SELECT Only)
+DROP POLICY IF EXISTS "Public read banners bucket" ON storage.objects;
 CREATE POLICY "Public read banners bucket" ON storage.objects FOR SELECT USING (bucket_id = 'banners');
+
+DROP POLICY IF EXISTS "Public read products bucket" ON storage.objects;
 CREATE POLICY "Public read products bucket" ON storage.objects FOR SELECT USING (bucket_id = 'products');
+
+DROP POLICY IF EXISTS "Public read gallery bucket" ON storage.objects;
 CREATE POLICY "Public read gallery bucket" ON storage.objects FOR SELECT USING (bucket_id = 'gallery');
+
+DROP POLICY IF EXISTS "Public read site bucket" ON storage.objects;
 CREATE POLICY "Public read site bucket" ON storage.objects FOR SELECT USING (bucket_id = 'site');
+
+DROP POLICY IF EXISTS "Public read souvenir images bucket" ON storage.objects;
 CREATE POLICY "Public read souvenir images bucket" ON storage.objects FOR SELECT USING (bucket_id = 'souvenir-images');
 
--- Izinkan Write pada Buckets
-CREATE POLICY "Allow upload to storage" ON storage.objects FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow update to storage" ON storage.objects FOR UPDATE USING (true);
-CREATE POLICY "Allow delete from storage" ON storage.objects FOR DELETE USING (true);
+-- Operasi tulis/upload/hapus file ke storage HANYA diizinkan melalui server route /api/upload
+-- yang memverifikasi sesi admin dan menggunakan service_role key.
 
 -- ================================================================
 -- SEED DATA AWAL (CANDLE & ARTISAN PROFILE)

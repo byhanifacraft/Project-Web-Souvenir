@@ -72,36 +72,12 @@ export async function getStoreData(): Promise<FullStoreData> {
           })),
         };
 
-        // Ambil data lokal untuk melengkapi field baru (original_price & options) jika tabel Supabase belum dimigrasi
-        const localProductsMap = new Map<string, ProductItem>();
-        try {
-          const filePath = path.join(process.cwd(), 'data', 'storeData.json');
-          if (fs.existsSync(filePath)) {
-            const content = fs.readFileSync(filePath, 'utf-8');
-            const parsed = JSON.parse(content);
-            ((parsed.products as ProductItem[]) || []).forEach((lp) =>
-              localProductsMap.set(lp.id, lp)
-            );
-          }
-        } catch (e) {
-          console.warn('Error reading local backup in getStoreData:', e);
-        }
-
         const mergedProducts: ProductItem[] = ((productsRes.data as ProductItem[]) || []).map(
-          (sp) => {
-            const local = localProductsMap.get(sp.id);
-            return {
-              ...sp,
-              original_price:
-                sp.original_price !== undefined && sp.original_price !== null
-                  ? sp.original_price
-                  : (local?.original_price ?? null),
-              options:
-                sp.options && Array.isArray(sp.options) && sp.options.length > 0
-                  ? sp.options
-                  : local?.options || [],
-            };
-          }
+          (sp) => ({
+            ...sp,
+            original_price: sp.original_price ?? null,
+            options: Array.isArray(sp.options) ? sp.options : [],
+          })
         );
 
         // Ambil data foto dokumentasi workshop (prioritas: site_content['workshop_gallery'] -> tabel gallery_images -> default)

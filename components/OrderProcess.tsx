@@ -60,7 +60,7 @@ export default function OrderProcess() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-          {steps.map((s, idx) => (
+          {steps.map((s) => (
             <div
               key={s.num}
               className="bg-white p-6 sm:p-7 rounded-3xl border border-zinc-200/80 shadow-2xs hover:shadow-lg hover:shadow-black/[0.03] transition-all flex flex-col justify-between group"

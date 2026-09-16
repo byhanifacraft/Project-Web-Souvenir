@@ -4,7 +4,7 @@ import Footer from '@/components/layout/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { getStoreData } from '@/lib/getStoreData';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR 5 menit (di-revalidate instan saat admin simpan perubahan)
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const storeData = await getStoreData();

@@ -4,7 +4,7 @@ import About from '@/components/About';
 import OrderProcess from '@/components/OrderProcess';
 import Testimonials from '@/components/Testimonials';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR 5 menit (di-revalidate instan saat admin simpan perubahan)
 
 export default async function TentangKamiPage() {
   const storeData = await getStoreData();

@@ -60,12 +60,24 @@ export async function POST(request: Request) {
     }
 
     // 3. Verifikasi 2: Cek kredensial server di .env.local
-    const expectedEmail = (process.env.ADMIN_EMAIL || 'craftbyhanifa@gmail.com')
-      .toLowerCase()
-      .trim();
-    const expectedPassword = process.env.ADMIN_PASSWORD || 'Bogem241';
+    const expectedEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+    const expectedPassword = process.env.ADMIN_PASSWORD;
 
     if (!isValid) {
+      if (!expectedEmail || !expectedPassword) {
+        console.error(
+          'CRITICAL: ADMIN_EMAIL atau ADMIN_PASSWORD belum dikonfigurasi di environment server.'
+        );
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              'Konfigurasi autentikasi server belum lengkap. Harap konfigurasi ADMIN_EMAIL dan ADMIN_PASSWORD.',
+          },
+          { status: 500 }
+        );
+      }
+
       if (email === expectedEmail && password === expectedPassword) {
         isValid = true;
       }
