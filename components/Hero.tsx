@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { MessageCircle, ShoppingBag, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 export interface HeroSlide {
   image: string;
@@ -89,9 +89,12 @@ export default function Hero({ config, hero }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Left Text Column */}
           <div className="lg:col-span-7 text-center lg:text-left">
-            {/* Apple-style Pill Badge */}
-            <div className="inline-flex items-center gap-2 text-[11px] font-medium text-zinc-600 bg-white/80 backdrop-blur-xs px-3.5 py-1 rounded-full border border-zinc-200/80 shadow-2xs mb-5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            {/* Expressive Pill Badge */}
+            <div className="inline-flex items-center gap-2 text-[11px] font-medium text-zinc-700 bg-white/90 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-zinc-200/80 shadow-2xs mb-5">
+              <Icon
+                icon="solar:stars-minimalistic-bold-duotone"
+                className="w-4 h-4 text-amber-500"
+              />
               <span>{badge}</span>
             </div>
 
@@ -105,39 +108,42 @@ export default function Hero({ config, hero }: HeroProps) {
               {description}
             </p>
 
-            {/* Clean Value Highlights (Minimalist) */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 mb-8 text-xs text-zinc-500 font-medium">
-              <div className="flex items-center gap-1.5">
-                <span className="text-zinc-400">•</span>
+            {/* Expressive Value Highlights */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2.5 mb-8 text-xs text-zinc-600 font-medium">
+              <div className="flex items-center gap-1.5 bg-zinc-100/70 px-2.5 py-1 rounded-full border border-zinc-200/60">
+                <Icon icon="solar:palette-bold-duotone" className="w-3.5 h-3.5 text-purple-600" />
                 <span>Free Mockup Desain</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-zinc-400">•</span>
-                <span>Kemasan Pita & Kartu Ucapan</span>
+              <div className="flex items-center gap-1.5 bg-zinc-100/70 px-2.5 py-1 rounded-full border border-zinc-200/60">
+                <Icon icon="solar:gift-bold-duotone" className="w-3.5 h-3.5 text-rose-500" />
+                <span>Kemasan Pita & Kartu</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-zinc-400">•</span>
-                <span>Garansi Pengiriman Seluruh RI</span>
+              <div className="flex items-center gap-1.5 bg-zinc-100/70 px-2.5 py-1 rounded-full border border-zinc-200/60">
+                <Icon
+                  icon="solar:shield-check-bold-duotone"
+                  className="w-3.5 h-3.5 text-emerald-600"
+                />
+                <span>Garansi Seluruh RI</span>
               </div>
             </div>
 
-            {/* Action CTAs - Apple Minimalist Pills */}
+            {/* Action CTAs - Expressive Pills with WhatsApp Green */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3">
               <a
                 href="/produk"
                 className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#1d1d1f] text-white font-medium text-xs sm:text-sm hover:bg-zinc-800 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px]"
               >
+                <Icon icon="solar:bag-3-bold-duotone" className="w-4 h-4 text-white" />
                 <span>Jelajahi Produk</span>
-                <ArrowRight className="w-4 h-4" />
               </a>
 
               <a
                 href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa (' + brandName + '), saya ingin konsultasi ide souvenir untuk acara kami.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial px-5 py-3 rounded-full bg-white text-zinc-800 border border-zinc-200/90 font-medium text-xs sm:text-sm hover:bg-zinc-50 hover:border-zinc-300 shadow-2xs transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                className="flex-1 sm:flex-initial px-5 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium text-xs sm:text-sm shadow-sm shadow-[#25D366]/25 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 min-h-[44px]"
               >
-                <MessageCircle className="w-4 h-4 text-emerald-600" />
+                <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
                 <span>Konsultasi WA</span>
               </a>
 
@@ -145,9 +151,9 @@ export default function Hero({ config, hero }: HeroProps) {
                 href={shopeeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial px-4 py-3 rounded-full bg-zinc-100 text-zinc-700 font-medium text-xs sm:text-sm hover:bg-zinc-200 hover:text-zinc-900 transition-all flex items-center justify-center gap-1.5 min-h-[44px]"
+                className="flex-1 sm:flex-initial px-4 py-3 rounded-full bg-[#ee4d2d] hover:bg-[#d73211] text-white font-medium text-xs sm:text-sm shadow-sm shadow-[#ee4d2d]/20 transition-all flex items-center justify-center gap-1.5 min-h-[44px]"
               >
-                <ShoppingBag className="w-4 h-4 text-[#ee4d2d]" />
+                <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4 text-white" />
                 <span>Shopee</span>
               </a>
             </div>
@@ -188,14 +194,14 @@ export default function Hero({ config, hero }: HeroProps) {
                     className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 backdrop-blur-xs text-white flex items-center justify-center opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/70 cursor-pointer"
                     aria-label="Foto Sebelumnya"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <Icon icon="solar:alt-arrow-left-bold" className="w-4 h-4" />
                   </button>
                   <button
                     onClick={nextSlide}
                     className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/50 backdrop-blur-xs text-white flex items-center justify-center opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/70 cursor-pointer"
                     aria-label="Foto Berikutnya"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <Icon icon="solar:alt-arrow-right-bold" className="w-4 h-4" />
                   </button>
                 </>
               )}

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { MessageCircle, ShoppingBag, Mail } from 'lucide-react';
 import { Icon } from '@iconify/react';
 
 interface ContactSectionProps {
@@ -64,9 +63,12 @@ export default function ContactSection({ contactInfo, config }: ContactSectionPr
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1: WhatsApp */}
-          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-zinc-200/80 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-xs transition-shadow">
-            <div className="w-12 h-12 rounded-xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-4">
-              <Icon icon="solar:chat-round-dots-bold-duotone" className="w-6 h-6 text-zinc-700" />
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-zinc-200/80 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-lg hover:shadow-black/[0.03] transition-all group">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-200/80 shadow-md shadow-emerald-500/15 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Icon
+                icon="solar:chat-round-call-bold-duotone"
+                className="w-7 h-7 text-emerald-600"
+              />
             </div>
             <div>
               <h3 className="font-semibold text-base text-zinc-900 mb-1">WhatsApp Studio</h3>
@@ -76,17 +78,17 @@ export default function ContactSection({ contactInfo, config }: ContactSectionPr
               href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa (' + brandName + '), saya ingin konsultasi seputar pemesanan souvenir.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 rounded-full bg-[#1d1d1f] text-white text-xs font-medium hover:bg-zinc-800 transition-all flex items-center justify-center gap-1.5 shadow-2xs"
+              className="w-full py-2.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-[#25D366]/25 hover:scale-[1.02]"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
               <span>Chat WhatsApp</span>
             </a>
           </div>
 
           {/* Card 2: Shopee */}
-          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-zinc-200/80 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-xs transition-shadow">
-            <div className="w-12 h-12 rounded-xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-4">
-              <Icon icon="solar:bag-heart-bold-duotone" className="w-6 h-6 text-zinc-700" />
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-zinc-200/80 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-lg hover:shadow-black/[0.03] transition-all group">
+            <div className="w-14 h-14 rounded-2xl bg-[#ee4d2d]/10 border border-orange-200/80 shadow-md shadow-orange-500/15 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Icon icon="solar:bag-heart-bold-duotone" className="w-7 h-7 text-[#ee4d2d]" />
             </div>
             <div>
               <h3 className="font-semibold text-base text-zinc-900 mb-1">Toko Shopee Resmi</h3>
@@ -96,17 +98,17 @@ export default function ContactSection({ contactInfo, config }: ContactSectionPr
               href={shopeeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 rounded-full bg-zinc-100 text-zinc-800 hover:bg-zinc-200 text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-full bg-[#ee4d2d] hover:bg-[#d73211] text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-[#ee4d2d]/25 hover:scale-[1.02]"
             >
-              <ShoppingBag className="w-3.5 h-3.5 text-[#ee4d2d]" />
+              <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4 text-white" />
               <span>Kunjungi Shopee</span>
             </a>
           </div>
 
           {/* Card 3: Workshop */}
-          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-zinc-200/80 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-xs transition-shadow">
-            <div className="w-12 h-12 rounded-xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-4">
-              <Icon icon="solar:point-on-map-bold-duotone" className="w-6 h-6 text-zinc-700" />
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-zinc-200/80 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-lg hover:shadow-black/[0.03] transition-all group">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-200/80 shadow-md shadow-indigo-500/15 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Icon icon="solar:point-on-map-bold-duotone" className="w-7 h-7 text-indigo-600" />
             </div>
             <div>
               <h3 className="font-semibold text-base text-zinc-900 mb-1">Workshop Studio</h3>
@@ -117,12 +119,13 @@ export default function ContactSection({ contactInfo, config }: ContactSectionPr
                 className="inline-flex items-center gap-1.5 text-xs text-zinc-700 hover:text-zinc-900 font-medium mt-2"
                 title={`Kirim email ke ${email}`}
               >
-                <Mail className="w-3.5 h-3.5 text-zinc-400" />
+                <Icon icon="solar:letter-bold-duotone" className="w-3.5 h-3.5 text-zinc-500" />
                 <span>{email}</span>
               </a>
             </div>
-            <span className="text-[11px] text-zinc-500 font-medium mt-3 bg-zinc-50 border border-zinc-200/70 px-3 py-1 rounded-full">
-              Pengiriman Seluruh Nusantara
+            <span className="text-[11px] text-zinc-500 font-medium mt-3 bg-zinc-50 border border-zinc-200/70 px-3 py-1 rounded-full flex items-center gap-1">
+              <Icon icon="solar:delivery-bold-duotone" className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Pengiriman Seluruh Nusantara</span>
             </span>
           </div>
         </div>

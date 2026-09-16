@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, MessageCircle, Menu, X } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 interface NavbarProps {
   config?: {
@@ -99,9 +99,9 @@ export default function Navbar({ config }: NavbarProps) {
             href={shopeeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-700 hover:bg-zinc-200 hover:text-zinc-900 transition-all flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#ee4d2d]/10 text-[#ee4d2d] hover:bg-[#ee4d2d] hover:text-white transition-all flex items-center gap-1.5"
           >
-            <ShoppingBag className="w-3.5 h-3.5 text-[#ee4d2d]" />
+            <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4" />
             <span>Shopee</span>
           </a>
 
@@ -109,9 +109,9 @@ export default function Navbar({ config }: NavbarProps) {
             href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo ' + brandName + ', saya ingin konsultasi pemesanan souvenir.')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-1.5 rounded-full text-xs font-medium bg-[#1d1d1f] text-white hover:bg-zinc-800 transition-all flex items-center gap-1.5 shadow-2xs"
+            className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#25D366] text-white hover:bg-[#20bd5a] transition-all flex items-center gap-1.5 shadow-sm shadow-[#25D366]/25 hover:scale-[1.02]"
           >
-            <MessageCircle className="w-3.5 h-3.5" />
+            <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
             <span>Konsultasi</span>
           </a>
         </div>
@@ -122,7 +122,11 @@ export default function Navbar({ config }: NavbarProps) {
           className="md:hidden w-9 h-9 flex items-center justify-center text-zinc-700 hover:bg-zinc-100 rounded-full transition-colors cursor-pointer shrink-0"
           aria-label="Buka Menu"
         >
-          {mobileOpen ? <X className="w-5 h-5 text-zinc-900" /> : <Menu className="w-5 h-5" />}
+          {mobileOpen ? (
+            <Icon icon="solar:close-circle-bold-duotone" className="w-6 h-6 text-zinc-900" />
+          ) : (
+            <Icon icon="solar:hamburger-menu-bold-duotone" className="w-6 h-6 text-zinc-800" />
+          )}
         </button>
       </div>
 
@@ -151,18 +155,18 @@ export default function Navbar({ config }: NavbarProps) {
               href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo ' + brandName + ', saya ingin konsultasi pemesanan souvenir.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 rounded-full text-xs font-medium bg-[#1d1d1f] text-white flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-full text-xs font-semibold bg-[#25D366] text-white flex items-center justify-center gap-2 shadow-sm"
             >
-              <MessageCircle className="w-4 h-4" />
+              <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
               <span>Konsultasi WhatsApp</span>
             </a>
             <a
               href={shopeeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2 rounded-full text-xs font-medium bg-zinc-100 text-zinc-800 flex items-center justify-center gap-2"
+              className="w-full py-2 rounded-full text-xs font-medium bg-[#ee4d2d]/10 text-[#ee4d2d] flex items-center justify-center gap-2"
             >
-              <ShoppingBag className="w-4 h-4 text-[#ee4d2d]" />
+              <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4" />
               <span>Buka Toko Shopee</span>
             </a>
           </div>

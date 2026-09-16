@@ -5,7 +5,7 @@ import { getStoreData } from '@/lib/getStoreData';
 import Hero from '@/components/Hero';
 import Features, { FeatureItem } from '@/components/Features';
 import WorkshopNewsSlider from '@/components/WorkshopNewsSlider';
-import { Sparkles, ArrowRight, MessageCircle, CheckCircle2, Flame } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { formatRupiah, calculateDiscount, getWhatsAppLink } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
@@ -79,7 +79,7 @@ export default async function HomePage() {
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-zinc-900 hover:text-[#c8476c] transition-colors"
           >
             <span>Semua Produk ({products.length})</span>
-            <ArrowRight className="w-4 h-4" />
+            <Icon icon="solar:alt-arrow-right-bold" className="w-4 h-4" />
           </Link>
         </div>
 
@@ -143,8 +143,11 @@ export default async function HomePage() {
 
                 <div className="p-4 bg-zinc-50/50 border-t border-zinc-100 flex items-center justify-between">
                   <span className="text-[11px] text-emerald-700 font-medium flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    Stok: {product.stock ?? 100} pcs
+                    <Icon
+                      icon="solar:verified-check-bold-duotone"
+                      className="w-4 h-4 text-emerald-600"
+                    />
+                    <span>Stok: {product.stock ?? 100} pcs</span>
                   </span>
                   <Link
                     href="/produk"
@@ -164,11 +167,14 @@ export default async function HomePage() {
         <div className="rounded-3xl bg-gradient-to-r from-[#fdf4f7] via-[#faf6f2] to-white border border-[#ebdcd5] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#fde8ee] text-[#c45a76] flex items-center justify-center shrink-0 shadow-2xs">
-              <Flame className="w-7 h-7" />
+              <Icon icon="solar:flame-bold-duotone" className="w-7 h-7 text-[#c45a76]" />
             </div>
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#fde8ee] text-[#c45a76] text-[10px] font-bold uppercase tracking-wider mb-1">
-                <Sparkles className="w-3 h-3" />
+                <Icon
+                  icon="solar:stars-minimalistic-bold-duotone"
+                  className="w-3.5 h-3.5 text-[#c45a76]"
+                />
                 <span>Kelas Meracik Lilin Magetan</span>
               </div>
               <h3 className="font-serif font-bold text-xl sm:text-2xl text-zinc-900 mb-1">
@@ -186,7 +192,7 @@ export default async function HomePage() {
             className="shrink-0 px-6 py-3 rounded-full bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition-all hover:scale-105"
           >
             <span>Jelajahi Paket Workshop</span>
-            <ArrowRight className="w-4 h-4" />
+            <Icon icon="solar:alt-arrow-right-bold" className="w-4 h-4" />
           </Link>
         </div>
       </section>
@@ -212,9 +218,9 @@ export default async function HomePage() {
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-full bg-[#128c7e] text-white text-xs sm:text-sm font-medium hover:bg-[#0e7065] transition-all flex items-center justify-center gap-2 shadow-sm"
+              className="px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-md shadow-[#25D366]/25 hover:scale-105"
             >
-              <MessageCircle className="w-4 h-4" />
+              <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
               <span>Chat WhatsApp Sekarang</span>
             </a>
             <Link

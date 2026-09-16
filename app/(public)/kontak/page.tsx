@@ -2,7 +2,7 @@ import React from 'react';
 import { getStoreData } from '@/lib/getStoreData';
 import ContactSection from '@/components/ContactSection';
 import FAQ from '@/components/FAQ';
-import { MapPin, Mail, ShoppingBag, Clock } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 function InstagramIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
@@ -82,15 +82,24 @@ export default async function KontakPage() {
 
             <div className="space-y-3 text-xs pt-2">
               <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-[#e05d82] shrink-0 mt-0.5" />
+                <Icon
+                  icon="solar:point-on-map-bold-duotone"
+                  className="w-4 h-4 text-[#e05d82] shrink-0 mt-0.5"
+                />
                 <span className="text-[#2e1c24] font-medium">{address}</span>
               </div>
               <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-[#e05d82] shrink-0" />
+                <Icon
+                  icon="solar:clock-circle-bold-duotone"
+                  className="w-4 h-4 text-[#e05d82] shrink-0"
+                />
                 <span className="text-[#755562]">{operationalHours}</span>
               </div>
               <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#e05d82] shrink-0" />
+                <Icon
+                  icon="solar:letter-bold-duotone"
+                  className="w-4 h-4 text-[#e05d82] shrink-0"
+                />
                 <span className="text-[#755562]">{email}</span>
               </div>
             </div>
@@ -102,7 +111,7 @@ export default async function KontakPage() {
                 rel="noopener noreferrer"
                 className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#ee4d2d] text-white text-xs font-bold hover:bg-[#d83f20] transition-colors flex items-center justify-center gap-1.5 shadow-2xs min-h-[44px]"
               >
-                <ShoppingBag className="w-3.5 h-3.5" />
+                <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4 text-white" />
                 <span>Shopee Star+</span>
               </a>
               <a

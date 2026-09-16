@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { siteConfig } from '@/data/siteConfig';
-import { MessageCircle } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { getWhatsAppLink } from '@/lib/utils';
 
 interface AboutProps {
@@ -58,16 +58,22 @@ export default function About({ content, config }: AboutProps) {
   const values = [
     {
       num: '01',
+      icon: 'solar:leaf-bold-duotone',
+      color: 'text-emerald-600 bg-emerald-500/10 border-emerald-200/80',
       title: '100% Natural Soy Wax',
       desc: 'Bebas racun parafin, lilin kedelai nabati kami menghasilkan pembakaran bersih, tidak berasap hitam, dan aman bagi pernapasan keluarga.',
     },
     {
       num: '02',
+      icon: 'solar:hand-stars-bold-duotone',
+      color: 'text-amber-600 bg-amber-500/10 border-amber-200/80',
       title: 'Hand-Poured in Magetan',
       desc: 'Setiap produk dikerjakan manual oleh pengrajin lokal berbakat di Magetan, Jawa Timur dengan dedikasi dan standar ketelitian tinggi.',
     },
     {
       num: '03',
+      icon: 'solar:gift-bold-duotone',
+      color: 'text-rose-600 bg-rose-500/10 border-rose-200/80',
       title: 'Thoughtful Presentation',
       desc: 'Lengkap dengan kemasan rustic elegan, pita satin pilihan, dan kartu ucapan kustom bertuliskan nama serta tanggal momen istimewa Anda.',
     },
@@ -140,12 +146,22 @@ export default function About({ content, config }: AboutProps) {
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {values.map((v) => (
-              <div key={v.num} className="space-y-2.5">
-                <span className="text-2xl text-zinc-900 font-bold tracking-tight block leading-none">
-                  {v.num}
-                </span>
+              <div
+                key={v.num}
+                className="bg-white p-6 sm:p-7 rounded-3xl border border-zinc-200/80 shadow-2xs hover:shadow-md transition-all space-y-3.5 group"
+              >
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center border shadow-xs group-hover:scale-110 transition-transform ${v.color}`}
+                  >
+                    <Icon icon={v.icon} className="w-6 h-6" />
+                  </div>
+                  <span className="text-xl text-zinc-300 font-bold tracking-tight font-serif">
+                    {v.num}
+                  </span>
+                </div>
                 <h4 className="font-semibold text-base text-zinc-900 leading-snug">{v.title}</h4>
                 <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed">{v.desc}</p>
               </div>
@@ -183,9 +199,9 @@ export default function About({ content, config }: AboutProps) {
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-2.5 rounded-full bg-[#1d1d1f] hover:bg-zinc-800 text-white text-xs font-medium transition-all shadow-xs flex items-center gap-2"
+                  className="px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-semibold transition-all shadow-md shadow-[#25D366]/25 flex items-center gap-2 hover:scale-105 cursor-pointer"
                 >
-                  <MessageCircle className="w-4 h-4 text-emerald-400" />
+                  <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
                   <span>Kirim Pesan ke Founder</span>
                 </a>
               </div>

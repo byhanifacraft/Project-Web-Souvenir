@@ -2,27 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import {
-  Sparkles,
-  Flame,
-  Clock,
-  Users,
-  Check,
-  MessageCircle,
-  Gift,
-  Award,
-  Heart,
-  Droplets,
-  Flower2,
-  PackageCheck,
-  ShieldCheck,
-  ArrowRight,
-  Eye,
-  Calendar,
-  MapPin,
-  Megaphone,
-  Images,
-} from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { GalleryImageItem, WorkshopNewsItem } from '@/types/store';
 import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
 import {
@@ -126,7 +106,10 @@ export default function WorkshopPageContent({
             {/* Left: Text & CTA */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium tracking-wide">
-                <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
+                <Icon
+                  icon="solar:stars-minimalistic-bold-duotone"
+                  className="w-4 h-4 text-amber-500"
+                />
                 <span>Studio Kerajinan Lilin Aromaterapi Magetan</span>
               </div>
 
@@ -145,7 +128,10 @@ export default function WorkshopPageContent({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
                   <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <Icon
+                      icon="solar:shield-check-bold-duotone"
+                      className="w-4 h-4 text-emerald-600"
+                    />
                     <span>100% Soy Wax</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 leading-tight">
@@ -155,7 +141,7 @@ export default function WorkshopPageContent({
 
                 <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
                   <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
-                    <Droplets className="w-3.5 h-3.5 text-rose-500" />
+                    <Icon icon="solar:dropper-3-bold-duotone" className="w-4 h-4 text-rose-500" />
                     <span>12+ Signature Oil</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 leading-tight">
@@ -165,7 +151,7 @@ export default function WorkshopPageContent({
 
                 <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
                   <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
-                    <Gift className="w-3.5 h-3.5 text-amber-500" />
+                    <Icon icon="solar:gift-bold-duotone" className="w-4 h-4 text-amber-500" />
                     <span>Bawa Pulang Karya</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 leading-tight">
@@ -175,7 +161,10 @@ export default function WorkshopPageContent({
 
                 <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-2xs text-left">
                   <div className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-1">
-                    <Award className="w-3.5 h-3.5 text-indigo-500" />
+                    <Icon
+                      icon="solar:medal-ribbons-star-bold-duotone"
+                      className="w-4 h-4 text-indigo-500"
+                    />
                     <span>Sertifikat Resmi</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 leading-tight">
@@ -196,9 +185,9 @@ export default function WorkshopPageContent({
                   href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa, saya ingin tanya ketersediaan jadwal workshop lilin aromaterapi.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-zinc-800 border border-zinc-200/90 hover:bg-zinc-50 hover:border-zinc-300 text-xs sm:text-sm font-medium shadow-2xs transition-all cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-semibold shadow-md shadow-[#25D366]/25 transition-all cursor-pointer hover:scale-105"
                 >
-                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                  <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
                   <span>Konsultasi Slot via WhatsApp</span>
                 </a>
               </div>
@@ -210,7 +199,7 @@ export default function WorkshopPageContent({
                 {/* Floating Rating Pill - Positioned cleanly inside bounds */}
                 <div className="absolute -top-3.5 right-2 sm:-top-5 sm:-right-4 bg-white/95 backdrop-blur-md border border-zinc-200/80 rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-md flex items-center gap-2.5 sm:gap-3 z-10 max-w-[90%]">
                   <div className="w-9 h-9 rounded-xl bg-[#fde8ee] text-[#c45a76] flex items-center justify-center shrink-0">
-                    <Heart className="w-4 h-4 fill-[#c45a76]" />
+                    <Icon icon="solar:heart-bold" className="w-5 h-5 text-[#c45a76]" />
                   </div>
                   <div>
                     <div className="text-xs font-bold text-zinc-900 leading-tight">
@@ -305,7 +294,9 @@ export default function WorkshopPageContent({
                             : 'border-zinc-300 bg-white'
                         }`}
                       >
-                        {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                        {isSelected && (
+                          <Icon icon="solar:check-read-linear" className="w-2.5 h-2.5" />
+                        )}
                       </span>
                       <span className="text-[11px]">{isSelected ? 'Dipilih' : 'Pilih Paket'}</span>
                     </div>
@@ -329,11 +320,17 @@ export default function WorkshopPageContent({
                     </div>
                     <div className="flex items-center gap-4 mt-2 text-[11px] text-zinc-600 font-medium">
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-[#c45a76]" />
+                        <Icon
+                          icon="solar:clock-circle-bold-duotone"
+                          className="w-4 h-4 text-[#c45a76]"
+                        />
                         {pkg.duration}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5 text-zinc-500" />
+                        <Icon
+                          icon="solar:users-group-rounded-bold-duotone"
+                          className="w-4 h-4 text-zinc-500"
+                        />
                         {pkg.capacity}
                       </span>
                     </div>
@@ -348,7 +345,10 @@ export default function WorkshopPageContent({
                       <ul className="space-y-2 text-xs text-zinc-600">
                         {pkg.features.map((feat, idx) => (
                           <li key={idx} className="flex items-start gap-2">
-                            <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                            <Icon
+                              icon="solar:verified-check-bold-duotone"
+                              className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"
+                            />
                             <span>{feat}</span>
                           </li>
                         ))}
@@ -358,7 +358,7 @@ export default function WorkshopPageContent({
                     {/* Take Home Items */}
                     <div className="pt-3 border-t border-dashed border-zinc-200">
                       <p className="text-[11px] font-bold uppercase tracking-wider text-[#c45a76] mb-2 flex items-center gap-1.5">
-                        <Gift className="w-3.5 h-3.5" />
+                        <Icon icon="solar:gift-bold-duotone" className="w-4 h-4 text-[#c45a76]" />
                         <span>Karya Dibawa Pulang:</span>
                       </p>
                       <ul className="space-y-1.5 text-xs text-zinc-700 font-medium">
@@ -367,7 +367,10 @@ export default function WorkshopPageContent({
                             key={idx}
                             className="flex items-start gap-2 bg-[#fdf4f7] p-2 rounded-xl border border-[#f3d7df]"
                           >
-                            <PackageCheck className="w-3.5 h-3.5 text-[#c45a76] shrink-0 mt-0.5" />
+                            <Icon
+                              icon="solar:box-minimalistic-bold-duotone"
+                              className="w-4 h-4 text-[#c45a76] shrink-0 mt-0.5"
+                            />
                             <span>{item}</span>
                           </li>
                         ))}
@@ -385,11 +388,14 @@ export default function WorkshopPageContent({
                   }}
                   className={`w-full py-3.5 rounded-full text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm mt-2 ${
                     isSelected
-                      ? 'bg-[#128c7e] hover:bg-[#0e7065] text-white shadow-md shadow-[#128c7e]/25 ring-2 ring-[#128c7e]/30 scale-[1.01]'
-                      : 'bg-[#128c7e] hover:bg-[#0e7065] text-white shadow-[#128c7e]/15'
+                      ? 'bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-md shadow-[#25D366]/25 ring-2 ring-[#25D366]/30 scale-[1.01]'
+                      : 'bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-[#25D366]/15 hover:scale-[1.01]'
                   }`}
                 >
-                  <MessageCircle className="w-4 h-4 shrink-0" />
+                  <Icon
+                    icon="solar:chat-round-call-bold-duotone"
+                    className="w-4 h-4 shrink-0 text-white"
+                  />
                   <span>{pkg.buttonLabel}</span>
                 </button>
               </div>
@@ -425,8 +431,13 @@ export default function WorkshopPageContent({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {curriculum.map((step, idx) => {
-              const icons = [Flame, Droplets, Clock, Flower2];
-              const IconComp = icons[idx % icons.length];
+              const curriculumIcons = [
+                'solar:flame-bold-duotone',
+                'solar:dropper-3-bold-duotone',
+                'solar:clock-circle-bold-duotone',
+                'solar:magic-stick-3-bold-duotone',
+              ];
+              const iconName = curriculumIcons[idx % curriculumIcons.length];
               return (
                 <div
                   key={idx}
@@ -438,7 +449,7 @@ export default function WorkshopPageContent({
                         {step.step || `0${idx + 1}`}
                       </span>
                       <div className="w-10 h-10 rounded-2xl bg-[#fde8ee] text-[#c45a76] flex items-center justify-center">
-                        <IconComp className="w-5 h-5" />
+                        <Icon icon={iconName} className="w-6 h-6" />
                       </div>
                     </div>
                     <h3 className="font-serif font-bold text-base text-zinc-900 mb-2">
@@ -458,7 +469,10 @@ export default function WorkshopPageContent({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fde8ee] border border-[#f3d7df] text-[#c45a76] text-[11px] font-bold uppercase tracking-wider mb-2">
-              <Sparkles className="w-3 h-3 text-[#e05d82]" />
+              <Icon
+                icon="solar:stars-minimalistic-bold-duotone"
+                className="w-3.5 h-3.5 text-[#e05d82]"
+              />
               <span>Dokumentasi Studio & Agenda Event</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-900 tracking-tight">
@@ -490,7 +504,7 @@ export default function WorkshopPageContent({
                   : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
-              <Megaphone className="w-3.5 h-3.5" />
+              <Icon icon="solar:bullhorn-bold-duotone" className="w-4 h-4" />
               <span>Event & Promosi ({activeNews.length})</span>
             </button>
             <button
@@ -501,7 +515,7 @@ export default function WorkshopPageContent({
                   : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
-              <Images className="w-3.5 h-3.5" />
+              <Icon icon="solar:gallery-bold-duotone" className="w-4 h-4" />
               <span>Foto Studio ({galleryList.length})</span>
             </button>
           </div>
@@ -562,13 +576,16 @@ export default function WorkshopPageContent({
 
                       <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
-                          <Eye className="w-3.5 h-3.5 text-[#e05d82]" />
+                          <Icon icon="solar:eye-bold-duotone" className="w-4 h-4 text-[#e05d82]" />
                           <span>Baca Berita</span>
                         </div>
                       </div>
 
                       <div className="absolute bottom-3 left-3 right-3 text-white flex items-center gap-2 text-[11px] font-medium drop-shadow-sm">
-                        <Calendar className="w-3.5 h-3.5 text-rose-300 shrink-0" />
+                        <Icon
+                          icon="solar:calendar-date-bold-duotone"
+                          className="w-4 h-4 text-rose-300 shrink-0"
+                        />
                         <span className="truncate">{item.date}</span>
                       </div>
                     </div>
@@ -581,7 +598,10 @@ export default function WorkshopPageContent({
                         {item.summary}
                       </p>
                       <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 pt-1">
-                        <MapPin className="w-3.5 h-3.5 text-[#e05d82] shrink-0" />
+                        <Icon
+                          icon="solar:point-on-map-bold-duotone"
+                          className="w-4 h-4 text-[#e05d82] shrink-0"
+                        />
                         <span className="truncate">{item.location}</span>
                       </div>
                     </div>
@@ -590,7 +610,10 @@ export default function WorkshopPageContent({
                   <div className="p-5 pt-0">
                     <div className="w-full py-2.5 px-3 rounded-xl bg-[#fdf2f4] group-hover:bg-[#c45a76] text-[#c45a76] group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-[#f3d7df] group-hover:border-transparent">
                       <span>Lihat Rincian & Reservasi</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      <Icon
+                        icon="solar:alt-arrow-right-bold"
+                        className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+                      />
                     </div>
                   </div>
                 </div>
@@ -623,7 +646,7 @@ export default function WorkshopPageContent({
 
                     <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
-                        <Eye className="w-3.5 h-3.5 text-[#e05d82]" />
+                        <Icon icon="solar:eye-bold-duotone" className="w-4 h-4 text-[#e05d82]" />
                         <span>Lihat Foto</span>
                       </div>
                     </div>
@@ -640,7 +663,10 @@ export default function WorkshopPageContent({
                 <div className="p-5 pt-0">
                   <div className="w-full py-2 px-3 rounded-xl bg-zinc-50 group-hover:bg-[#fde8ee] text-zinc-700 group-hover:text-[#c45a76] text-xs font-semibold transition-all flex items-center justify-center gap-1.5 border border-zinc-200 group-hover:border-[#f3d7df]">
                     <span>Info & Tanya Jadwal Serupa</span>
-                    <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                    <Icon
+                      icon="solar:alt-arrow-right-bold"
+                      className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+                    />
                   </div>
                 </div>
               </div>

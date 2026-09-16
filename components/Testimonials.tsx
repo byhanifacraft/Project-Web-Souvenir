@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Star, Calendar, CheckCircle } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 interface TestimonialItem {
   id: string;
@@ -99,12 +99,15 @@ export default function Testimonials() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-1 text-amber-400">
                     {[...Array(item.rating)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                      <Icon key={i} icon="solar:star-bold" className="w-4 h-4 text-amber-400" />
                     ))}
                   </div>
 
                   <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                    <Calendar className="w-3.5 h-3.5" />
+                    <Icon
+                      icon="solar:calendar-date-bold-duotone"
+                      className="w-4 h-4 text-zinc-400"
+                    />
                     <span>{item.date}</span>
                   </div>
                 </div>
@@ -121,8 +124,12 @@ export default function Testimonials() {
                   <div className="flex items-center gap-1.5">
                     <h4 className="font-semibold text-sm text-zinc-900">{item.name}</h4>
                     {item.verifiedBuyer && (
-                      <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                        <CheckCircle className="w-3 h-3" /> Terverifikasi
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">
+                        <Icon
+                          icon="solar:verified-check-bold-duotone"
+                          className="w-3.5 h-3.5 text-emerald-600"
+                        />
+                        <span>Terverifikasi</span>
                       </span>
                     )}
                   </div>
@@ -143,9 +150,15 @@ export default function Testimonials() {
 
         {/* Shopee Review Badge Banner */}
         <div className="text-center bg-[#faf4ef] border border-[#ebdcd5] rounded-2xl p-6 max-w-2xl mx-auto shadow-2xs">
-          <p className="text-xs font-serif text-[#2a2123] mb-1">
-            ★ <strong>4.85 / 5.0</strong> dari 1.500+ Ulasan Star+ Seller di Shopee
-          </p>
+          <div className="flex items-center justify-center gap-1.5 mb-1 text-xs text-[#2a2123]">
+            <Icon
+              icon="solar:medal-ribbons-star-bold-duotone"
+              className="w-4 h-4 text-amber-500 shrink-0"
+            />
+            <span>
+              <strong>4.85 / 5.0</strong> dari 1.500+ Ulasan Star+ Seller di Shopee
+            </span>
+          </div>
           <p className="text-xs text-[#736064]">
             Semua ulasan asli dari pembeli di seluruh nusantara yang telah merasakan kehangatan
             lilin dan kerajinan CraftByHanifa.

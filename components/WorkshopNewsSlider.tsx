@@ -3,17 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-  Calendar,
-  MapPin,
-  ArrowRight,
-  Flame,
-  CheckCircle2,
-  Clock,
-} from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { WorkshopNewsItem } from '@/types/store';
 import WorkshopNewsModal from '@/components/WorkshopNewsModal';
 
@@ -53,25 +43,25 @@ export default function WorkshopNewsSlider({
       case 'coming_soon':
         return {
           bg: 'bg-amber-500 text-white',
-          icon: Sparkles,
+          icon: 'solar:stars-minimalistic-bold-duotone',
           text: label || 'Coming Soon',
         };
       case 'open_registration':
         return {
           bg: 'bg-emerald-600 text-white',
-          icon: CheckCircle2,
+          icon: 'solar:verified-check-bold-duotone',
           text: label || 'Pendaftaran Dibuka',
         };
       case 'completed':
         return {
           bg: 'bg-zinc-700 text-white',
-          icon: Clock,
+          icon: 'solar:clock-circle-bold-duotone',
           text: label || 'Dokumentasi',
         };
       default:
         return {
           bg: 'bg-[#c45a76] text-white',
-          icon: Sparkles,
+          icon: 'solar:stars-minimalistic-bold-duotone',
           text: label || 'Event Spesial',
         };
     }
@@ -83,8 +73,8 @@ export default function WorkshopNewsSlider({
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 text-zinc-700 text-[10px] font-medium uppercase tracking-wider mb-2">
-              <Flame className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-700 text-[10px] font-bold uppercase tracking-wider mb-2">
+              <Icon icon="solar:flame-bold-duotone" className="w-4 h-4 text-orange-500" />
               <span>Agenda & Berita Studio</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">
@@ -101,7 +91,7 @@ export default function WorkshopNewsSlider({
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-zinc-900 hover:text-zinc-600 transition-colors shrink-0"
           >
             <span>Semua Paket Workshop</span>
-            <ArrowRight className="w-4 h-4" />
+            <Icon icon="solar:alt-arrow-right-bold" className="w-4 h-4" />
           </Link>
         </div>
 
@@ -109,7 +99,6 @@ export default function WorkshopNewsSlider({
         <div className="relative rounded-3xl overflow-hidden border border-zinc-200/80 bg-zinc-900 shadow-md aspect-[16/10] sm:aspect-[21/9] group">
           {activeNews.map((item, idx) => {
             const badge = getStatusBadge(item.status, item.status_label);
-            const BadgeIcon = badge.icon;
             const isCurrent = idx === currentIndex;
 
             return (
@@ -138,7 +127,7 @@ export default function WorkshopNewsSlider({
                     <span
                       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold shadow-xs ${badge.bg}`}
                     >
-                      <BadgeIcon className="w-3.5 h-3.5" />
+                      <Icon icon={badge.icon} className="w-4 h-4" />
                       <span>{badge.text}</span>
                     </span>
 
@@ -154,13 +143,19 @@ export default function WorkshopNewsSlider({
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-white/80 text-[11px] sm:text-xs">
                       {item.date && (
                         <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5 text-amber-300" />
+                          <Icon
+                            icon="solar:calendar-date-bold-duotone"
+                            className="w-4 h-4 text-amber-300"
+                          />
                           <span>{item.date}</span>
                         </span>
                       )}
                       {item.location && (
                         <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                          <Icon
+                            icon="solar:point-on-map-bold-duotone"
+                            className="w-4 h-4 text-rose-300"
+                          />
                           <span>{item.location}</span>
                         </span>
                       )}
@@ -183,7 +178,10 @@ export default function WorkshopNewsSlider({
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-[#fde8ee] text-[#2e1c24] text-xs font-bold shadow-md transition-all hover:scale-105 cursor-pointer min-h-[40px]"
                       >
                         <span>Baca Berita & Info Pendaftaran</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-[#e05d82]" />
+                        <Icon
+                          icon="solar:alt-arrow-right-bold"
+                          className="w-3.5 h-3.5 text-[#e05d82]"
+                        />
                       </button>
                     </div>
                   </div>
@@ -201,7 +199,7 @@ export default function WorkshopNewsSlider({
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-xs text-white flex items-center justify-center transition-all opacity-90 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer shadow-lg"
                 aria-label="Berita Sebelumnya"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <Icon icon="solar:alt-arrow-left-bold" className="w-5 h-5" />
               </button>
               <button
                 type="button"
@@ -209,7 +207,7 @@ export default function WorkshopNewsSlider({
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-xs text-white flex items-center justify-center transition-all opacity-90 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer shadow-lg"
                 aria-label="Berita Berikutnya"
               >
-                <ChevronRight className="w-5 h-5" />
+                <Icon icon="solar:alt-arrow-right-bold" className="w-5 h-5" />
               </button>
             </>
           )}

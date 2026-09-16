@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { siteConfig } from '@/data/siteConfig';
-import { MessageCircle, ShoppingBag, X } from 'lucide-react';
 import { Icon } from '@iconify/react';
 
 export default function FloatingButtons() {
@@ -19,16 +18,16 @@ export default function FloatingButtons() {
     <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
       {/* Friendly Chat Bubble Prompt */}
       {showGreeting && (
-        <div className="bg-white p-3 rounded-xl shadow-lg border border-zinc-200/80 max-w-[230px] text-xs text-zinc-900 relative animate-fadeIn">
+        <div className="bg-white p-3 rounded-2xl shadow-xl border border-zinc-200/80 max-w-[240px] text-xs text-zinc-900 relative animate-fadeIn">
           <button
             onClick={() => setShowGreeting(false)}
-            className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-zinc-100 text-zinc-500 flex items-center justify-center hover:bg-zinc-200 cursor-pointer"
+            className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-zinc-100 text-zinc-400 hover:text-zinc-700 flex items-center justify-center hover:bg-zinc-200 cursor-pointer transition-colors shadow-2xs"
             aria-label="Tutup pesan"
           >
-            <X className="w-3 h-3" />
+            <Icon icon="solar:close-circle-bold-duotone" className="w-3.5 h-3.5" />
           </button>
-          <div className="flex items-center gap-1.5 font-semibold text-zinc-900 mb-0.5">
-            <Icon icon="solar:chat-round-dots-bold-duotone" className="w-4 h-4 text-[#128c7e]" />
+          <div className="flex items-center gap-1.5 font-semibold text-zinc-900 mb-1">
+            <Icon icon="solar:chat-round-dots-bold-duotone" className="w-4 h-4 text-[#25D366]" />
             <span>Butuh Rekomendasi?</span>
           </div>
           <p className="text-zinc-500 text-[11px] leading-snug">
@@ -46,7 +45,7 @@ export default function FloatingButtons() {
           className="w-12 h-12 rounded-full bg-[#ee4d2d] text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
           title="Toko Shopee Resmi (Craftbyhanifa)"
         >
-          <ShoppingBag className="w-5 h-5" />
+          <Icon icon="solar:bag-heart-bold-duotone" className="w-6 h-6 text-white" />
         </a>
 
         {/* WhatsApp Floating Button */}
@@ -54,10 +53,10 @@ export default function FloatingButtons() {
           href={getWaLink()}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-14 h-14 rounded-full bg-[#128c7e] hover:bg-[#0e7065] text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-200 animate-pulse-glow"
+          className="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-xl shadow-[#25D366]/35 hover:scale-110 active:scale-95 transition-all duration-200 animate-pulse-glow"
           title="Chat WhatsApp CraftByHanifa"
         >
-          <MessageCircle className="w-7 h-7" />
+          <Icon icon="solar:chat-round-call-bold-duotone" className="w-7 h-7 text-white" />
         </a>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { faqData, siteConfig } from '@/data/siteConfig';
-import { HelpCircle, ChevronDown, MessageCircle } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 export default function FAQ() {
   const [openId, setOpenId] = useState<string | null>(faqData[0]?.id || null);
@@ -17,7 +17,8 @@ export default function FAQ() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium mb-3">
-            <HelpCircle className="w-3.5 h-3.5" /> Tanya Jawab Pemesanan
+            <Icon icon="solar:question-circle-bold-duotone" className="w-4 h-4 text-[#df829b]" />
+            <span>Tanya Jawab Pemesanan</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight mb-3">
             Pertanyaan yang Sering Diajukan
@@ -49,7 +50,7 @@ export default function FAQ() {
                       isOpen ? 'rotate-180 text-zinc-900 bg-zinc-100' : ''
                     }`}
                   >
-                    <ChevronDown className="w-4 h-4" />
+                    <Icon icon="solar:alt-arrow-down-bold" className="w-3.5 h-3.5" />
                   </div>
                 </button>
 
@@ -65,8 +66,8 @@ export default function FAQ() {
 
         {/* Quick Question WhatsApp Box */}
         <div className="text-center p-8 sm:p-10 rounded-3xl bg-[#fbfbfd] border border-zinc-200/80 shadow-2xs">
-          <div className="w-11 h-11 rounded-full bg-zinc-100 text-zinc-800 flex items-center justify-center mx-auto mb-3.5">
-            <MessageCircle className="w-5 h-5 text-zinc-700" />
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-200/80 text-emerald-600 flex items-center justify-center mx-auto mb-3.5 shadow-sm">
+            <Icon icon="solar:chat-round-dots-bold-duotone" className="w-6 h-6 text-emerald-600" />
           </div>
           <h4 className="text-lg font-semibold text-zinc-900 mb-1">
             Masih Ada Pertanyaan atau Request Khusus?
@@ -79,9 +80,9 @@ export default function FAQ() {
             href={`https://wa.me/${siteConfig.contact.whatsapp}?text=${encodeURIComponent('Halo CraftByHanifa, saya ingin bertanya seputar pemesanan souvenir.')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1d1d1f] text-white font-medium text-xs sm:text-sm hover:bg-zinc-800 shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold text-xs sm:text-sm shadow-md shadow-[#25D366]/25 transition-all cursor-pointer hover:scale-105"
           >
-            <MessageCircle className="w-4 h-4 text-emerald-400" />
+            <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
             <span>Tanya Admin via WhatsApp</span>
           </a>
         </div>

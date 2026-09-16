@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { ProductItem } from '@/types/store';
 import { Product } from '@/types';
 import { formatRupiah, calculateDiscount } from '@/lib/utils';
-import { Eye, MessageCircle, ShoppingBag, Search, Package } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import ProductModal from '@/components/ProductModal';
 
@@ -139,7 +138,10 @@ export default function ProductCatalog({
           </div>
 
           <div className="relative w-full md:w-64">
-            <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+            <Icon
+              icon="solar:magnifer-linear"
+              className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"
+            />
             <input
               type="text"
               placeholder="Cari jenis souvenir..."
@@ -213,7 +215,7 @@ export default function ProductCatalog({
                     />
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <span className="px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-xs text-xs font-semibold text-zinc-900 flex items-center gap-1.5 shadow-sm transform translate-y-1 group-hover:translate-y-0 transition-transform">
-                        <Eye className="w-3.5 h-3.5 text-[#df829b]" />
+                        <Icon icon="solar:eye-bold-duotone" className="w-4 h-4 text-[#df829b]" />
                         <span>Lihat Detail & Custom</span>
                       </span>
                     </div>
@@ -251,7 +253,10 @@ export default function ProductCatalog({
 
                     <div className="flex items-center justify-between gap-1 text-xs text-zinc-500 mb-2">
                       <div className="flex items-center gap-1.5">
-                        <Package className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <Icon
+                          icon="solar:box-minimalistic-bold-duotone"
+                          className="w-4 h-4 text-zinc-400 shrink-0"
+                        />
                         <span>
                           Min. Pesanan: <strong>{minOrder} pcs</strong>
                         </span>
@@ -295,7 +300,7 @@ export default function ProductCatalog({
                       onClick={handleOpenModal}
                       className="flex-1 py-2.5 rounded-full bg-[#1d1d1f] text-white font-medium text-xs text-center hover:bg-zinc-800 transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer min-h-[40px]"
                     >
-                      <Eye className="w-3.5 h-3.5" />
+                      <Icon icon="solar:eye-bold-duotone" className="w-4 h-4" />
                       <span>Detail & Custom</span>
                     </button>
 
@@ -303,10 +308,13 @@ export default function ProductCatalog({
                       href={getWaLink(p)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3.5 py-2.5 rounded-full bg-white text-zinc-700 border border-zinc-200/90 font-medium text-xs text-center hover:bg-zinc-50 hover:border-zinc-300 transition-all flex items-center justify-center gap-1 shadow-2xs min-h-[40px]"
+                      className="px-3.5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium text-xs text-center transition-all flex items-center justify-center gap-1 shadow-sm shadow-[#25D366]/25 hover:scale-105 min-h-[40px]"
                       title="Pesan Langsung via WhatsApp"
                     >
-                      <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                      <Icon
+                        icon="solar:chat-round-call-bold-duotone"
+                        className="w-4 h-4 text-white"
+                      />
                     </a>
 
                     {p.shopee_url && (
@@ -314,10 +322,10 @@ export default function ProductCatalog({
                         href={p.shopee_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3.5 py-2.5 rounded-full bg-[#ee4d2d] text-white font-medium text-xs text-center hover:bg-[#d73211] transition-colors flex items-center justify-center gap-1 shadow-2xs min-h-[40px]"
+                        className="px-3.5 py-2.5 rounded-full bg-[#ee4d2d] text-white font-medium text-xs text-center hover:bg-[#d73211] transition-all flex items-center justify-center gap-1 shadow-sm shadow-[#ee4d2d]/25 hover:scale-105 min-h-[40px]"
                         title="Beli Sampel di Shopee"
                       >
-                        <ShoppingBag className="w-3.5 h-3.5 text-white" />
+                        <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4 text-white" />
                       </a>
                     )}
                   </div>
@@ -349,7 +357,7 @@ export default function ProductCatalog({
             rel="noopener noreferrer"
             className="px-5 py-2.5 rounded-full bg-[#ee4d2d] text-white font-medium text-xs hover:bg-[#d73211] transition-colors shrink-0 shadow-sm flex items-center gap-1.5"
           >
-            <ShoppingBag className="w-3.5 h-3.5 text-white" />
+            <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4 text-white" />
             <span>Toko Shopee Resmi</span>
           </a>
         </div>

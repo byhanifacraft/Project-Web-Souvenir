@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, MessageCircle, MapPin, Phone, Mail } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 interface FooterProps {
   config?: {
@@ -82,16 +82,16 @@ export default function Footer({ config }: FooterProps) {
                 className="w-8 h-8 rounded-full bg-[#ee4d2d] text-white flex items-center justify-center hover:brightness-110 hover:scale-105 transition-all shadow-xs"
                 title="Toko Shopee Resmi"
               >
-                <ShoppingBag className="w-3.5 h-3.5 text-white" />
+                <Icon icon="solar:bag-heart-bold-duotone" className="w-4 h-4 text-white" />
               </a>
               <a
                 href={`https://wa.me/${whatsappNum}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-[#128c7e] text-white flex items-center justify-center hover:bg-[#0e7065] hover:scale-105 transition-all shadow-xs"
+                className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#20bd5a] hover:scale-105 transition-all shadow-xs shadow-[#25D366]/30"
                 title="Konsultasi WhatsApp"
               >
-                <MessageCircle className="w-3.5 h-3.5 text-white" />
+                <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
               </a>
               <a
                 href={instagramUrl}
@@ -107,7 +107,7 @@ export default function Footer({ config }: FooterProps) {
                 className="w-8 h-8 rounded-full bg-[#ea4335] text-white flex items-center justify-center hover:brightness-110 hover:scale-105 transition-all shadow-xs"
                 title={`Kirim Email: ${email}`}
               >
-                <Mail className="w-3.5 h-3.5 text-white" />
+                <Icon icon="solar:letter-bold-duotone" className="w-4 h-4 text-white" />
               </a>
             </div>
           </div>
@@ -153,11 +153,17 @@ export default function Footer({ config }: FooterProps) {
             </h4>
             <div className="space-y-2.5 text-xs text-zinc-400">
               <p className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#df829b] shrink-0 mt-0.5" />
+                <Icon
+                  icon="solar:point-on-map-bold-duotone"
+                  className="w-4 h-4 text-[#df829b] shrink-0 mt-0.5"
+                />
                 <span>{fullAddress}</span>
               </p>
               <p className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#128c7e] shrink-0" />
+                <Icon
+                  icon="solar:phone-calling-rounded-bold-duotone"
+                  className="w-4 h-4 text-[#25D366] shrink-0"
+                />
                 <span>WA: {whatsappDisplay}</span>
               </p>
               <a
@@ -165,7 +171,10 @@ export default function Footer({ config }: FooterProps) {
                 className="flex items-center gap-2 hover:text-white transition-colors"
                 title={`Kirim email ke ${email}`}
               >
-                <Mail className="w-3.5 h-3.5 text-[#ea4335] shrink-0" />
+                <Icon
+                  icon="solar:letter-bold-duotone"
+                  className="w-4 h-4 text-[#ea4335] shrink-0"
+                />
                 <span>Email: {email}</span>
               </a>
               <p className="text-[11px] text-zinc-500 pt-1">Jam Layanan: {operationalHours}</p>

@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
-import { X, Calendar, MapPin, MessageCircle, Sparkles, CheckCircle2, Clock } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { WorkshopNewsItem } from '@/types/store';
 
 interface WorkshopNewsModalProps {
@@ -37,32 +37,31 @@ export default function WorkshopNewsModal({
       case 'coming_soon':
         return {
           bg: 'bg-amber-100 text-amber-900 border-amber-300',
-          icon: Sparkles,
+          icon: 'solar:stars-minimalistic-bold-duotone',
           label: news.status_label || 'Segera Hadir / Coming Soon',
         };
       case 'open_registration':
         return {
           bg: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-          icon: CheckCircle2,
+          icon: 'solar:verified-check-bold-duotone',
           label: news.status_label || 'Pendaftaran Dibuka',
         };
       case 'completed':
         return {
           bg: 'bg-zinc-100 text-zinc-700 border-zinc-300',
-          icon: Clock,
+          icon: 'solar:clock-circle-bold-duotone',
           label: news.status_label || 'Dokumentasi Acara',
         };
       default:
         return {
           bg: 'bg-[#fde8ee] text-[#c45a76] border-[#f8c4d2]',
-          icon: Sparkles,
+          icon: 'solar:stars-minimalistic-bold-duotone',
           label: news.status_label || 'Agenda Workshop',
         };
     }
   };
 
   const badgeInfo = getStatusBadge();
-  const BadgeIcon = badgeInfo.icon;
 
   const defaultWaMsg =
     news.wa_message ||
@@ -87,7 +86,7 @@ export default function WorkshopNewsModal({
           className="absolute top-3.5 right-3.5 z-20 w-10 h-10 rounded-full bg-black/60 text-white hover:bg-[#e05d82] flex items-center justify-center transition-colors shadow-lg cursor-pointer backdrop-blur-sm"
           aria-label="Tutup Berita"
         >
-          <X className="w-5 h-5" />
+          <Icon icon="solar:close-circle-bold-duotone" className="w-5 h-5 text-white" />
         </button>
 
         {/* Scrollable Content Container */}
@@ -102,7 +101,7 @@ export default function WorkshopNewsModal({
                 <span
                   className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs ${badgeInfo.bg}`}
                 >
-                  <BadgeIcon className="w-3.5 h-3.5" />
+                  <Icon icon={badgeInfo.icon} className="w-4 h-4" />
                   <span>{badgeInfo.label}</span>
                 </span>
                 {news.category_label && (
@@ -123,7 +122,10 @@ export default function WorkshopNewsModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-[#fff7f9] border border-[#f3d7df]">
               <div className="flex items-start gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-[#fde8ee] text-[#e05d82] flex items-center justify-center shrink-0 mt-0.5">
-                  <Calendar className="w-4 h-4" />
+                  <Icon
+                    icon="solar:calendar-date-bold-duotone"
+                    className="w-4 h-4 text-[#e05d82]"
+                  />
                 </div>
                 <div>
                   <span className="block text-[10px] uppercase tracking-wider font-bold text-[#755562]">
@@ -137,7 +139,7 @@ export default function WorkshopNewsModal({
 
               <div className="flex items-start gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-[#fde8ee] text-[#e05d82] flex items-center justify-center shrink-0 mt-0.5">
-                  <MapPin className="w-4 h-4" />
+                  <Icon icon="solar:point-on-map-bold-duotone" className="w-4 h-4 text-[#e05d82]" />
                 </div>
                 <div>
                   <span className="block text-[10px] uppercase tracking-wider font-bold text-[#755562]">
@@ -187,9 +189,9 @@ export default function WorkshopNewsModal({
             href={waUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#128c7e] hover:bg-[#0e7065] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#128c7e]/20 transition-all hover:scale-[1.02] cursor-pointer min-h-[44px]"
+            className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#25D366]/25 transition-all hover:scale-[1.02] cursor-pointer min-h-[44px]"
           >
-            <MessageCircle className="w-4 h-4" />
+            <Icon icon="solar:chat-round-call-bold-duotone" className="w-4 h-4 text-white" />
             <span>
               {news.status === 'coming_soon'
                 ? 'Daftar Antrean / Tanya Info via WA'
