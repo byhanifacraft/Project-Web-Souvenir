@@ -485,7 +485,7 @@ export default function WorkshopPageContent({
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-2 p-1.5 bg-white border border-[#ebdcd5] rounded-2xl shadow-2xs self-start md:self-auto shrink-0 overflow-x-auto">
+          <div className="flex items-center gap-1.5 p-1.5 bg-white border border-[#ebdcd5] rounded-2xl shadow-2xs self-start md:self-auto shrink-0 overflow-x-auto">
             <button
               onClick={() => setGalleryTab('all')}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
@@ -496,6 +496,7 @@ export default function WorkshopPageContent({
             >
               Semua ({activeNews.length + galleryList.length})
             </button>
+            <div className="w-px h-5 bg-zinc-200" />
             <button
               onClick={() => setGalleryTab('news')}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
@@ -507,6 +508,7 @@ export default function WorkshopPageContent({
               <Icon icon="solar:bullhorn-bold-duotone" className="w-4 h-4" />
               <span>Event & Promosi ({activeNews.length})</span>
             </button>
+            <div className="w-px h-5 bg-zinc-200" />
             <button
               onClick={() => setGalleryTab('gallery')}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
@@ -516,100 +518,204 @@ export default function WorkshopPageContent({
               }`}
             >
               <Icon icon="solar:gallery-bold-duotone" className="w-4 h-4" />
-              <span>Foto Studio ({galleryList.length})</span>
+              <span>Foto Dokumentasi ({galleryList.length})</span>
             </button>
           </div>
         </div>
 
-        {/* Dynamic Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* 1. Show Event & Promosi Cards */}
-          {(galleryTab === 'all' || galleryTab === 'news') &&
-            activeNews.map((item) => {
-              const statusColors: Record<string, { bg: string; text: string; border: string }> = {
-                coming_soon: {
-                  bg: 'bg-amber-50',
-                  text: 'text-amber-800',
-                  border: 'border-amber-200',
-                },
-                open_registration: {
-                  bg: 'bg-emerald-50',
-                  text: 'text-emerald-800',
-                  border: 'border-emerald-200',
-                },
-                completed: { bg: 'bg-zinc-50', text: 'text-zinc-700', border: 'border-zinc-200' },
-                special_event: {
-                  bg: 'bg-purple-50',
-                  text: 'text-purple-800',
-                  border: 'border-purple-200',
-                },
-              };
-              const sc = statusColors[item.status] || {
-                bg: 'bg-[#fde8ee]',
-                text: 'text-[#c45a76]',
-                border: 'border-[#f3d7df]',
-              };
+        {/* 1. BAGIAN EVENT & BERITA PROMOSI WORKSHOP */}
+        {(galleryTab === 'all' || galleryTab === 'news') && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#c45a76]">
+                  <Icon icon="solar:bullhorn-bold-duotone" className="w-4 h-4" />
+                  <span>Agenda Event & Jadwal Promosi</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-zinc-900">
+                  Kelas Terbuka & Agenda Mendatang
+                </h3>
+              </div>
+              <span className="hidden sm:inline-block text-xs font-semibold px-3 py-1 rounded-full bg-[#fde8ee] text-[#c45a76]">
+                {activeNews.length} Agenda Aktif
+              </span>
+            </div>
 
-              return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activeNews.map((item) => {
+                const statusColors: Record<string, { bg: string; text: string; border: string }> = {
+                  coming_soon: {
+                    bg: 'bg-amber-50',
+                    text: 'text-amber-800',
+                    border: 'border-amber-200',
+                  },
+                  open_registration: {
+                    bg: 'bg-emerald-50',
+                    text: 'text-emerald-800',
+                    border: 'border-emerald-200',
+                  },
+                  completed: { bg: 'bg-zinc-50', text: 'text-zinc-700', border: 'border-zinc-200' },
+                  special_event: {
+                    bg: 'bg-purple-50',
+                    text: 'text-purple-800',
+                    border: 'border-purple-200',
+                  },
+                };
+                const sc = statusColors[item.status] || {
+                  bg: 'bg-[#fde8ee]',
+                  text: 'text-[#c45a76]',
+                  border: 'border-[#f3d7df]',
+                };
+
+                return (
+                  <div
+                    key={`news-${item.id}`}
+                    onClick={() => setSelectedNews(item)}
+                    className="group relative rounded-3xl overflow-hidden bg-white border border-[#ebdcd5] shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                  >
+                    <div>
+                      <div className="relative aspect-[16/10] w-full bg-zinc-100 overflow-hidden">
+                        <Image
+                          src={item.image_url}
+                          alt={item.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                        <div className="absolute top-3 left-3 z-10">
+                          <span
+                            className={`text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-xs uppercase tracking-wider backdrop-blur-md ${sc.bg} ${sc.text} ${sc.border}`}
+                          >
+                            {item.status_label || item.status}
+                          </span>
+                        </div>
+
+                        <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
+                            <Icon
+                              icon="solar:eye-bold-duotone"
+                              className="w-4 h-4 text-[#e05d82]"
+                            />
+                            <span>Baca Berita</span>
+                          </div>
+                        </div>
+
+                        <div className="absolute bottom-3 left-3 right-3 text-white flex items-center gap-2 text-[11px] font-medium drop-shadow-sm">
+                          <Icon
+                            icon="solar:calendar-date-bold-duotone"
+                            className="w-4 h-4 text-rose-300 shrink-0"
+                          />
+                          <span className="truncate">{item.date}</span>
+                        </div>
+                      </div>
+
+                      <div className="p-5 space-y-2.5">
+                        <h3 className="font-serif font-bold text-base text-zinc-900 leading-snug group-hover:text-[#c45a76] transition-colors line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-xs text-zinc-600 line-clamp-2 leading-relaxed">
+                          {item.summary}
+                        </p>
+                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 pt-1">
+                          <Icon
+                            icon="solar:point-on-map-bold-duotone"
+                            className="w-4 h-4 text-[#e05d82] shrink-0"
+                          />
+                          <span className="truncate">{item.location}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0">
+                      <div className="w-full py-2.5 px-3 rounded-xl bg-[#fdf2f4] group-hover:bg-[#c45a76] text-[#c45a76] group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-[#f3d7df] group-hover:border-transparent">
+                        <span>Lihat Rincian & Reservasi</span>
+                        <Icon
+                          icon="solar:alt-arrow-right-bold"
+                          className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ELEMEN PEMISAH ESTETIK (DIVIDER) JIKA KEDUANYA TAMPIL */}
+        {galleryTab === 'all' && (
+          <div className="my-14 relative flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-[#e4d4cd]" />
+            </div>
+            <div className="relative px-6 py-2 bg-[#faf6f3] rounded-full border border-[#ebdcd5] text-xs font-bold text-[#c45a76] shadow-2xs flex items-center gap-2">
+              <Icon icon="solar:camera-bold-duotone" className="w-4 h-4 text-[#e05d82]" />
+              <span>Koleksi Foto Dokumentasi Studio</span>
+            </div>
+          </div>
+        )}
+
+        {/* 2. BAGIAN FOTO DOKUMENTASI WORKSHOP */}
+        {(galleryTab === 'all' || galleryTab === 'gallery') && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#c45a76]">
+                  <Icon icon="solar:gallery-bold-duotone" className="w-4 h-4" />
+                  <span>Galeri Dokumentasi Studio</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-zinc-900">
+                  Arsip Foto Kegiatan & Karya Studio
+                </h3>
+              </div>
+              <span className="hidden sm:inline-block text-xs font-semibold px-3 py-1 rounded-full bg-zinc-100 text-zinc-700">
+                {galleryList.length} Foto Tersedia
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryList.map((photo, idx) => (
                 <div
-                  key={`news-${item.id}`}
-                  onClick={() => setSelectedNews(item)}
+                  key={`photo-${photo.id || idx}`}
+                  onClick={() => handleOpenGalleryPhoto(photo)}
                   className="group relative rounded-3xl overflow-hidden bg-white border border-[#ebdcd5] shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer"
                 >
                   <div>
                     <div className="relative aspect-[16/10] w-full bg-zinc-100 overflow-hidden">
                       <Image
-                        src={item.image_url}
-                        alt={item.title}
+                        src={photo.image_url}
+                        alt={photo.caption || 'Foto Dokumentasi Studio'}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity" />
 
                       <div className="absolute top-3 left-3 z-10">
-                        <span
-                          className={`text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-xs uppercase tracking-wider backdrop-blur-md ${sc.bg} ${sc.text} ${sc.border}`}
-                        >
-                          {item.status_label || item.status}
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 shadow-xs uppercase tracking-wider">
+                          {photo.category_label || 'Dokumentasi Studio'}
                         </span>
                       </div>
 
                       <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
                           <Icon icon="solar:eye-bold-duotone" className="w-4 h-4 text-[#e05d82]" />
-                          <span>Baca Berita</span>
+                          <span>Lihat Foto</span>
                         </div>
-                      </div>
-
-                      <div className="absolute bottom-3 left-3 right-3 text-white flex items-center gap-2 text-[11px] font-medium drop-shadow-sm">
-                        <Icon
-                          icon="solar:calendar-date-bold-duotone"
-                          className="w-4 h-4 text-rose-300 shrink-0"
-                        />
-                        <span className="truncate">{item.date}</span>
                       </div>
                     </div>
 
-                    <div className="p-5 space-y-2.5">
-                      <h3 className="font-serif font-bold text-base text-zinc-900 leading-snug group-hover:text-[#c45a76] transition-colors line-clamp-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-xs text-zinc-600 line-clamp-2 leading-relaxed">
-                        {item.summary}
+                    <div className="p-5 space-y-2">
+                      <p className="font-serif font-bold text-sm text-zinc-900 line-clamp-2 leading-snug group-hover:text-[#c45a76] transition-colors">
+                        {photo.caption || 'Dokumentasi kegiatan & karya studio'}
                       </p>
-                      <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 pt-1">
-                        <Icon
-                          icon="solar:point-on-map-bold-duotone"
-                          className="w-4 h-4 text-[#e05d82] shrink-0"
-                        />
-                        <span className="truncate">{item.location}</span>
-                      </div>
+                      <p className="text-[11px] text-zinc-500">Studio CraftByHanifa Magetan</p>
                     </div>
                   </div>
 
                   <div className="p-5 pt-0">
-                    <div className="w-full py-2.5 px-3 rounded-xl bg-[#fdf2f4] group-hover:bg-[#c45a76] text-[#c45a76] group-hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-[#f3d7df] group-hover:border-transparent">
-                      <span>Lihat Rincian & Reservasi</span>
+                    <div className="w-full py-2 px-3 rounded-xl bg-zinc-50 group-hover:bg-[#fde8ee] text-zinc-700 group-hover:text-[#c45a76] text-xs font-semibold transition-all flex items-center justify-center gap-1.5 border border-zinc-200 group-hover:border-[#f3d7df]">
+                      <span>Info & Tanya Jadwal Serupa</span>
                       <Icon
                         icon="solar:alt-arrow-right-bold"
                         className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
@@ -617,61 +723,10 @@ export default function WorkshopPageContent({
                     </div>
                   </div>
                 </div>
-              );
-            })}
-
-          {/* 2. Show Foto Dokumentasi Cards */}
-          {(galleryTab === 'all' || galleryTab === 'gallery') &&
-            galleryList.map((photo, idx) => (
-              <div
-                key={`photo-${photo.id || idx}`}
-                onClick={() => handleOpenGalleryPhoto(photo)}
-                className="group relative rounded-3xl overflow-hidden bg-white border border-[#ebdcd5] shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer"
-              >
-                <div>
-                  <div className="relative aspect-[16/10] w-full bg-zinc-100 overflow-hidden">
-                    <Image
-                      src={photo.image_url}
-                      alt={photo.caption || 'Foto Dokumentasi Studio'}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity" />
-
-                    <div className="absolute top-3 left-3 z-10">
-                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 shadow-xs uppercase tracking-wider">
-                        {photo.category_label || 'Dokumentasi Studio'}
-                      </span>
-                    </div>
-
-                    <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-zinc-900 text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
-                        <Icon icon="solar:eye-bold-duotone" className="w-4 h-4 text-[#e05d82]" />
-                        <span>Lihat Foto</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-5 space-y-2">
-                    <p className="font-serif font-bold text-sm text-zinc-900 line-clamp-2 leading-snug group-hover:text-[#c45a76] transition-colors">
-                      {photo.caption || 'Dokumentasi kegiatan & karya studio'}
-                    </p>
-                    <p className="text-[11px] text-zinc-500">Studio CraftByHanifa Magetan</p>
-                  </div>
-                </div>
-
-                <div className="p-5 pt-0">
-                  <div className="w-full py-2 px-3 rounded-xl bg-zinc-50 group-hover:bg-[#fde8ee] text-zinc-700 group-hover:text-[#c45a76] text-xs font-semibold transition-all flex items-center justify-center gap-1.5 border border-zinc-200 group-hover:border-[#f3d7df]">
-                    <span>Info & Tanya Jadwal Serupa</span>
-                    <Icon
-                      icon="solar:alt-arrow-right-bold"
-                      className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-        </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Detail Popup Modal Berita & Promosi Event */}
         {selectedNews && (
