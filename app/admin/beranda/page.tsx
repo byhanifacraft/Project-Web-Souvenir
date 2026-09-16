@@ -321,8 +321,6 @@ export default function AdminBerandaPage() {
               image_url: '/images/products/hero-banner.jpg',
               title: '',
               subtitle: '',
-              cta_text: 'Lihat Koleksi Lilin',
-              cta_link: '/produk',
               sort_order: banners.length + 1,
               is_active: true,
             });
@@ -371,12 +369,7 @@ export default function AdminBerandaPage() {
                   <h3 className="font-serif font-bold text-sm text-[#2e1c24] line-clamp-1 mb-1">
                     {b.title}
                   </h3>
-                  <p className="text-xs text-[#755562] line-clamp-2 mb-2">{b.subtitle}</p>
-                  {b.cta_text && (
-                    <span className="inline-block text-[11px] font-semibold text-[#e05d82] bg-white px-2.5 py-1 rounded-lg border border-[#fce7ed]">
-                      Tombol: {b.cta_text} &rarr; ({b.cta_link})
-                    </span>
-                  )}
+                  <p className="text-xs text-[#755562] line-clamp-2">{b.subtitle}</p>
                 </div>
               </div>
 
@@ -797,34 +790,6 @@ export default function AdminBerandaPage() {
                 <p className="text-[11px] text-[#755562] mt-1">
                   Format gambar JPG, PNG, WEBP (maks. 10MB). Tersimpan otomatis ke Supabase Storage.
                 </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div>
-                  <label className="block font-bold text-[#2e1c24] mb-1">Teks Tombol CTA</label>
-                  <input
-                    type="text"
-                    value={editingBanner.cta_text || ''}
-                    onChange={(e) =>
-                      setEditingBanner({ ...editingBanner, cta_text: e.target.value })
-                    }
-                    placeholder="e.g. Lihat Koleksi Lilin"
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#2e1c24] mb-1">Link Tombol CTA</label>
-                  <input
-                    type="text"
-                    value={editingBanner.cta_link || ''}
-                    onChange={(e) =>
-                      setEditingBanner({ ...editingBanner, cta_link: e.target.value })
-                    }
-                    placeholder="e.g. /produk"
-                    className="w-full px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24]"
-                  />
-                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
