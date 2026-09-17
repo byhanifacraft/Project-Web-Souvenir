@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { GalleryImageItem, WorkshopNewsItem } from '@/types/store';
@@ -104,7 +105,19 @@ export default function WorkshopPageContent({
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left: Text & CTA */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-xs text-zinc-400">
+                <Link
+                  href="/"
+                  className="hover:text-[#c45a76] transition-colors flex items-center gap-1 font-medium"
+                >
+                  <Icon icon="solar:home-2-bold-duotone" className="w-3.5 h-3.5" />
+                  <span>Beranda</span>
+                </Link>
+                <span>/</span>
+                <span className="text-[#c45a76] font-medium">Workshop & Studio</span>
+              </div>
+
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium tracking-wide">
                 <Icon
                   icon="solar:stars-minimalistic-bold-duotone"

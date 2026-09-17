@@ -150,6 +150,7 @@ export async function POST(request: Request) {
     // B. Simpan ke Supabase PostgreSQL via Server Client (Bulk Upsert)
     const supabaseServer = createServerClient();
     if (supabaseServer) {
+      const errors: string[] = [];
       try {
         // 1. Simpan Banners (Bulk Upsert)
         if (banners && Array.isArray(banners)) {
@@ -189,7 +190,10 @@ export async function POST(request: Request) {
             const { error: bannerErr } = await supabaseServer
               .from('banners')
               .upsert(bannerPayloads);
-            if (bannerErr) console.error('Bulk upsert banners error:', bannerErr);
+            if (bannerErr) {
+              console.error('Bulk upsert banners error:', bannerErr);
+              errors.push(`Banners: ${bannerErr.message}`);
+            }
           }
         }
 
@@ -209,7 +213,10 @@ export async function POST(request: Request) {
           const { error: contentErr } = await supabaseServer
             .from('site_content')
             .upsert(contentPayloads, { onConflict: 'section_key' });
-          if (contentErr) console.error('Bulk upsert site_content error:', contentErr);
+          if (contentErr) {
+            console.error('Bulk upsert site_content error:', contentErr);
+            errors.push(`Site Content: ${contentErr.message}`);
+          }
         }
 
         // 3. Simpan Products (Bulk Upsert)
@@ -253,7 +260,10 @@ export async function POST(request: Request) {
             const { error: prodErr } = await supabaseServer
               .from('products')
               .upsert(productPayloads, { onConflict: 'id' });
-            if (prodErr) console.error('Bulk upsert products error:', prodErr);
+            if (prodErr) {
+              console.error('Bulk upsert products error:', prodErr);
+              errors.push(`Products: ${prodErr.message}`);
+            }
           }
         }
 
@@ -277,7 +287,10 @@ export async function POST(request: Request) {
             const { error: galErr } = await supabaseServer
               .from('gallery_images')
               .upsert(galPayloads, { onConflict: 'id' });
-            if (galErr) console.error('Bulk upsert gallery_images error:', galErr);
+            if (galErr) {
+              console.error('Bulk upsert gallery_images error:', galErr);
+              errors.push(`Gallery Images: ${galErr.message}`);
+            }
           }
         }
 
@@ -299,10 +312,34 @@ export async function POST(request: Request) {
             operational_hours: c.operational_hours || null,
             updated_at: new Date().toISOString(),
           });
-          if (contactErr) console.error('Upsert contact_info error:', contactErr);
+          if (contactErr) {
+            console.error('Upsert contact_info error:', contactErr);
+            errors.push(`Contact Info: ${contactErr.message}`);
+          }
+        }
+
+        // Jika ada kegagalan query pada Supabase, kembalikan response error agar admin tahu
+        if (errors.length > 0) {
+          const combinedMsg = errors.join('; ');
+          const isRlsViolation = combinedMsg.toLowerCase().includes('row-level security');
+          const rlsHint = isRlsViolation
+            ? ' (Penyebab: SUPABASE_SERVICE_ROLE_KEY belum dipasang di .env.local atau dev server belum di-restart sehingga ditolak oleh RLS Supabase)'
+            : '';
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Gagal menyimpan ke Supabase: ${combinedMsg}${rlsHint}`,
+            },
+            { status: 500 }
+          );
         }
       } catch (sbErr) {
-        console.warn('Gagal menyimpan ke Supabase:', sbErr);
+        console.error('Gagal menyimpan ke Supabase:', sbErr);
+        const errMsg = sbErr instanceof Error ? sbErr.message : 'Kesalahan internal database';
+        return NextResponse.json(
+          { success: false, error: `Gagal menyimpan ke Supabase: ${errMsg}` },
+          { status: 500 }
+        );
       }
     }
 

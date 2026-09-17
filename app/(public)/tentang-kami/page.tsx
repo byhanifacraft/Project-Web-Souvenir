@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import { Icon } from '@iconify/react';
 import { getStoreData } from '@/lib/getStoreData';
 import About from '@/components/About';
 import OrderProcess from '@/components/OrderProcess';
@@ -16,6 +18,17 @@ export default async function TentangKamiPage() {
       {/* 1. Header Banner */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-2 text-xs text-zinc-400 mb-3">
+            <Link
+              href="/"
+              className="hover:text-[#c45a76] transition-colors flex items-center gap-1 font-medium"
+            >
+              <Icon icon="solar:home-2-bold-duotone" className="w-3.5 h-3.5" />
+              <span>Beranda</span>
+            </Link>
+            <span>/</span>
+            <span className="text-[#c45a76] font-medium">Tentang Kami</span>
+          </div>
           <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#a85267] mb-2.5">
             About CraftByHanifa
           </p>

@@ -47,8 +47,21 @@ export default async function HomePage() {
   const featuresTitle = siteContent['keunggulan_features']?.title || undefined;
   const featuresSubtitle = siteContent['keunggulan_features']?.image_url || undefined;
 
+  let galleryImages = storeData?.galleryImages || [];
+  if (siteContent['workshop_gallery']?.content) {
+    try {
+      const parsed = JSON.parse(siteContent['workshop_gallery'].content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        galleryImages = parsed;
+      }
+    } catch {
+      // keep fallback
+    }
+  }
+  const previewGallery = galleryImages.slice(0, 6);
+
   return (
-    <div className="space-y-12 pb-16">
+    <div className="space-y-14 pb-16">
       {/* 1. Hero Section with Banner Slider & CTA */}
       <Hero config={siteConfig} hero={heroData} />
 
@@ -57,6 +70,77 @@ export default async function HomePage() {
 
       {/* 2. Standar Mutu Kerajinan (Features) Dinamis */}
       <Features features={customFeatures} title={featuresTitle} subtitle={featuresSubtitle} />
+
+      {/* 3. Preview Tentang Kami Studio CraftByHanifa */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="bg-white rounded-3xl border border-[#ebdcd5] p-6 sm:p-10 lg:p-12 shadow-2xs overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Foto Studio */}
+            <div className="lg:col-span-5 relative">
+              <div className="relative aspect-[4/3] sm:aspect-square w-full rounded-2xl overflow-hidden shadow-xs border border-zinc-200/80">
+                <Image
+                  src={siteContent['tentang_kami']?.image_url || '/images/products/shop-cover.jpg'}
+                  alt="Studio CraftByHanifa"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-70" />
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 uppercase tracking-wider">
+                    Studio Pengrajin Magetan
+                  </span>
+                  <p className="text-sm font-serif font-bold mt-1.5 drop-shadow-xs">
+                    CraftByHanifa Studio & Workshop
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Konten Teks & Link ke /tentang-kami */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fde8ee] border border-[#f3d7df] text-[#c45a76] text-[11px] font-bold uppercase tracking-wider">
+                <Icon icon="solar:heart-bold-duotone" className="w-3.5 h-3.5 text-[#e05d82]" />
+                <span>Tentang CraftByHanifa</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-900 leading-snug">
+                {siteContent['tentang_kami']?.title ||
+                  'Dedikasi Menghadirkan Makna di Setiap Sentuhan Lilin & Kerajinan'}
+              </h2>
+
+              <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed line-clamp-4">
+                {siteContent['tentang_kami']?.content ||
+                  'Berawal dari kecintaan pada seni kerajinan lilin aromaterapi dan dried flowers, CraftByHanifa hadir mendampingi ribuan momen bahagia pernikahan, wisuda, dan corporate gift di seluruh penjuru Indonesia.'}
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-100">
+                  <span className="block text-base font-bold text-[#c45a76]">100%</span>
+                  <span className="text-[11px] text-zinc-500">Natural Soy Wax</span>
+                </div>
+                <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-100">
+                  <span className="block text-base font-bold text-[#c45a76]">50.000+</span>
+                  <span className="text-[11px] text-zinc-500">Pcs Terkirim</span>
+                </div>
+                <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-100 col-span-2 sm:col-span-1">
+                  <span className="block text-base font-bold text-[#c45a76]">Magetan</span>
+                  <span className="text-[11px] text-zinc-500">Jawa Timur</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/tentang-kami"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs sm:text-sm font-semibold transition-all shadow-xs hover:scale-105"
+                >
+                  <span>Baca Selengkapnya Tentang Kami</span>
+                  <Icon icon="solar:alt-arrow-right-bold" className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 4. Featured Products Preview */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -162,8 +246,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4.5 Workshop Experience Spotlight */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+      {/* 4.5 Workshop Experience Spotlight & Galeri Dokumentasi */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
         <div className="rounded-3xl bg-gradient-to-r from-[#fdf4f7] via-[#faf6f2] to-white border border-[#ebdcd5] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#fde8ee] text-[#c45a76] flex items-center justify-center shrink-0 shadow-2xs">
@@ -195,6 +279,50 @@ export default async function HomePage() {
             <Icon icon="solar:alt-arrow-right-bold" className="w-4 h-4" />
           </Link>
         </div>
+
+        {/* Preview Galeri Foto Dokumentasi Workshop */}
+        {previewGallery.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Icon icon="solar:camera-bold-duotone" className="w-4 h-4 text-[#c45a76]" />
+                <h4 className="text-sm sm:text-base font-serif font-bold text-zinc-900">
+                  Dokumentasi Karya & Suasana Workshop Studio
+                </h4>
+              </div>
+              <Link
+                href="/workshop"
+                className="text-xs font-semibold text-[#c45a76] hover:text-[#a8445e] flex items-center gap-1"
+              >
+                <span>Lihat Seluruh Dokumentasi ({galleryImages.length})</span>
+                <Icon icon="solar:alt-arrow-right-bold" className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              {previewGallery.map((photo, idx) => (
+                <Link
+                  key={`doc-${photo.id || idx}`}
+                  href="/workshop"
+                  className="group relative aspect-square rounded-2xl overflow-hidden bg-zinc-100 border border-[#ebdcd5] shadow-2xs hover:shadow-md transition-all duration-300 block"
+                >
+                  <Image
+                    src={photo.image_url}
+                    alt={photo.caption || 'Dokumentasi Workshop'}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5 text-white">
+                    <p className="text-[10px] font-bold text-white line-clamp-1 leading-tight drop-shadow-xs">
+                      {photo.caption || 'Workshop Studio'}
+                    </p>
+                    <span className="text-[9px] text-zinc-300 font-medium">Buka Galeri &rarr;</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* 5. Direct Quick Action Consultation Bar */}
