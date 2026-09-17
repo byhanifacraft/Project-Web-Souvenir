@@ -28,7 +28,12 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
-import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
+import {
+  WorkshopPackage,
+  CurriculumStep,
+  ReservationStep,
+  normalizeTakeHomeItem,
+} from '@/types/workshop';
 import {
   GalleryImageItem,
   SiteContentItem,
@@ -64,6 +69,7 @@ export default function AdminWorkshopPage() {
   // 2. Modal States for Package Editing / Adding
   const [editingPackage, setEditingPackage] = useState<WorkshopPackage | null>(null);
   const [isAddingPackage, setIsAddingPackage] = useState(false);
+  const [uploadingTakeHomeIndex, setUploadingTakeHomeIndex] = useState<number | null>(null);
 
   // 3. Modal / Upload State for Gallery Photo
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -254,6 +260,88 @@ export default function AdminWorkshopPage() {
     clone[targetIdx] = temp;
     setPackages(clone);
     await handleSaveAll(clone, undefined, undefined, undefined);
+  };
+
+  const handleUploadTakeHomePhoto = async (index: number, file: File) => {
+    if (!editingPackage) return;
+    try {
+      setUploadingTakeHomeIndex(index);
+      const compressed = await compressImage(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.85,
+      });
+      const formData = new FormData();
+      formData.append('file', compressed);
+      formData.append('bucket', 'gallery');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
+        current[index] = {
+          ...current[index],
+          image_url: data.url,
+        };
+        setEditingPackage({
+          ...editingPackage,
+          takeHome: current,
+        });
+        showNotification('Foto karya berhasil diunggah!');
+      } else {
+        alert(data.error || 'Gagal mengunggah foto karya');
+      }
+    } catch {
+      alert('Terjadi kesalahan jaringan saat upload foto');
+    } finally {
+      setUploadingTakeHomeIndex(null);
+    }
+  };
+
+  const handleUpdateTakeHomeItem = (
+    index: number,
+    field: 'title' | 'description' | 'image_url',
+    val: string
+  ) => {
+    if (!editingPackage) return;
+    const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
+    current[index] = {
+      ...current[index],
+      [field]: val,
+    };
+    setEditingPackage({
+      ...editingPackage,
+      takeHome: current,
+    });
+  };
+
+  const handleRemoveTakeHomeItem = (index: number) => {
+    if (!editingPackage) return;
+    const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
+    current.splice(index, 1);
+    setEditingPackage({
+      ...editingPackage,
+      takeHome: current,
+    });
+  };
+
+  const handleAddTakeHomeItem = () => {
+    if (!editingPackage) return;
+    const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
+    setEditingPackage({
+      ...editingPackage,
+      takeHome: [
+        ...current,
+        {
+          title: 'Karya Bawa Pulang Baru',
+          description: '',
+          image_url: '',
+        },
+      ],
+    });
   };
 
   // --- CURRICULUM ACTIONS ---
@@ -645,13 +733,26 @@ export default function AdminWorkshopPage() {
                       <span className="font-bold text-[#c45a76] block mb-1">
                         Karya Bawa Pulang ({pkg.takeHome.length}):
                       </span>
-                      <ul className="space-y-1 text-zinc-600">
-                        {pkg.takeHome.map((th, i) => (
-                          <li key={i} className="flex items-start gap-1.5">
-                            <Gift className="w-3.5 h-3.5 text-[#c45a76] shrink-0 mt-0.5" />
-                            <span className="line-clamp-1">{th}</span>
-                          </li>
-                        ))}
+                      <ul className="space-y-1.5 text-zinc-600">
+                        {pkg.takeHome.map((rawTh, i) => {
+                          const th = normalizeTakeHomeItem(rawTh);
+                          return (
+                            <li key={i} className="flex items-center gap-2">
+                              {th.image_url ? (
+                                <Image
+                                  src={th.image_url}
+                                  alt={th.title}
+                                  width={24}
+                                  height={24}
+                                  className="w-6 h-6 rounded-md object-cover border border-[#ebdcd5] shrink-0"
+                                />
+                              ) : (
+                                <Gift className="w-3.5 h-3.5 text-[#c45a76] shrink-0" />
+                              )}
+                              <span className="line-clamp-1 truncate">{th.title}</span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
 
@@ -1288,21 +1389,125 @@ export default function AdminWorkshopPage() {
               </div>
 
               <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Karya Dibawa Pulang (1 Poin per Baris):
-                </label>
-                <textarea
-                  rows={3}
-                  value={editingPackage.takeHome.join('\n')}
-                  onChange={(e) =>
-                    setEditingPackage({
-                      ...editingPackage,
-                      takeHome: e.target.value.split('\n').filter((t) => t.trim().length > 0),
-                    })
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] leading-relaxed"
-                  placeholder="1 Jar Lilin Aromaterapi Soy Wax (100g)&#10;Box kemasan cantik berpita&#10;Sertifikat Resmi Keikutsertaan..."
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <label className="block font-bold text-zinc-700">
+                      Karya Dibawa Pulang (Dengan Foto Visual):
+                    </label>
+                    <p className="text-[11px] text-zinc-500">
+                      Tambahkan foto visual dan deskripsi singkat karya yang akan dibawa pulang
+                      peserta.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddTakeHomeItem}
+                    className="px-3 py-1.5 rounded-lg bg-[#fde8ee] hover:bg-[#fbd1dd] text-[#c45a76] text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Tambah Karya</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+                  {editingPackage.takeHome.map((rawTh, thIdx) => {
+                    const th = normalizeTakeHomeItem(rawTh);
+                    const isUploadingThis = uploadingTakeHomeIndex === thIdx;
+
+                    return (
+                      <div
+                        key={thIdx}
+                        className="p-3 rounded-2xl border border-[#ebdcd5] bg-[#fffaf8] flex items-start gap-3 relative hover:border-[#c45a76]/40 transition-colors"
+                      >
+                        {/* Thumbnail / Upload Trigger */}
+                        {th.image_url ? (
+                          <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#ebdcd5] bg-white shrink-0 group">
+                            <Image src={th.image_url} alt="" fill className="object-cover" />
+                            <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer text-white transition-opacity text-[10px] font-bold">
+                              {isUploadingThis ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <Upload className="w-3.5 h-3.5" />
+                                  <span>Ganti</span>
+                                </>
+                              )}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                disabled={isUploadingThis}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleUploadTakeHomePhoto(thIdx, file);
+                                }}
+                              />
+                            </label>
+                          </div>
+                        ) : (
+                          <label className="w-14 h-14 rounded-xl border-2 border-dashed border-[#ebdcd5] hover:border-[#c45a76] bg-white flex flex-col items-center justify-center shrink-0 cursor-pointer text-zinc-400 hover:text-[#c45a76] transition-colors">
+                            {isUploadingThis ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-[#c45a76]" />
+                            ) : (
+                              <>
+                                <Upload className="w-4 h-4" />
+                                <span className="text-[9px] font-bold mt-0.5">+ Foto</span>
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={isUploadingThis}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleUploadTakeHomePhoto(thIdx, file);
+                              }}
+                            />
+                          </label>
+                        )}
+
+                        {/* Title & Description Inputs */}
+                        <div className="flex-1 min-w-0 space-y-1.5">
+                          <input
+                            type="text"
+                            value={th.title}
+                            onChange={(e) =>
+                              handleUpdateTakeHomeItem(thIdx, 'title', e.target.value)
+                            }
+                            placeholder="Nama karya (misal: 1 Jar Lilin Aromaterapi Soy Wax)"
+                            className="w-full px-3 py-1.5 rounded-lg border border-[#ebdcd5] text-xs font-semibold focus:outline-hidden focus:border-[#c45a76] bg-white"
+                          />
+                          <input
+                            type="text"
+                            value={th.description || ''}
+                            onChange={(e) =>
+                              handleUpdateTakeHomeItem(thIdx, 'description', e.target.value)
+                            }
+                            placeholder="Keterangan singkat (opsional, misal: Pilihan 6 aroma signature)"
+                            className="w-full px-3 py-1 rounded-lg border border-[#ebdcd5] text-[11px] text-zinc-600 focus:outline-hidden focus:border-[#c45a76] bg-white"
+                          />
+                        </div>
+
+                        {/* Delete Item */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTakeHomeItem(thIdx)}
+                          className="w-7 h-7 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center shrink-0 transition-colors cursor-pointer mt-1"
+                          title="Hapus item karya ini"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })}
+
+                  {editingPackage.takeHome.length === 0 && (
+                    <div className="p-4 rounded-xl border border-dashed border-zinc-200 text-center text-xs text-zinc-400">
+                      Belum ada karya bawa pulang. Klik tombol &quot;+ Tambah Karya&quot; di atas.
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>

@@ -24,6 +24,15 @@ export interface ProductOption {
   choices: string[];
 }
 
+export interface ProductVariant {
+  id: string;
+  name: string;
+  price: number;
+  original_price?: number | null;
+  image_url?: string;
+  stock?: number;
+}
+
 export interface ProductItem {
   id: string;
   name: string;
@@ -32,6 +41,8 @@ export interface ProductItem {
   original_price?: number | null;
   stock: number;
   image_url: string;
+  images?: string[];
+  variants?: ProductVariant[];
   is_active: boolean;
   category?: string;
   category_label?: string;

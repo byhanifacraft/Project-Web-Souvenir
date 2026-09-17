@@ -8,7 +8,6 @@ import {
   Trash2,
   CheckCircle2,
   X,
-  Upload,
   Loader2,
   Eye,
   EyeOff,
@@ -16,8 +15,12 @@ import {
   Check,
   Tag,
   Sparkles,
+  Images,
+  Star,
+  ShoppingBag,
+  ImagePlus,
 } from 'lucide-react';
-import { ProductItem } from '@/types/store';
+import { ProductItem, ProductVariant } from '@/types/store';
 import { ProductSchema } from '@/lib/validations/product.schema';
 import { formatRupiah } from '@/lib/utils';
 import { compressImage } from '@/lib/imageCompressor';
@@ -45,7 +48,8 @@ export default function AdminProdukPage() {
   const [editingProduct, setEditingProduct] = useState<ProductItem | null>(null);
   const [isNewProduct, setIsNewProduct] = useState<boolean>(false);
   const [isCustomCategory, setIsCustomCategory] = useState<boolean>(false);
-  const [uploading, setUploading] = useState<boolean>(false);
+  const [uploadingImages, setUploadingImages] = useState<boolean>(false);
+  const [newManualImageUrl, setNewManualImageUrl] = useState<string>('');
   const [newChoiceInputs, setNewChoiceInputs] = useState<{ [index: number]: string }>({});
 
   useEffect(() => {
@@ -75,10 +79,263 @@ export default function AdminProdukPage() {
     return Array.from(map.entries()).map(([id, label]) => ({ id, label }));
   }, [products]);
 
-  const handleUploadFile = async (file: File, onSuccess: (url: string) => void) => {
+  // Multi-Image Upload & Management
+  const handleUploadMultipleFiles = async (files: FileList | File[]) => {
+    if (!editingProduct) return;
+    const fileArray = Array.from(files);
+    if (fileArray.length === 0) return;
+
     try {
-      setUploading(true);
-      // Auto-kompres foto produk ke WebP ringan (~150KB-300KB) resolusi tajam
+      setUploadingImages(true);
+      const uploadedUrls: string[] = [];
+
+      for (const file of fileArray) {
+        const compressedFile = await compressImage(file, {
+          maxWidth: 1600,
+          maxHeight: 1600,
+          quality: 0.85,
+        });
+        const formData = new FormData();
+        formData.append('file', compressedFile);
+        formData.append('bucket', 'products');
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          uploadedUrls.push(data.url);
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        const existing =
+          editingProduct.images && editingProduct.images.length > 0
+            ? editingProduct.images
+            : editingProduct.image_url
+              ? [editingProduct.image_url]
+              : [];
+        const updatedImages = [...existing, ...uploadedUrls];
+        setEditingProduct({
+          ...editingProduct,
+          images: updatedImages,
+          image_url: updatedImages[0],
+        });
+        showNotification(`${uploadedUrls.length} foto berhasil diunggah dan dikompres WebP!`);
+      }
+    } catch {
+      alert('Terjadi kesalahan saat mengunggah foto.');
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const handleSetCoverImage = (index: number) => {
+    if (!editingProduct) return;
+    const currentImages = [
+      ...(editingProduct.images && editingProduct.images.length > 0
+        ? editingProduct.images
+        : editingProduct.image_url
+          ? [editingProduct.image_url]
+          : []),
+    ];
+    if (index < 0 || index >= currentImages.length) return;
+    const [selected] = currentImages.splice(index, 1);
+    const reordered = [selected, ...currentImages];
+    setEditingProduct({
+      ...editingProduct,
+      images: reordered,
+      image_url: reordered[0],
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    if (!editingProduct) return;
+    const currentImages = [
+      ...(editingProduct.images && editingProduct.images.length > 0
+        ? editingProduct.images
+        : editingProduct.image_url
+          ? [editingProduct.image_url]
+          : []),
+    ];
+    currentImages.splice(index, 1);
+    setEditingProduct({
+      ...editingProduct,
+      images: currentImages,
+      image_url: currentImages[0] || '',
+    });
+  };
+
+  const handleAddManualImage = () => {
+    if (!editingProduct || !newManualImageUrl.trim()) return;
+    const currentImages = [
+      ...(editingProduct.images && editingProduct.images.length > 0
+        ? editingProduct.images
+        : editingProduct.image_url
+          ? [editingProduct.image_url]
+          : []),
+    ];
+    currentImages.push(newManualImageUrl.trim());
+    setEditingProduct({
+      ...editingProduct,
+      images: currentImages,
+      image_url: currentImages[0],
+    });
+    setNewManualImageUrl('');
+  };
+
+  // Shopee-Style Variant Management
+  const handleAddVariant = (
+    defaultName = '',
+    defaultPrice = 0,
+    defaultOriginalPrice: number | null = null,
+    defaultImg = ''
+  ) => {
+    if (!editingProduct) return;
+    const currentVariants = editingProduct.variants || [];
+    const baseImg = defaultImg || editingProduct.images?.[0] || editingProduct.image_url || '';
+    const basePrice = defaultPrice > 0 ? defaultPrice : editingProduct.price;
+
+    const newVariant: ProductVariant = {
+      id: `var-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      name: defaultName || `Varian ${currentVariants.length + 1}`,
+      price: basePrice,
+      original_price: defaultOriginalPrice,
+      image_url: baseImg,
+      stock: 100,
+    };
+
+    setEditingProduct({
+      ...editingProduct,
+      variants: [...currentVariants, newVariant],
+    });
+  };
+
+  const handleUpdateVariant = (index: number, updates: Partial<ProductVariant>) => {
+    if (!editingProduct) return;
+    const currentVariants = [...(editingProduct.variants || [])];
+    if (!currentVariants[index]) return;
+    currentVariants[index] = { ...currentVariants[index], ...updates };
+    setEditingProduct({
+      ...editingProduct,
+      variants: currentVariants,
+    });
+  };
+
+  const handleRemoveVariant = (index: number) => {
+    if (!editingProduct) return;
+    const currentVariants = [...(editingProduct.variants || [])];
+    currentVariants.splice(index, 1);
+    setEditingProduct({
+      ...editingProduct,
+      variants: currentVariants,
+    });
+  };
+
+  const handleApplyVariantPreset = (presetType: 'resin' | 'candle' | 'hampers') => {
+    if (!editingProduct) return;
+    const currentImg = editingProduct.images?.[0] || editingProduct.image_url || '';
+
+    if (presetType === 'resin') {
+      setEditingProduct({
+        ...editingProduct,
+        variants: [
+          {
+            id: `var-${Date.now()}-1`,
+            name: 'Huruf Saja (Polos)',
+            price: 8500,
+            original_price: 10000,
+            image_url: currentImg,
+            stock: 200,
+          },
+          {
+            id: `var-${Date.now()}-2`,
+            name: 'Huruf + Pita & Thank You Tag',
+            price: 12000,
+            original_price: 15000,
+            image_url: currentImg,
+            stock: 150,
+          },
+          {
+            id: `var-${Date.now()}-3`,
+            name: 'Paket Box Mika Eksklusif Berpita',
+            price: 16500,
+            original_price: 20000,
+            image_url: currentImg,
+            stock: 100,
+          },
+        ],
+      });
+      showNotification('Template Varian Gantungan Kunci Resin berhasil diterapkan!');
+    } else if (presetType === 'candle') {
+      setEditingProduct({
+        ...editingProduct,
+        variants: [
+          {
+            id: `var-${Date.now()}-1`,
+            name: 'Jar Amber 60ml (Compact)',
+            price: 15000,
+            original_price: 25000,
+            image_url: currentImg,
+            stock: 150,
+          },
+          {
+            id: `var-${Date.now()}-2`,
+            name: 'Jar Amber 100ml (Best Value)',
+            price: 24000,
+            original_price: 32000,
+            image_url: currentImg,
+            stock: 100,
+          },
+          {
+            id: `var-${Date.now()}-3`,
+            name: 'Set Hardbox + Korek Api Kayu',
+            price: 35000,
+            original_price: 45000,
+            image_url: currentImg,
+            stock: 50,
+          },
+        ],
+      });
+      showNotification('Template Varian Lilin berhasil diterapkan!');
+    } else if (presetType === 'hampers') {
+      setEditingProduct({
+        ...editingProduct,
+        variants: [
+          {
+            id: `var-${Date.now()}-1`,
+            name: 'Paket Basic (1 Lilin + Pouch)',
+            price: 35000,
+            original_price: 45000,
+            image_url: currentImg,
+            stock: 80,
+          },
+          {
+            id: `var-${Date.now()}-2`,
+            name: 'Paket Deluxe (Lilin + Resin + Pouch)',
+            price: 55000,
+            original_price: 65000,
+            image_url: currentImg,
+            stock: 60,
+          },
+          {
+            id: `var-${Date.now()}-3`,
+            name: 'Paket Luxury Hardbox (Komplit)',
+            price: 85000,
+            original_price: 100000,
+            image_url: currentImg,
+            stock: 40,
+          },
+        ],
+      });
+      showNotification('Template Varian Hampers berhasil diterapkan!');
+    }
+  };
+
+  const handleUploadVariantFile = async (variantIndex: number, file: File) => {
+    try {
+      setUploadingImages(true);
       const compressedFile = await compressImage(file, {
         maxWidth: 1600,
         maxHeight: 1600,
@@ -92,18 +349,22 @@ export default function AdminProdukPage() {
         method: 'POST',
         body: formData,
       });
-
       const data = await res.json();
       if (res.ok && data.url) {
-        onSuccess(data.url);
-        showNotification('Foto produk berhasil diunggah! Lengkapi form lalu klik Simpan.');
-      } else {
-        alert(data.error || 'Gagal mengunggah foto');
+        handleUpdateVariant(variantIndex, { image_url: data.url });
+        if (editingProduct) {
+          const currentImages = editingProduct.images || [];
+          const updatedImages = currentImages.includes(data.url)
+            ? currentImages
+            : [...currentImages, data.url];
+          setEditingProduct((prev) => (prev ? { ...prev, images: updatedImages } : null));
+        }
+        showNotification('Foto varian berhasil diunggah!');
       }
     } catch {
-      alert('Terjadi kesalahan jaringan saat mengunggah foto.');
+      alert('Gagal mengunggah foto varian.');
     } finally {
-      setUploading(false);
+      setUploadingImages(false);
     }
   };
 
@@ -148,11 +409,44 @@ export default function AdminProdukPage() {
         ? Number(editingProduct.original_price)
         : null;
 
+    // Images array: ensure at least 1 image
+    const currentImages =
+      editingProduct.images && editingProduct.images.length > 0
+        ? editingProduct.images
+        : editingProduct.image_url
+          ? [editingProduct.image_url]
+          : ['/images/products/aromatherapy-candle.jpg'];
+    const primaryImageUrl =
+      currentImages[0] || editingProduct.image_url || '/images/products/aromatherapy-candle.jpg';
+
+    // Clean up variants
+    const sanitizedVariants = (editingProduct.variants || [])
+      .filter((v) => v.name.trim().length > 0)
+      .map((v, idx) => ({
+        id: v.id || `var-${Date.now()}-${idx}`,
+        name: v.name.trim(),
+        price: Number(v.price) || 0,
+        original_price:
+          v.original_price && Number(v.original_price) > 0 ? Number(v.original_price) : null,
+        image_url: v.image_url || primaryImageUrl,
+        stock: v.stock !== undefined ? Number(v.stock) : 100,
+      }));
+
+    // If variants exist, set base price to the minimum variant price
+    const calculatedBasePrice =
+      sanitizedVariants.length > 0
+        ? Math.min(...sanitizedVariants.map((v) => v.price))
+        : Number(editingProduct.price);
+
     const payload: ProductItem = {
       ...editingProduct,
+      price: calculatedBasePrice,
       category: cleanCategory,
       category_label: cleanLabel,
       original_price: normalizedOriginalPrice,
+      image_url: primaryImageUrl,
+      images: currentImages,
+      variants: sanitizedVariants,
       options: editingProduct.options || [],
     };
 
@@ -333,6 +627,8 @@ export default function AdminProdukPage() {
               original_price: null,
               stock: 100,
               image_url: '/images/products/aromatherapy-candle.jpg',
+              images: ['/images/products/aromatherapy-candle.jpg'],
+              variants: [],
               is_active: true,
               category: 'candle',
               category_label: 'Lilin Aromaterapi',
@@ -353,6 +649,7 @@ export default function AdminProdukPage() {
             setIsNewProduct(true);
             setIsCustomCategory(false);
             setNewChoiceInputs({});
+            setNewManualImageUrl('');
           }}
           className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-[#e05d82]/20 cursor-pointer"
         >
@@ -422,6 +719,21 @@ export default function AdminProdukPage() {
               ? Math.round(((originalPrice - p.price) / originalPrice) * 100)
               : 0;
           const customOptionsCount = p.options?.length || 0;
+          const variantsCount = p.variants?.length || 0;
+          const imagesCount = p.images?.length || (p.image_url ? 1 : 0);
+
+          const hasVariants = Boolean(p.variants && p.variants.length > 0);
+          const minVariantPrice = hasVariants
+            ? Math.min(...p.variants!.map((v) => v.price))
+            : p.price;
+          const maxVariantPrice = hasVariants
+            ? Math.max(...p.variants!.map((v) => v.price))
+            : p.price;
+          const displayPriceText = hasVariants
+            ? minVariantPrice === maxVariantPrice
+              ? formatRupiah(minVariantPrice)
+              : `${formatRupiah(minVariantPrice)} - ${formatRupiah(maxVariantPrice)}`
+            : formatRupiah(p.price);
 
           return (
             <div
@@ -451,6 +763,13 @@ export default function AdminProdukPage() {
                       {p.is_active !== false ? 'Aktif' : 'Nonaktif'}
                     </span>
                   </div>
+
+                  {imagesCount > 1 && (
+                    <span className="absolute bottom-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white backdrop-blur-xs flex items-center gap-1">
+                      <Images className="w-3 h-3" />
+                      <span>{imagesCount} Foto</span>
+                    </span>
+                  )}
                 </div>
 
                 <div className="p-4">
@@ -470,15 +789,18 @@ export default function AdminProdukPage() {
                           </span>
                         </div>
                       )}
-                      <span className="font-bold text-[#e05d82] text-sm">
-                        {formatRupiah(p.price)}
-                      </span>
+                      <span className="font-bold text-[#e05d82] text-sm">{displayPriceText}</span>
                     </div>
 
                     <div className="text-right">
                       <span className="text-[11px] text-[#755562] bg-[#fff7f9] px-2 py-0.5 rounded-md border border-[#f3d7df] block">
                         Stok: {p.stock ?? 100} pcs
                       </span>
+                      {variantsCount > 0 && (
+                        <span className="text-[10px] text-[#e05d82] font-bold mt-0.5 block">
+                          🛍️ {variantsCount} Varian Harga
+                        </span>
+                      )}
                       {customOptionsCount > 0 && (
                         <span className="text-[10px] text-[#a85267] font-semibold mt-0.5 block">
                           🎨 {customOptionsCount} Opsi Custom
@@ -514,11 +836,21 @@ export default function AdminProdukPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setEditingProduct(p);
+                      setEditingProduct({
+                        ...p,
+                        images:
+                          p.images && p.images.length > 0
+                            ? [...p.images]
+                            : p.image_url
+                              ? [p.image_url]
+                              : [],
+                        variants: p.variants ? p.variants.map((v) => ({ ...v })) : [],
+                      });
                       setIsNewProduct(false);
                       const isPreset = PRESET_CATEGORIES.some((c) => c.id === p.category);
                       setIsCustomCategory(!isPreset);
                       setNewChoiceInputs({});
+                      setNewManualImageUrl('');
                     }}
                     className="p-1.5 rounded-lg bg-[#fde8ee] text-[#e05d82] hover:bg-[#e05d82] hover:text-white transition-colors cursor-pointer"
                     title="Edit Produk"
@@ -792,6 +1124,394 @@ export default function AdminProdukPage() {
                 />
               </div>
 
+              {/* Galeri Multi-Foto Produk */}
+              <div className="bg-[#fff7f9] p-4 sm:p-5 rounded-2xl border border-[#f3d7df] space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h4 className="font-bold text-[#2e1c24] flex items-center gap-1.5 text-xs sm:text-sm">
+                      <Images className="w-4 h-4 text-[#e05d82]" />
+                      <span>
+                        Galeri Foto Produk (
+                        {editingProduct.images?.length || (editingProduct.image_url ? 1 : 0)} Foto)
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-[#755562] mt-0.5 leading-relaxed">
+                      Unggah banyak foto produk sekaligus (auto-kompres WebP). Foto bertanda{' '}
+                      <strong className="text-[#e05d82]">⭐ Cover Utama</strong> akan ditampilkan di
+                      katalog depan.
+                    </p>
+                  </div>
+
+                  <label
+                    className={`px-3.5 py-2 rounded-xl font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 shrink-0 self-start sm:self-auto min-h-[36px] ${
+                      uploadingImages
+                        ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed pointer-events-none'
+                        : 'bg-[#e05d82] text-white hover:bg-[#c8476c] shadow-xs'
+                    }`}
+                  >
+                    {uploadingImages ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <ImagePlus className="w-3.5 h-3.5" />
+                    )}
+                    <span>
+                      {uploadingImages ? 'Mengompres & Upload...' : '+ Unggah Banyak Foto'}
+                    </span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      disabled={uploadingImages}
+                      className="hidden"
+                      onClick={(e) => {
+                        (e.currentTarget as HTMLInputElement).value = '';
+                      }}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          handleUploadMultipleFiles(e.target.files);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {/* Input URL Gambar Manual */}
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="text"
+                    placeholder="Atau masukkan tautan URL gambar langsung (https://...)"
+                    value={newManualImageUrl}
+                    onChange={(e) => setNewManualImageUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddManualImage();
+                      }
+                    }}
+                    className="flex-1 px-3 py-1.5 rounded-xl border border-[#f3d7df] bg-white text-xs text-[#2e1c24] focus:outline-none focus:ring-1 focus:ring-[#e05d82]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddManualImage}
+                    className="px-3 py-1.5 rounded-xl bg-white border border-[#f3d7df] text-xs font-bold text-[#755562] hover:bg-[#fde8ee] hover:text-[#e05d82] transition-colors cursor-pointer shrink-0"
+                  >
+                    + Tambah URL
+                  </button>
+                </div>
+
+                {/* Thumbnail Galeri Foto */}
+                {(!editingProduct.images || editingProduct.images.length === 0) &&
+                !editingProduct.image_url ? (
+                  <div className="p-4 rounded-xl bg-white border border-dashed border-[#f3d7df] text-center text-xs text-[#755562]">
+                    Belum ada foto produk. Klik <strong>+ Unggah Banyak Foto</strong> untuk memilih
+                    foto produk dari perangkat Anda.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 pt-2">
+                    {(editingProduct.images && editingProduct.images.length > 0
+                      ? editingProduct.images
+                      : [editingProduct.image_url]
+                    ).map((imgUrl, idx) => (
+                      <div
+                        key={`${imgUrl}-${idx}`}
+                        className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 bg-white shadow-2xs group transition-all ${
+                          idx === 0
+                            ? 'border-[#e05d82] ring-2 ring-[#e05d82]/20'
+                            : 'border-[#f3d7df]'
+                        }`}
+                      >
+                        <Image
+                          src={imgUrl}
+                          alt={`Foto Produk ${idx + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+
+                        {/* Cover Badge */}
+                        {idx === 0 ? (
+                          <span className="absolute top-1.5 left-1.5 bg-[#e05d82] text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
+                            <Star className="w-2.5 h-2.5 fill-white" />
+                            <span>Cover Utama</span>
+                          </span>
+                        ) : (
+                          <span className="absolute top-1.5 left-1.5 bg-black/60 text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md backdrop-blur-xs">
+                            #{idx + 1}
+                          </span>
+                        )}
+
+                        {/* Action Overlay on Hover */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
+                          <div className="flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(idx)}
+                              className="p-1 rounded-lg bg-rose-600/90 text-white hover:bg-rose-700 transition-colors cursor-pointer"
+                              title="Hapus foto ini"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          {idx !== 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleSetCoverImage(idx)}
+                              className="w-full py-1 rounded bg-[#e05d82] text-white text-[10px] font-bold hover:bg-[#c8476c] transition-colors cursor-pointer text-center flex items-center justify-center gap-1"
+                            >
+                              <Star className="w-3 h-3 fill-white" />
+                              <span>Jadikan Cover</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-[10px] text-[#9d7c8b] pt-1">
+                  💡 Tips: Arahkan kursor ke foto untuk melihat tombol <strong>Hapus</strong> atau{' '}
+                  <strong>Jadikan Cover</strong>.
+                </p>
+              </div>
+
+              {/* Varian Produk Bertingkat Harga (Shopee Style) */}
+              <div className="bg-[#fff7f9] p-4 sm:p-5 rounded-2xl border border-[#f3d7df] space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h4 className="font-bold text-[#2e1c24] flex items-center gap-1.5 text-xs sm:text-sm">
+                      <ShoppingBag className="w-4 h-4 text-[#e05d82]" />
+                      <span>Varian Produk & Harga Bertingkat (Ala Shopee)</span>
+                    </h4>
+                    <p className="text-[11px] text-[#755562] mt-0.5 leading-relaxed">
+                      Atur pilihan variasi dengan foto & harga berbeda (contoh: Huruf Saja Rp 8.500
+                      vs Huruf + Pita Rp 12.000 vs Box Mika Rp 16.500).
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleAddVariant()}
+                    className="px-3.5 py-2 rounded-xl bg-[#e05d82] text-white font-bold text-xs hover:bg-[#c8476c] transition-colors flex items-center gap-1 shrink-0 self-start sm:self-auto cursor-pointer shadow-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Tambah Varian Baru</span>
+                  </button>
+                </div>
+
+                {/* Preset Buttons */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] text-[#755562] font-semibold">
+                    Template Varian Shopee:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyVariantPreset('resin')}
+                    className="px-2.5 py-1 rounded-lg bg-white border border-[#f3d7df] text-[10px] font-semibold text-[#755562] hover:bg-[#fde8ee] hover:text-[#e05d82] transition-colors cursor-pointer"
+                  >
+                    + Gantungan Resin (Huruf / Pita / Box)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyVariantPreset('candle')}
+                    className="px-2.5 py-1 rounded-lg bg-white border border-[#f3d7df] text-[10px] font-semibold text-[#755562] hover:bg-[#fde8ee] hover:text-[#e05d82] transition-colors cursor-pointer"
+                  >
+                    + Lilin Jar (60ml / 100ml / Box Gift)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyVariantPreset('hampers')}
+                    className="px-2.5 py-1 rounded-lg bg-white border border-[#f3d7df] text-[10px] font-semibold text-[#755562] hover:bg-[#fde8ee] hover:text-[#e05d82] transition-colors cursor-pointer"
+                  >
+                    + Paket Hampers (Basic / Deluxe / Luxury)
+                  </button>
+                </div>
+
+                {/* Active Variant Price Range Summary */}
+                {editingProduct.variants && editingProduct.variants.length > 0 && (
+                  <div className="p-3 bg-white rounded-xl border border-[#f3d7df] flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-[#fde8ee] text-[#e05d82] flex items-center justify-center font-bold text-xs">
+                        ✓
+                      </span>
+                      <div>
+                        <span className="font-bold text-[#2e1c24]">
+                          Rentang Harga Etalase:{' '}
+                          <strong className="text-[#e05d82]">
+                            {Math.min(...editingProduct.variants.map((v) => v.price)) ===
+                            Math.max(...editingProduct.variants.map((v) => v.price))
+                              ? formatRupiah(
+                                  Math.min(...editingProduct.variants.map((v) => v.price))
+                                )
+                              : `${formatRupiah(
+                                  Math.min(...editingProduct.variants.map((v) => v.price))
+                                )} - ${formatRupiah(
+                                  Math.max(...editingProduct.variants.map((v) => v.price))
+                                )}`}
+                          </strong>
+                        </span>
+                        <p className="text-[11px] text-[#755562]">
+                          Total {editingProduct.variants.length} varian aktif. Di katalog pembeli
+                          bisa klik varian dan harga otomatis berganti!
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm('Hapus seluruh varian dan kembali ke harga produk tunggal?')) {
+                          setEditingProduct({ ...editingProduct, variants: [] });
+                        }
+                      }}
+                      className="text-rose-500 hover:text-rose-700 text-[11px] font-semibold underline cursor-pointer shrink-0"
+                    >
+                      Reset ke Harga Tunggal
+                    </button>
+                  </div>
+                )}
+
+                {/* Variants List */}
+                {!editingProduct.variants || editingProduct.variants.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-white border border-dashed border-[#f3d7df] text-center">
+                    <p className="text-xs text-[#755562]">
+                      Produk ini saat ini menggunakan <strong>Harga Tunggal</strong> (
+                      {formatRupiah(editingProduct.price)}). Jika Anda ingin membuat varian dengan
+                      harga berbeda seperti Shopee, klik tombol{' '}
+                      <strong>+ Tambah Varian Baru</strong> atau gunakan salah satu{' '}
+                      <strong>Template Varian Shopee</strong> di atas.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-1">
+                    {editingProduct.variants.map((variant, vIdx) => {
+                      const galleryImages =
+                        editingProduct.images && editingProduct.images.length > 0
+                          ? editingProduct.images
+                          : [editingProduct.image_url];
+                      const currentVariantImg =
+                        variant.image_url ||
+                        galleryImages[0] ||
+                        '/images/products/aromatherapy-candle.jpg';
+
+                      return (
+                        <div
+                          key={variant.id || vIdx}
+                          className="p-3.5 sm:p-4 rounded-2xl bg-white border border-[#f3d7df] shadow-2xs space-y-3"
+                        >
+                          <div className="flex items-center justify-between pb-2 border-b border-[#f3d7df]/60">
+                            <div className="flex items-center gap-2">
+                              <span className="w-5 h-5 rounded-full bg-[#fde8ee] text-[#e05d82] text-[10px] font-bold flex items-center justify-center shrink-0">
+                                {vIdx + 1}
+                              </span>
+                              <span className="font-bold text-xs text-[#2e1c24]">
+                                {variant.name || `Varian #${vIdx + 1}`}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveVariant(vIdx)}
+                              className="p-1 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                              title="Hapus varian ini"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                            {/* Mini Variant Image Preview & Selector */}
+                            <div className="sm:col-span-3 flex sm:flex-col items-center gap-2">
+                              <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#f3d7df] bg-[#fff7f9] shrink-0">
+                                <Image
+                                  src={currentVariantImg}
+                                  alt={variant.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="flex-1 w-full text-center sm:text-left">
+                                <select
+                                  value={variant.image_url || galleryImages[0]}
+                                  onChange={(e) =>
+                                    handleUpdateVariant(vIdx, { image_url: e.target.value })
+                                  }
+                                  className="w-full text-[10px] px-2 py-1 rounded-lg border border-[#f3d7df] bg-[#fff7f9] text-[#2e1c24] truncate"
+                                >
+                                  {galleryImages.map((img, imgI) => (
+                                    <option key={imgI} value={img}>
+                                      {imgI === 0 ? '⭐ Foto Cover' : `Foto Galeri #${imgI + 1}`}
+                                    </option>
+                                  ))}
+                                </select>
+                                <label className="text-[10px] text-[#e05d82] hover:underline cursor-pointer block mt-0.5 font-semibold">
+                                  + Upload foto varian
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const f = e.target.files?.[0];
+                                      if (f) handleUploadVariantFile(vIdx, f);
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                            </div>
+
+                            {/* Variant Name */}
+                            <div className="sm:col-span-4">
+                              <label className="block text-[11px] font-bold text-[#2e1c24] mb-1">
+                                Nama Varian <span className="text-rose-500">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. Huruf Saja / Huruf + Pita"
+                                value={variant.name}
+                                onChange={(e) =>
+                                  handleUpdateVariant(vIdx, { name: e.target.value })
+                                }
+                                className="w-full px-3 py-1.5 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-xs font-semibold text-[#2e1c24] focus:outline-none focus:ring-1 focus:ring-[#e05d82]"
+                              />
+                            </div>
+
+                            {/* Variant Price */}
+                            <div className="sm:col-span-3">
+                              <label className="block text-[11px] font-bold text-[#2e1c24] mb-1">
+                                Harga Jual (Rp) <span className="text-rose-500">*</span>
+                              </label>
+                              <input
+                                type="number"
+                                required
+                                value={variant.price}
+                                onChange={(e) =>
+                                  handleUpdateVariant(vIdx, { price: Number(e.target.value) })
+                                }
+                                className="w-full px-3 py-1.5 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-xs font-bold text-[#e05d82] focus:outline-none focus:ring-1 focus:ring-[#e05d82]"
+                              />
+                            </div>
+
+                            {/* Variant Original Price */}
+                            <div className="sm:col-span-2">
+                              <label className="block text-[11px] font-bold text-[#2e1c24] mb-1">
+                                Harga Coret (Rp)
+                              </label>
+                              <input
+                                type="number"
+                                placeholder="Opsional"
+                                value={variant.original_price ?? ''}
+                                onChange={(e) => {
+                                  const val = e.target.value === '' ? null : Number(e.target.value);
+                                  handleUpdateVariant(vIdx, { original_price: val });
+                                }}
+                                className="w-full px-3 py-1.5 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-xs text-[#2e1c24] focus:outline-none focus:ring-1 focus:ring-[#e05d82]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
               {/* Opsi Kustomisasi Produk (Custom Variations) */}
               <div className="bg-[#fff7f9] p-4 sm:p-5 rounded-2xl border border-[#f3d7df] space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -945,78 +1665,6 @@ export default function AdminProdukPage() {
                 )}
               </div>
 
-              {/* Upload Foto Produk */}
-              <div>
-                <label className="block font-bold text-[#2e1c24] mb-1">
-                  Foto Produk (Storage Bucket: products)
-                </label>
-                <div className="flex items-center gap-3 mb-2">
-                  <input
-                    type="text"
-                    required
-                    value={editingProduct.image_url}
-                    onChange={(e) =>
-                      setEditingProduct((prev) =>
-                        prev ? { ...prev, image_url: e.target.value } : null
-                      )
-                    }
-                    placeholder="https://... atau /images/products/..."
-                    className="flex-1 px-3.5 py-2 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#e05d82]"
-                  />
-                  <label
-                    className={`px-4 py-2 rounded-xl font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0 min-h-[40px] ${
-                      uploading
-                        ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed pointer-events-none'
-                        : 'bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20'
-                    }`}
-                  >
-                    {uploading ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Upload className="w-3.5 h-3.5" />
-                    )}
-                    <span>{uploading ? 'Mengunggah...' : 'Upload'}</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      disabled={uploading}
-                      className="hidden"
-                      onClick={(e) => {
-                        (e.currentTarget as HTMLInputElement).value = '';
-                      }}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handleUploadFile(file, (url) => {
-                            setEditingProduct((prev) =>
-                              prev ? { ...prev, image_url: url } : null
-                            );
-                          });
-                        }
-                      }}
-                    />
-                  </label>
-                </div>
-
-                {/* Preview Thumbnail Foto Produk */}
-                {editingProduct.image_url && (
-                  <div className="relative w-28 h-24 rounded-xl border border-[#f3d7df] overflow-hidden bg-[#fff7f9] shadow-2xs mt-2 group">
-                    <Image
-                      src={editingProduct.image_url}
-                      alt="Preview Foto Produk"
-                      fill
-                      className="object-cover"
-                    />
-                    <span className="absolute bottom-1 left-1 right-1 text-[9px] font-bold text-center bg-black/60 text-white rounded px-1 py-0.5 backdrop-blur-xs">
-                      Preview Foto
-                    </span>
-                  </div>
-                )}
-                <p className="text-[11px] text-[#755562] mt-1">
-                  Format gambar JPG, PNG, WEBP (maks. 10MB). Tersimpan otomatis ke Supabase Storage.
-                </p>
-              </div>
-
               {/* Material & Lead Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -1074,10 +1722,10 @@ export default function AdminProdukPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={saving || uploading}
+                  disabled={saving || uploadingImages}
                   className="px-6 py-2 rounded-xl bg-[#e05d82] text-white text-xs font-bold hover:bg-[#c8476c] shadow-md shadow-[#e05d82]/20 flex items-center gap-2 cursor-pointer"
                 >
-                  {saving || uploading ? (
+                  {saving || uploadingImages ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <Check className="w-4 h-4" />

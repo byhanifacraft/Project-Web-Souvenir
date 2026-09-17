@@ -1,3 +1,5 @@
+import { ProductVariant } from './store';
+
 export interface Product {
   id: string;
   name: string;
@@ -6,6 +8,8 @@ export interface Product {
   shortDesc: string;
   description: string;
   image: string;
+  images?: string[];
+  variants?: ProductVariant[];
   badge?: string;
   originalPrice?: number | null;
   priceMin: number;

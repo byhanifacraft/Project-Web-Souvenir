@@ -66,9 +66,21 @@ export const DEFAULT_WORKSHOP_PACKAGES: WorkshopPackage[] = [
       'Free Welcome Drink & camilan santai',
     ],
     takeHome: [
-      '1 Jar Lilin Aromaterapi Soy Wax (100g) hasil buatan sendiri',
-      'Box kemasan cantik + kartu petunjuk perawatan lilin',
-      'Sertifikat Resmi Keikutsertaan Workshop',
+      {
+        title: '1 Jar Lilin Aromaterapi Soy Wax (100g)',
+        image_url: '/images/products/bubble-candle.jpg',
+        description: 'Lilin racikan sendiri dengan pilihan 6 aroma & botanical styling',
+      },
+      {
+        title: 'Box Kemasan Cantik & Care Card',
+        image_url: '/images/products/pouch-blacu.jpg',
+        description: 'Kemasan estetik siap pajang atau hadiah + petunjuk perawatan',
+      },
+      {
+        title: 'Sertifikat Resmi Keikutsertaan',
+        image_url: '/images/products/totebag-kanvas.jpg',
+        description: 'Sertifikat fisik bertandatangan Artisan CraftByHanifa',
+      },
     ],
     buttonLabel: 'Daftar Paket Basic',
     waMessage:
@@ -95,9 +107,21 @@ export const DEFAULT_WORKSHOP_PACKAGES: WorkshopPackage[] = [
       'Welcome Drink spesial & Artisan Snack Box',
     ],
     takeHome: [
-      '2 Karya: 1 Lilin Jar Kaca 150g + 1 Botanical Wax Sachet',
-      'Luxury Hardbox Hampers dengan pita satin rose gold',
-      'Sertifikat Resmi Kelulusan Workshop CraftByHanifa',
+      {
+        title: '2 Karya: Lilin Jar 150g + Botanical Sachet',
+        image_url: '/images/products/resin-keychain.jpg',
+        description: 'Lilin jar kaca amber & botanical wax sachet gantung beraroma mewah',
+      },
+      {
+        title: 'Luxury Hardbox Hampers Pita Rose Gold',
+        image_url: '/images/products/hampers-wedding.jpg',
+        description: 'Gift box eksklusif dengan lining satin dan greeting card kustom',
+      },
+      {
+        title: 'Sertifikat Resmi Kelulusan Workshop',
+        image_url: '/images/products/totebag-kanvas.jpg',
+        description: 'Sertifikat kompetensi dasar candle making & perfumery',
+      },
     ],
     buttonLabel: 'Daftar Paket Premium',
     waMessage:
@@ -124,9 +148,21 @@ export const DEFAULT_WORKSHOP_PACKAGES: WorkshopPackage[] = [
       'Jadwal, waktu, dan konsep acara dapat disesuaikan fleksibel',
     ],
     takeHome: [
-      'Lilin aromaterapi custom souvenir buatan setiap peserta',
-      'Packaging box eksklusif sesuai tema event',
-      'Goodie bag & sertifikat untuk masing-masing peserta',
+      {
+        title: 'Lilin Aromaterapi Custom Souvenir',
+        image_url: '/images/products/bubble-candle.jpg',
+        description: 'Lilin buatan tiap peserta dengan stiker label custom nama/event',
+      },
+      {
+        title: 'Packaging Box Eksklusif Tema Acara',
+        image_url: '/images/products/hampers-wedding.jpg',
+        description: 'Kemasan disesuaikan dengan warna dan identitas acara',
+      },
+      {
+        title: 'Goodie Bag & Sertifikat Peserta',
+        image_url: '/images/products/pouch-blacu.jpg',
+        description: 'Merchandise kit lengkap untuk setiap peserta workshop',
+      },
     ],
     buttonLabel: 'Konsultasi Paket Group',
     waMessage:

@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+export const ProductVariantSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1, 'Nama varian wajib diisi'),
+  price: z.number().min(500, 'Harga varian minimal Rp 500'),
+  original_price: z.number().nullable().optional(),
+  image_url: z.string().optional(),
+  stock: z.number().int().min(0).optional(),
+});
+
 export const ProductSchema = z.object({
   id: z.string().min(1, 'ID produk wajib ada'),
   name: z.string().min(3, 'Nama produk minimal 3 karakter'),
@@ -8,6 +17,8 @@ export const ProductSchema = z.object({
   original_price: z.number().nullable().optional(),
   stock: z.number().int().min(0, 'Stok tidak boleh negatif'),
   image_url: z.string().min(1, 'Foto produk wajib diisi atau diunggah'),
+  images: z.array(z.string()).optional(),
+  variants: z.array(ProductVariantSchema).optional(),
   is_active: z.boolean().default(true),
   category: z.string().default('candle'),
   category_label: z.string().optional(),

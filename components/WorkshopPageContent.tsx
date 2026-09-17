@@ -5,7 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { GalleryImageItem, WorkshopNewsItem } from '@/types/store';
-import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
+import {
+  WorkshopPackage,
+  CurriculumStep,
+  ReservationStep,
+  normalizeTakeHomeItem,
+} from '@/types/workshop';
 import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
@@ -55,6 +60,11 @@ export default function WorkshopPageContent({
 
   const [selectedPackage, setSelectedPackage] = useState<string>(packages[0]?.id || 'premium');
   const [selectedNews, setSelectedNews] = useState<WorkshopNewsItem | null>(null);
+  const [previewTakeHome, setPreviewTakeHome] = useState<{
+    title: string;
+    image_url: string;
+    description?: string;
+  } | null>(null);
   const [galleryTab, setGalleryTab] = useState<'all' | 'news' | 'gallery'>('all');
 
   const handleOpenGalleryPhoto = (photo: GalleryImageItem) => {
@@ -368,26 +378,76 @@ export default function WorkshopPageContent({
                       </ul>
                     </div>
 
-                    {/* Take Home Items */}
+                    {/* Take Home Items with Visual Mini Cards */}
                     <div className="pt-3 border-t border-dashed border-zinc-200">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#c45a76] mb-2 flex items-center gap-1.5">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#c45a76] mb-2.5 flex items-center gap-1.5">
                         <Icon icon="solar:gift-bold-duotone" className="w-4 h-4 text-[#c45a76]" />
                         <span>Karya Dibawa Pulang:</span>
                       </p>
-                      <ul className="space-y-1.5 text-xs text-zinc-700 font-medium">
-                        {pkg.takeHome.map((item, idx) => (
-                          <li
-                            key={idx}
-                            className="flex items-start gap-2 bg-[#fdf4f7] p-2 rounded-xl border border-[#f3d7df]"
-                          >
-                            <Icon
-                              icon="solar:box-minimalistic-bold-duotone"
-                              className="w-4 h-4 text-[#c45a76] shrink-0 mt-0.5"
-                            />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="space-y-2">
+                        {pkg.takeHome.map((rawItem, idx) => {
+                          const item = normalizeTakeHomeItem(rawItem);
+                          const hasImage = Boolean(item.image_url);
+
+                          return (
+                            <div
+                              key={idx}
+                              className="group flex items-center gap-2.5 bg-[#fdf4f7] hover:bg-[#faebf0] p-2 rounded-2xl border border-[#f3d7df] transition-all"
+                            >
+                              {hasImage ? (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPreviewTakeHome({
+                                      title: item.title,
+                                      image_url: item.image_url!,
+                                      description: item.description,
+                                    });
+                                  }}
+                                  className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[#f3d7df] bg-white cursor-pointer shadow-2xs hover:ring-2 hover:ring-[#c45a76]/50 transition-all"
+                                  title="Klik untuk perbesar foto karya"
+                                >
+                                  <Image
+                                    src={item.image_url!}
+                                    alt={item.title}
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                    <Icon
+                                      icon="solar:magnifer-zoom-in-bold"
+                                      className="w-4 h-4 text-white drop-shadow-sm"
+                                    />
+                                  </div>
+                                </button>
+                              ) : (
+                                <div className="w-10 h-10 rounded-xl bg-white border border-[#f3d7df] flex items-center justify-center shrink-0 text-[#c45a76] shadow-2xs">
+                                  <Icon icon="solar:gift-bold-duotone" className="w-4 h-4" />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0 pr-1">
+                                <p className="text-xs font-bold text-zinc-800 leading-snug truncate sm:whitespace-normal">
+                                  {item.title}
+                                </p>
+                                {item.description ? (
+                                  <p className="text-[11px] text-[#7d5260] line-clamp-1 mt-0.5 leading-tight">
+                                    {item.description}
+                                  </p>
+                                ) : hasImage ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] text-[#c45a76] font-medium mt-0.5">
+                                    <Icon
+                                      icon="solar:camera-minimalistic-bold"
+                                      className="w-3 h-3"
+                                    />
+                                    <span>Lihat foto karya</span>
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -780,6 +840,51 @@ export default function WorkshopPageContent({
           </div>
         </div>
       </section>
+
+      {/* Lightbox Zoom Modal for Take-Home Creations */}
+      {previewTakeHome && (
+        <div
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+          onClick={() => setPreviewTakeHome(null)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-[#ebdcd5] animate-scaleUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative aspect-4/3 w-full bg-zinc-100">
+              <Image
+                src={previewTakeHome.image_url}
+                alt={previewTakeHome.title}
+                fill
+                className="object-cover"
+                priority
+              />
+              <button
+                type="button"
+                onClick={() => setPreviewTakeHome(null)}
+                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center cursor-pointer transition-colors shadow-md"
+                aria-label="Tutup"
+              >
+                <Icon icon="solar:close-circle-bold" className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 sm:p-6 space-y-2">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#c45a76]">
+                <Icon icon="solar:gift-bold-duotone" className="w-4 h-4" />
+                <span>Karya Bawa Pulang Workshop</span>
+              </div>
+              <h3 className="font-serif font-bold text-lg text-zinc-900 leading-snug">
+                {previewTakeHome.title}
+              </h3>
+              {previewTakeHome.description && (
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  {previewTakeHome.description}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

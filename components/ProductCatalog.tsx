@@ -156,9 +156,25 @@ export default function ProductCatalog({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
           {filteredProducts.map((p) => {
             const imageUrl = p.image_url || '/images/products/aromatherapy-candle.jpg';
-            const price = Number(p.price || 15000);
+            const galleryImages = p.images && p.images.length > 0 ? p.images : [imageUrl];
+            const hasMultipleImages = galleryImages.length > 1;
+            const secondaryImage = hasMultipleImages ? galleryImages[1] : imageUrl;
+
+            const variants = p.variants || [];
+            let priceMin = Number(p.price || 15000);
+            let priceMax = priceMin;
+            if (variants.length > 0) {
+              const variantPrices = variants
+                .map((v) => Number(v.price))
+                .filter((n) => !isNaN(n) && n > 0);
+              if (variantPrices.length > 0) {
+                priceMin = Math.min(...variantPrices);
+                priceMax = Math.max(...variantPrices);
+              }
+            }
+
             const originalPrice = p.original_price ? Number(p.original_price) : null;
-            const { hasDiscount, discountPercent } = calculateDiscount(originalPrice, price);
+            const { hasDiscount, discountPercent } = calculateDiscount(originalPrice, priceMin);
             const minOrder = p.min_order ?? 1;
             const hasCustomOptions = Boolean(p.options && p.options.length > 0);
 
@@ -175,8 +191,10 @@ export default function ProductCatalog({
                 category: validCat,
                 categoryLabel: p.category_label || p.category || 'Lilin Aromaterapi',
                 image: imageUrl,
-                priceMin: price,
-                priceMax: price,
+                images: galleryImages,
+                variants: variants,
+                priceMin: priceMin,
+                priceMax: priceMax,
                 originalPrice: originalPrice,
                 minOrder: minOrder,
                 leadTime: p.lead_time || '5 - 10 Hari Kerja',
@@ -211,22 +229,41 @@ export default function ProductCatalog({
                       src={imageUrl}
                       alt={p.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className={`object-cover transition-all duration-500 group-hover:scale-105 ${
+                        hasMultipleImages ? 'group-hover:opacity-0' : ''
+                      }`}
                     />
-                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    {hasMultipleImages && (
+                      <Image
+                        src={secondaryImage}
+                        alt={`${p.name} - Galeri`}
+                        fill
+                        className="object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
                       <span className="px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-xs text-xs font-semibold text-zinc-900 flex items-center gap-1.5 shadow-sm transform translate-y-1 group-hover:translate-y-0 transition-transform">
                         <Icon icon="solar:eye-bold-duotone" className="w-4 h-4 text-[#df829b]" />
-                        <span>Lihat Detail & Custom</span>
+                        <span>Lihat Detail & Varian</span>
                       </span>
                     </div>
 
-                    <span className="absolute top-3 left-3 text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#fdf0f3] text-[#c45a76] shadow-2xs">
+                    <span className="absolute top-3 left-3 text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#fdf0f3] text-[#c45a76] shadow-2xs z-10">
                       {p.category_label || p.category}
                     </span>
 
-                    {hasDiscount && (
-                      <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ee4d2d] text-white shadow-xs tracking-tight">
-                        -{discountPercent}%
+                    <div className="absolute top-3 right-3 flex items-center gap-1 z-10">
+                      {hasDiscount && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ee4d2d] text-white shadow-xs tracking-tight">
+                          -{discountPercent}%
+                        </span>
+                      )}
+                    </div>
+
+                    {hasMultipleImages && (
+                      <span className="absolute bottom-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white backdrop-blur-xs flex items-center gap-1 z-10">
+                        <Icon icon="solar:gallery-wide-bold" className="w-3 h-3" />
+                        <span>{galleryImages.length} Foto</span>
                       </span>
                     )}
                   </div>
@@ -258,14 +295,21 @@ export default function ProductCatalog({
                           className="w-4 h-4 text-zinc-400 shrink-0"
                         />
                         <span>
-                          Min. Pesanan: <strong>{minOrder} pcs</strong>
+                          Min: <strong>{minOrder} pcs</strong>
                         </span>
                       </div>
-                      {hasCustomOptions && (
-                        <span className="text-[10px] font-medium text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">
-                          Bisa Custom
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {variants.length > 0 && (
+                          <span className="text-[10px] font-bold text-[#c45a76] bg-[#fde8ee] px-2 py-0.5 rounded-full">
+                            {variants.length} Varian
+                          </span>
+                        )}
+                        {hasCustomOptions && variants.length === 0 && (
+                          <span className="text-[10px] font-medium text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">
+                            Bisa Custom
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -273,7 +317,11 @@ export default function ProductCatalog({
                 {/* Price & Action Buttons */}
                 <div className="p-5 pt-0">
                   <div className="pt-3 border-t border-zinc-100 mb-3 flex items-center justify-between">
-                    <span className="text-xs text-zinc-400">Harga Satuan:</span>
+                    <span className="text-xs text-zinc-400">
+                      {variants.length > 0 && priceMin !== priceMax
+                        ? 'Rentang Harga:'
+                        : 'Harga Satuan:'}
+                    </span>
                     <div className="text-right">
                       {hasDiscount && (
                         <div className="flex items-center justify-end gap-1.5 leading-none mb-0.5">
@@ -287,7 +335,9 @@ export default function ProductCatalog({
                       )}
                       <div className="flex items-baseline justify-end gap-1">
                         <span className="text-base sm:text-lg font-bold text-zinc-900">
-                          {formatRupiah(price)}
+                          {priceMin === priceMax
+                            ? formatRupiah(priceMin)
+                            : `${formatRupiah(priceMin)} - ${formatRupiah(priceMax)}`}
                         </span>
                         <span className="text-[11px] text-zinc-400">/ pcs</span>
                       </div>
@@ -366,6 +416,7 @@ export default function ProductCatalog({
       {/* Detail Modal Component */}
       {selectedModalProduct && (
         <ProductModal
+          key={selectedModalProduct.id}
           product={selectedModalProduct}
           whatsapp={whatsapp}
           brandName={brandName}

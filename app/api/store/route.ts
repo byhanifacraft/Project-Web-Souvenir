@@ -235,26 +235,36 @@ export async function POST(request: Request) {
             }
           }
 
-          const productPayloads = prodList.map((p) => ({
-            id: p.id,
-            name: p.name,
-            description: p.description,
-            price: p.price,
-            original_price: p.original_price ?? null,
-            stock: p.stock ?? 100,
-            image_url: p.image_url,
-            is_active: p.is_active ?? true,
-            category: p.category || 'candle',
-            category_label: p.category_label || 'Lilin Aromaterapi',
-            min_order: p.min_order ?? 1,
-            lead_time: p.lead_time || '5 - 10 Hari Kerja',
-            material: p.material || null,
-            size: p.size || null,
-            options: p.options || [],
-            shopee_url: p.shopee_url || null,
-            rating: p.rating ?? 5.0,
-            sold_count: p.sold_count ?? 0,
-          }));
+          const productPayloads = prodList.map((p) => {
+            const gallery =
+              p.images && p.images.length > 0 ? p.images : p.image_url ? [p.image_url] : [];
+            const optionsPayload = {
+              variants: p.variants || [],
+              gallery,
+              custom_options: p.options || [],
+            };
+
+            return {
+              id: p.id,
+              name: p.name,
+              description: p.description,
+              price: p.price,
+              original_price: p.original_price ?? null,
+              stock: p.stock ?? 100,
+              image_url: p.image_url,
+              is_active: p.is_active ?? true,
+              category: p.category || 'candle',
+              category_label: p.category_label || 'Lilin Aromaterapi',
+              min_order: p.min_order ?? 1,
+              lead_time: p.lead_time || '5 - 10 Hari Kerja',
+              material: p.material || null,
+              size: p.size || null,
+              options: optionsPayload,
+              shopee_url: p.shopee_url || null,
+              rating: p.rating ?? 5.0,
+              sold_count: p.sold_count ?? 0,
+            };
+          });
 
           if (productPayloads.length > 0) {
             let { error: prodErr } = await supabaseServer
@@ -268,7 +278,7 @@ export async function POST(request: Request) {
                 prodErr.message
               );
               const fallbackPayloads = productPayloads.map(
-                ({ options, original_price, ...rest }) => rest
+                ({ options: _options, original_price: _original_price, ...rest }) => rest
               );
               const { error: retryErr } = await supabaseServer
                 .from('products')

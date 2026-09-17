@@ -19,8 +19,23 @@ export default function ProductModal({
   brandName = 'CraftByHanifa',
 }: ProductModalProps) {
   const [selectedChoices, setSelectedChoices] = useState<{ [key: string]: string }>({});
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    product?.variants?.[0]?.id || null
+  );
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   if (!product) return null;
+
+  // Hitung varian aktif berdasarkan pilihan atau fallback ke varian pertama
+  const selectedVariant =
+    (selectedVariantId ? product.variants?.find((v) => v.id === selectedVariantId) : null) ||
+    product.variants?.[0] ||
+    null;
+
+  // Daftar galeri foto produk (multi-foto)
+  const imageList: string[] =
+    product.images && product.images.length > 0 ? product.images : [product.image];
+  const activeImage = imageList[activeImageIndex] || product.image;
 
   const handleSelectChoice = (optionLabel: string, choice: string) => {
     setSelectedChoices((prev) => ({
@@ -37,6 +52,24 @@ export default function ProductModal({
     }).format(num);
   };
 
+  // Hitung harga aktif berdasarkan varian yang dipilih (ala Shopee)
+  const currentPrice = selectedVariant ? selectedVariant.price : product.priceMin;
+  const currentOriginalPrice = selectedVariant
+    ? (selectedVariant.original_price ?? product.originalPrice)
+    : product.originalPrice;
+  const hasDiscount = Boolean(currentOriginalPrice && currentOriginalPrice > currentPrice);
+  const discountPercent = hasDiscount
+    ? Math.round(((currentOriginalPrice! - currentPrice) / currentOriginalPrice!) * 100)
+    : 0;
+
+  const nextImage = () => {
+    setActiveImageIndex((prev) => (prev + 1) % imageList.length);
+  };
+
+  const prevImage = () => {
+    setActiveImageIndex((prev) => (prev - 1 + imageList.length) % imageList.length);
+  };
+
   const getWaOrderLink = () => {
     let customText = '';
     if (Object.keys(selectedChoices).length > 0) {
@@ -45,11 +78,20 @@ export default function ProductModal({
         .join('\n');
     }
 
+    const variantLine = selectedVariant
+      ? `📌 *Varian Model:* ${selectedVariant.name} (${formatRupiah(selectedVariant.price)}/pcs)\n`
+      : '';
+    const subtotalLine = selectedVariant
+      ? `📌 *Estimasi Min. Total:* ${formatRupiah(selectedVariant.price * product.minOrder)} (${product.minOrder} pcs)\n`
+      : '';
+
     const message =
       `Halo Kak Hanifa (${brandName}), saya tertarik untuk pesan souvenir custom:\n\n` +
       `📌 *Produk:* ${product.name}\n` +
+      variantLine +
       `📌 *Jumlah Min. Pesanan:* ${product.minOrder} pcs\n` +
-      (customText ? `📌 *Pilihan Kustomisasi:*\n${customText}\n\n` : '\n') +
+      subtotalLine +
+      (customText ? `📌 *Pilihan Kustomisasi Tambahan:*\n${customText}\n\n` : '\n') +
       `Boleh minta rincian penawaran harga & simulasi desain mock-up nya kak? Terima kasih.`;
 
     return `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
@@ -77,28 +119,83 @@ export default function ProductModal({
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-12 max-h-[88vh] overflow-y-auto">
-          {/* Product Image Side */}
-          <div className="md:col-span-5 relative bg-[#fff7f9] min-h-[260px] md:min-h-full flex flex-col">
-            <div className="relative flex-1 w-full min-h-[240px]">
-              <Image src={product.image} alt={product.name} fill className="object-cover" />
+          {/* ================= SISI KIRI: MULTI-IMAGE GALLERY ================= */}
+          <div className="md:col-span-5 relative bg-[#fff7f9] flex flex-col border-b md:border-b-0 md:border-r border-[#f3d7df]">
+            {/* Foto Utama Besar */}
+            <div className="relative aspect-[4/3] md:aspect-square w-full bg-zinc-100 overflow-hidden">
+              <Image src={activeImage} alt={product.name} fill className="object-cover" priority />
+
               {product.badge && (
                 <span className="absolute top-4 left-4 z-10 text-xs font-bold px-3 py-1 rounded-full bg-[#df829b] text-white shadow-md">
                   {product.badge}
                 </span>
               )}
-              {product.originalPrice && product.originalPrice > product.priceMin && (
+
+              {hasDiscount && (
                 <span className="absolute top-4 right-4 z-10 text-xs font-bold px-2.5 py-1 rounded-full bg-[#ee4d2d] text-white shadow-md">
-                  -
-                  {Math.round(
-                    ((product.originalPrice - product.priceMin) / product.originalPrice) * 100
-                  )}
-                  %
+                  -{discountPercent}%
                 </span>
+              )}
+
+              {/* Tombol Navigasi Panah Slider (Jika lebih dari 1 foto) */}
+              {imageList.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      prevImage();
+                    }}
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-zinc-700 flex items-center justify-center shadow-md transition-all cursor-pointer"
+                    aria-label="Foto Sebelumnya"
+                  >
+                    <Icon icon="solar:alt-arrow-left-bold" className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      nextImage();
+                    }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-zinc-700 flex items-center justify-center shadow-md transition-all cursor-pointer"
+                    aria-label="Foto Selanjutnya"
+                  >
+                    <Icon icon="solar:alt-arrow-right-bold" className="w-4 h-4" />
+                  </button>
+
+                  {/* Indikator Angka Foto */}
+                  <span className="absolute bottom-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white backdrop-blur-xs">
+                    {activeImageIndex + 1} / {imageList.length}
+                  </span>
+                </>
               )}
             </div>
 
+            {/* Thumbnail Gallery Row (Jika ada banyak foto) */}
+            {imageList.length > 1 && (
+              <div className="p-3 bg-[#fff0f4] border-t border-[#f3d7df] flex items-center gap-2 overflow-x-auto">
+                {imageList.map((img, idx) => {
+                  const isActive = idx === activeImageIndex;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`relative w-14 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                        isActive
+                          ? 'border-[#e05d82] ring-2 ring-[#e05d82]/30 scale-105'
+                          : 'border-transparent opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <Image src={img} alt="" fill className="object-cover" />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Micro Benefit Banner on Left */}
-            <div className="p-4 bg-gradient-to-r from-[#fde8ee] to-[#fff0f4] border-t border-[#f3d7df] text-xs text-[#5e414d] space-y-1.5">
+            <div className="p-4 bg-gradient-to-r from-[#fde8ee] to-[#fff0f4] border-t border-[#f3d7df] text-xs text-[#5e414d] space-y-1.5 mt-auto">
               <div className="font-bold text-[#a85267] text-[11px] uppercase tracking-wider">
                 Kelebihan Kerajinan Studio:
               </div>
@@ -109,8 +206,8 @@ export default function ProductModal({
             </div>
           </div>
 
-          {/* Product Information Details Side */}
-          <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between">
+          {/* ================= SISI KANAN: DETAIL & VARIAN ALA SHOPEE ================= */}
+          <div className="md:col-span-7 p-4 sm:p-7 flex flex-col justify-between">
             <div>
               {/* Category & Rating */}
               <div className="flex items-center justify-between gap-2 mb-2">
@@ -131,41 +228,114 @@ export default function ProductModal({
                 {product.name}
               </h3>
 
-              {/* Pricing Range with Strikethrough Discount */}
+              {/* Pricing Display (Dinamis Sesuai Varian yang Dipilih) */}
               <div className="mb-4 pb-3.5 border-b border-[#f3d7df]">
-                <span className="text-[11px] text-[#755562] block mb-0.5">Harga Souvenir:</span>
-                {product.originalPrice && product.originalPrice > product.priceMin && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-[#755562] block mb-0.5">
+                    {selectedVariant
+                      ? `Harga Varian (${selectedVariant.name}):`
+                      : 'Harga Souvenir:'}
+                  </span>
+                  {selectedVariant && (
+                    <span className="text-[10px] uppercase font-bold text-[#e05d82] bg-[#fde8ee] px-2 py-0.5 rounded-full">
+                      Varian Dipilih
+                    </span>
+                  )}
+                </div>
+
+                {hasDiscount && (
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs text-zinc-400 line-through">
-                      {formatRupiah(product.originalPrice)}
+                      {formatRupiah(currentOriginalPrice!)}
                     </span>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fef0ed] text-[#ee4d2d] border border-[#fcd5cd]">
-                      Hemat{' '}
-                      {Math.round(
-                        ((product.originalPrice - product.priceMin) / product.originalPrice) * 100
-                      )}
-                      %
+                      Hemat {discountPercent}%
                     </span>
                   </div>
                 )}
-                <div className="text-xl sm:text-2xl font-extrabold text-[#c45a76]">
-                  {formatRupiah(product.priceMin)}
-                  {product.priceMax > product.priceMin && (
-                    <span className="text-sm font-normal text-[#755562]">
-                      {' '}
-                      - {formatRupiah(product.priceMax)}
-                    </span>
-                  )}
+
+                <div className="text-xl sm:text-2xl font-extrabold text-[#c45a76] flex items-baseline gap-1">
+                  <span>{formatRupiah(currentPrice)}</span>
                   <span className="text-xs font-normal text-zinc-500"> / pcs</span>
                 </div>
+
                 <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-[#4d8b74] font-semibold">
                   <Icon
                     icon="solar:sale-bold-duotone"
                     className="w-4 h-4 shrink-0 text-[#4d8b74]"
                   />
-                  <span>Diskon kuantiti tambahan hingga 15% untuk pemesanan partai besar</span>
+                  <span>
+                    Diskon kuantiti tambahan untuk pemesanan partai besar (Hubungi admin via WA)
+                  </span>
                 </div>
               </div>
+
+              {/* ================= SHOPEE-STYLE VARIANT SELECTOR ================= */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="mb-4 space-y-2.5 bg-[#faf6f2] p-3.5 rounded-2xl border border-[#ebdcd5]">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#2e1c24] flex items-center gap-1.5">
+                      <Icon
+                        icon="solar:tag-price-bold-duotone"
+                        className="w-4 h-4 text-[#e05d82]"
+                      />
+                      <span>Pilihan Model / Varian:</span>
+                    </h4>
+                    <span className="text-[11px] text-[#c45a76] font-bold">
+                      {selectedVariant ? selectedVariant.name : 'Pilih Varian'}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.map((variant) => {
+                      const isSelected = selectedVariant?.id === variant.id;
+                      return (
+                        <button
+                          key={variant.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedVariantId(variant.id);
+                            // Jika varian punya foto khusus, beralih ke foto tersebut
+                            if (variant.image_url) {
+                              const matchIdx = imageList.indexOf(variant.image_url);
+                              if (matchIdx >= 0) {
+                                setActiveImageIndex(matchIdx);
+                              }
+                            }
+                          }}
+                          className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-2 text-left ${
+                            isSelected
+                              ? 'bg-white text-[#c45a76] border-[#e05d82] shadow-sm ring-2 ring-[#e05d82]/25'
+                              : 'bg-white/80 text-zinc-700 border-zinc-200 hover:border-zinc-300 hover:bg-white'
+                          }`}
+                        >
+                          {variant.image_url && (
+                            <div className="relative w-6 h-6 rounded-lg overflow-hidden shrink-0 border border-black/5">
+                              <Image src={variant.image_url} alt="" fill className="object-cover" />
+                            </div>
+                          )}
+                          <div>
+                            <span className="block font-bold leading-tight">{variant.name}</span>
+                            <span
+                              className={`text-[10px] ${
+                                isSelected ? 'text-[#c45a76] font-bold' : 'text-zinc-500'
+                              }`}
+                            >
+                              {formatRupiah(variant.price)}
+                            </span>
+                          </div>
+                          {isSelected && (
+                            <Icon
+                              icon="solar:check-circle-bold"
+                              className="w-4 h-4 text-[#e05d82] ml-1 shrink-0"
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Description */}
               <p className="text-xs sm:text-sm text-[#4a2e3a] leading-relaxed mb-4">
@@ -208,11 +378,11 @@ export default function ProductModal({
                 </div>
               </div>
 
-              {/* Options / Customization choices */}
+              {/* Options / Customization choices (Pilihan kustom tambahan: aroma, warna pita, dll) */}
               {product.options && product.options.length > 0 && (
                 <div className="mb-4 space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[#2e1c24] flex items-center gap-1">
-                    <span>Pilih Variasi & Kustomisasi:</span>
+                    <span>Pilihan Kustomisasi Tambahan:</span>
                     <span className="text-[10px] text-[#755562] font-normal">
                       (Klik untuk rincian WA)
                     </span>

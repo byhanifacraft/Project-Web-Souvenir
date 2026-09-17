@@ -1,3 +1,10 @@
+export interface WorkshopTakeHomeItem {
+  id?: string;
+  title: string;
+  image_url?: string;
+  description?: string;
+}
+
 export interface WorkshopPackage {
   id: string;
   name: string;
@@ -9,9 +16,16 @@ export interface WorkshopPackage {
   isPopular?: boolean;
   description: string;
   features: string[];
-  takeHome: string[];
+  takeHome: (string | WorkshopTakeHomeItem)[];
   buttonLabel: string;
   waMessage: string;
+}
+
+export function normalizeTakeHomeItem(item: string | WorkshopTakeHomeItem): WorkshopTakeHomeItem {
+  if (typeof item === 'string') {
+    return { title: item };
+  }
+  return item;
 }
 
 export interface CurriculumStep {

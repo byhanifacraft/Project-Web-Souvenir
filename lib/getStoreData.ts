@@ -72,13 +72,39 @@ export async function getStoreData(): Promise<FullStoreData> {
           })),
         };
 
-        const mergedProducts: ProductItem[] = ((productsRes.data as ProductItem[]) || []).map(
-          (sp) => ({
-            ...sp,
-            original_price: sp.original_price ?? null,
-            options: Array.isArray(sp.options) ? sp.options : [],
-          })
-        );
+        const mergedProducts: ProductItem[] = (
+          (productsRes.data as unknown as Record<string, unknown>[]) || []
+        ).map((sp) => {
+          let variants: import('@/types/store').ProductVariant[] = [];
+          let images: string[] = [];
+          let options: import('@/types/store').ProductOption[] = [];
+
+          if (Array.isArray(sp.options)) {
+            options = sp.options as import('@/types/store').ProductOption[];
+          } else if (sp.options && typeof sp.options === 'object') {
+            const optObj = sp.options as Record<string, unknown>;
+            variants = (optObj.variants as import('@/types/store').ProductVariant[]) || [];
+            images = (optObj.gallery as string[]) || (optObj.images as string[]) || [];
+            options =
+              (optObj.custom_options as import('@/types/store').ProductOption[]) ||
+              (optObj.options as import('@/types/store').ProductOption[]) ||
+              [];
+          }
+
+          const mainImageUrl = (sp.image_url as string) || '';
+          if (images.length === 0 && mainImageUrl) {
+            images = [mainImageUrl];
+          }
+
+          return {
+            ...(sp as unknown as ProductItem),
+            image_url: mainImageUrl,
+            original_price: (sp.original_price as number) ?? null,
+            options,
+            variants,
+            images,
+          };
+        });
 
         // Ambil data foto dokumentasi workshop (prioritas: site_content['workshop_gallery'] -> tabel gallery_images -> default)
         let galleryImagesList: GalleryImageItem[] = [];
