@@ -163,15 +163,52 @@ export default function AdminBerandaPage() {
         body: JSON.stringify({ banners: updatedBanners }),
       });
 
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setBanners(updatedBanners);
+        if (data.data?.banners && Array.isArray(data.data.banners)) {
+          setBanners(data.data.banners);
+        } else {
+          setBanners(updatedBanners);
+        }
         showNotification('Daftar banner berhasil diperbarui!');
       } else {
-        const data = await res.json().catch(() => ({}));
         alert(data.error || 'Gagal menyimpan banner.');
       }
     } catch {
       alert('Terjadi kesalahan koneksi saat menyimpan.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteBanner = async (id: string) => {
+    if (banners.length <= 1) {
+      alert('Minimal harus ada 1 banner.');
+      return;
+    }
+    if (!confirm('Hapus banner ini? Tindakan ini tidak dapat dibatalkan.')) return;
+
+    try {
+      setSaving(true);
+      const res = await fetch('/api/store', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deletedBannerIds: [id] }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        if (data.data?.banners && Array.isArray(data.data.banners)) {
+          setBanners(data.data.banners);
+        } else {
+          setBanners((prev) => prev.filter((item) => item.id !== id));
+        }
+        showNotification('Banner berhasil dihapus!');
+      } else {
+        alert(data.error || 'Gagal menghapus banner.');
+      }
+    } catch {
+      alert('Terjadi kesalahan koneksi saat menghapus banner.');
     } finally {
       setSaving(false);
     }
@@ -412,16 +449,7 @@ export default function AdminBerandaPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (banners.length <= 1) {
-                        alert('Minimal harus ada 1 banner.');
-                        return;
-                      }
-                      if (confirm('Hapus banner ini?')) {
-                        const updated = banners.filter((item) => item.id !== b.id);
-                        handleSaveBannerList(updated);
-                      }
-                    }}
+                    onClick={() => handleDeleteBanner(b.id)}
                     className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer"
                     title="Hapus Banner"
                   >

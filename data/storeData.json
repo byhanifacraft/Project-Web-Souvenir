@@ -24,72 +24,11 @@
     }
   ],
   "siteContent": {
-    "workshop_reservation_steps": {
-      "section_key": "workshop_reservation_steps",
-      "title": "Langkah Reservasi Workshop",
-      "content": "[{\"step\":\"1\",\"title\":\"Pilih Paket & Tanggal\",\"desc\":\"Tentukan paket yang diinginkan (Basic, Premium, atau Group) beserta estimasi tanggal sesi.\"},{\"step\":\"2\",\"title\":\"Chat WhatsApp Admin\",\"desc\":\"Kirim pesan WhatsApp ke kami untuk mencocokkan ketersediaan kursi & jam sesi studio.\"},{\"step\":\"3\",\"title\":\"Konfirmasi Pembayaran DP\",\"desc\":\"Selesaikan pembayaran uang muka (DP 50%) untuk mengunci kursi jadwal workshop Anda.\"},{\"step\":\"4\",\"title\":\"Hadir & Nikmati Sesi\",\"desc\":\"Datang ke studio di Magetan, nikmati proses meracik lilin, dan bawa pulang karya Anda!\"}]"
-    },
-    "tagline_beranda": {
-      "id": "cd95a79e-0323-4ef7-9b9a-3f16d211e0bb",
-      "section_key": "tagline_beranda",
-      "title": "Sentuhan Hangat Kerajinan Tangan untuk Setiap Momen",
-      "content": "Studio kerajinan lilin aromaterapi soy wax murni dan souvenir handmade estetik dari pengrajin Magetan, Jawa Timur untuk pernikahan, seminar, dan acara spesial Anda.",
-      "image_url": "/images/products/shop-cover.jpg",
-      "updated_at": "2026-09-16T03:59:55.823+00:00"
-    },
-    "workshop_news": {
-      "section_key": "workshop_news",
-      "title": "Berita & Event Promosi Workshop",
-      "content": "[{\"id\":\"news-1\",\"title\":\"Coming Soon: Intimate Scented Candle & Botanical Blending Workshop\",\"image_url\":\"/images/products/studio-workshop.jpg\",\"summary\":\"Sesi workshop privat meracik lilin aromaterapi 100% natural soy wax alami bersama Founder CraftByHanifa akan segera hadir dalam waktu dekat!\",\"content\":\"Kabar gembira untuk teman-teman pencinta aroma dan kerajinan tangan! Studio CraftByHanifa akan segera membuka sesi intimate workshop terbaru untuk batch terdekat.\\n\\nDalam sesi ini, peserta akan diajak secara langsung mempelajari rahasia formulasi aroma minyak esensial terapeutik, teknik penuangan soy wax bebas asap, hingga dekorasi dried botanical flowers khas Magetan. Sangat cocok untuk pemula, healing santai akhir pekan, maupun persiapan usaha souvenir.\\n\\nKuota peserta dibatasi maksimal 8 orang per sesi agar pendampingan berlangsung intensif dan mendalam. Nantikan pengumuman jadwal resmi pembukaan registrasi!\",\"date\":\"Coming Soon - November 2026\",\"location\":\"Studio CraftByHanifa, Magetan\",\"status\":\"coming_soon\",\"status_label\":\"Segera Hadir\",\"category_label\":\"Agenda Workshop\",\"wa_message\":\"Halo Kak Hanifa, saya ingin info pendaftaran Coming Soon Workshop Lilin Aromaterapi Batch November.\",\"sort_order\":1,\"is_active\":true},{\"id\":\"news-2\",\"title\":\"Pendaftaran Dibuka: Kelas Meracik Lilin Aromaterapi Pemula & Suvenir\",\"image_url\":\"/images/products/hero-banner.jpg\",\"summary\":\"Pendaftaran dibuka untuk kelas tatap muka akhir pekan. Kuota terbatas 10 kursi per sesi dengan fasilitas lengkap dan bahan ramah lingkungan.\",\"content\":\"Sesi reguler belajar membuat lilin aromaterapi jar kaca dan hiasan botanical kini resmi dibuka untuk pendaftaran.\\n\\nSetiap peserta akan mendapatkan kit lengkap termasuk apron, natural soy wax, wadah jar amber, 3 pilihan minyak aromaterapi premium, serta sertifikat keikutsertaan. Hasil karya lilin buatan sendiri langsung bisa dibawa pulang!\\n\\nJadwal Sesi: Setiap Sabtu, Pukul 13.00 - 16.00 WIB di Studio CraftByHanifa Magetan. Segera amankan kursi Anda sebelum kuota terpenuhi.\",\"date\":\"Setiap Sabtu • 13.00 - 16.00 WIB\",\"location\":\"Studio CraftByHanifa, Magetan\",\"status\":\"open_registration\",\"status_label\":\"Pendaftaran Dibuka\",\"category_label\":\"Kelas Reguler\",\"wa_message\":\"Halo Kak Hanifa, saya ingin mendaftar Kelas Reguler Meracik Lilin Akhir Pekan di Studio.\",\"sort_order\":2,\"is_active\":true},{\"id\":\"news-3\",\"title\":\"Dokumentasi: Keseruan Corporate Workshop & Suvenir Ramah Lingkungan\",\"image_url\":\"/images/products/gift-box.jpg\",\"summary\":\"Dokumentasi kegiatan pelatihan kerajinan lilin aromaterapi bersama komunitas dan instansi di Jawa Timur.\",\"content\":\"Terima kasih kepada seluruh peserta yang telah bergabung dalam rangkaian workshop lilin aromaterapi dan perakitan hampers gift box.\\n\\nSuasana hangat dan antusiasme luar biasa dari para peserta saat meracik aroma favorit dan merangkai packaging rustic khas CraftByHanifa. Kami juga melayani kolaborasi workshop untuk gathering kantor, sekolah, arisan, maupun bridal shower.\",\"date\":\"Dokumentasi Acara Selesai\",\"location\":\"Magetan & Sekitarnya\",\"status\":\"completed\",\"status_label\":\"Dokumentasi\",\"category_label\":\"Dokumentasi Studio\",\"wa_message\":\"Halo Kak Hanifa, saya tertarik mengundang CraftByHanifa untuk Private / Corporate Workshop.\",\"sort_order\":3,\"is_active\":true}]",
-      "updated_at": "2026-09-17T04:51:04.901Z"
-    },
-    "profil_owner": {
-      "id": "a7df235f-5ebc-4227-a625-52eec68c906e",
-      "section_key": "profil_owner",
-      "title": "Hanifa Kumala — Founder & Lead Artisan",
-      "content": "Halo! Saya Hanifa Kumala, perajin dan penggagas di balik CraftByHanifa. Sejak awal berdiri di Magetan, saya mendedikasikan studio ini untuk meracik lilin aromaterapi 100% soy wax nabati alami yang menenangkan dan kerajinan souvenir estetik bermakna. Setiap detail karya lilin, resin, hingga jahitan pouch kami kerjakan secara handmade dengan penuh cinta dan ketelitian tinggi.",
-      "image_url": "/images/products/avatar.jpg",
-      "updated_at": "2026-09-16T03:59:55.56+00:00"
-    },
-    "keunggulan_features": {
-      "id": "c9880dab-e9c1-4761-b765-b2700d1d7947",
-      "section_key": "keunggulan_features",
-      "title": "Mengapa Souvenir CraftByHanifa Selalu Berkesan?",
-      "content": "[{\"icon\":\"Flame\",\"title\":\"100% Sentuhan Tangan Berkelanjutan\",\"desc\":\"Setiap karya dibuat manual dengan penuh ketelitian oleh pengrajin lokal berbakat di Magetan, Jawa Timur, bukan produk cetakan massal pabrik biasa.\",\"linkText\":\"Standar Pengrajin Magetan\"},{\"icon\":\"Palette\",\"title\":\"Free Desain & Mockup Digital\",\"desc\":\"Bebas konsultasi tema warna acara, font inisial nama, hingga penyesuaian packaging sampai Anda merasa puas sebelum proses produksi dimulai.\",\"linkText\":\"Standar Pengrajin Magetan\"},{\"icon\":\"ShieldCheck\",\"title\":\"Quality Control Berlapis & Rapi\",\"desc\":\"Setiap produk dicek ketat: kejernihan resin tanpa gelembung berlebih, aroma lilin pekat merata, dan kerapian jahitan pouch.\",\"linkText\":\"Standar Pengrajin Magetan\"},{\"icon\":\"BadgeCheck\",\"title\":\"Harga Produsen Tangan Pertama\",\"desc\":\"Dapatkan penawaran harga terbaik langsung dari pengrajin tanpa perantara, dengan diskon kuantiti bertingkat untuk pesanan jumlah besar.\",\"linkText\":\"Standar Pengrajin Magetan\"}]",
-      "image_url": "Setiap karya dibuat manual dengan ketelitian tinggi oleh pengrajin lokal di Magetan, menghasilkan souvenir bermakna yang berguna dan membahagiakan para tamu.",
-      "updated_at": "2026-09-16T03:59:55.684+00:00"
-    },
-    "visi_misi": {
-      "id": "4ebf151a-7de7-4837-86c7-59e907fe70a5",
-      "section_key": "visi_misi",
-      "title": "Visi & Misi Studio Kami",
-      "content": "Visi:\\nMenjadi studio kerajinan tangan dan lilin aromaterapi terpercaya di Indonesia yang menghadirkan keindahan estetik ramah lingkungan di setiap momen berharga.\\n\\nMisi:\\n1. Menggunakan 100% bahan alami soy wax nabati yang aman dan bebas racun parafin.\\n2. Memberdayakan pengrajin lokal berbakat di Kabupaten Magetan, Jawa Timur.\\n3. Memberikan layanan kustomisasi dan mockup desain gratis untuk setiap pelanggan.",
-      "image_url": "/images/products/avatar.jpg",
-      "updated_at": "2026-09-16T03:59:55.944+00:00"
-    },
-    "tentang_kami": {
-      "id": "360680f3-0199-47c1-9440-71710e2df037",
-      "section_key": "tentang_kami",
-      "title": "Dedikasi Menghadirkan Makna di Setiap Sentuhan Lilin & Kerajinan",
-      "content": "Berawal dari kecintaan pada seni kerajinan lilin aromaterapi dan dried flowers, CraftByHanifa hadir mendampingi ribuan momen bahagia pernikahan, wisuda, dan corporate gift di seluruh penjuru Indonesia. Kami percaya bahwa souvenir bukan sekadar pajangan, melainkan kenangan hangat yang membawa aroma ketenangan dan kegunaan nyata bagi penerimanya.\\n\\nSetiap lilin aromaterapi kami dibuat secara handmade dengan 100% natural soy wax nabati dan perpaduan minyak esensial terapeutik berkualitas. Kami melayani pengiriman bergaransi aman ke seluruh wilayah Nusantara.",
-      "image_url": "https://glmipnvibbgpowueubjq.supabase.co/storage/v1/object/public/site/site-1789532311416-mxkx52.jpg",
-      "updated_at": "2026-09-16T04:23:30.366+00:00"
-    },
-    "workshop_packages": {
-      "section_key": "workshop_packages",
-      "title": "Paket Workshop Lilin Aromaterapi",
-      "content": "[{\"id\":\"basic\",\"name\":\"Paket Basic (Intro to Candle Making)\",\"tagline\":\"Sempurna untuk pemula, self-healing, atau me-time akhir pekan\",\"price\":\"Rp 150.000\",\"duration\":\"1.5 - 2 Jam\",\"capacity\":\"1 - 8 Orang / Sesi\",\"isPopular\":false,\"description\":\"Pelajari dasar-dasar meracik lilin beraroma ramah lingkungan. Didesain ramah untuk pemula tanpa latar belakang kerajinan tangan sama sekali.\",\"features\":[\"100% natural soy wax nabati murni ramah lingkungan\",\"Pilihan jenis sumbu (cotton & wood wick)\",\"Eksplorasi 6 aroma signature CraftByHanifa\",\"Praktik menuang lilin (pouring) dengan suhu presisi\",\"Styling dried botanical flowers & topping estetik\",\"Peminjaman seluruh tools & apron studio\",\"Free Welcome Drink & camilan santai\"],\"takeHome\":[\"1 Jar Lilin Aromaterapi Soy Wax (100g) hasil buatan sendiri\",\"Box kemasan cantik + kartu petunjuk perawatan lilin\",\"Sertifikat Resmi Keikutsertaan Workshop\"],\"buttonLabel\":\"Daftar Paket Basic\",\"waMessage\":\"Halo Kak Hanifa, saya ingin mendaftar Paket Workshop Basic (Rp 150.000). Bisakah saya info jadwal sesi yang masih tersedia?\"},{\"id\":\"premium\",\"name\":\"Paket Premium (Advanced Blending & Duo Creations)\",\"badge\":\"Paling Populer\",\"tagline\":\"Cocok untuk couple date, bestie hang-out, hobi serius, & calon entrepreneur\",\"price\":\"Rp 325.000\",\"duration\":\"2.5 - 3 Jam\",\"capacity\":\"1 - 6 Orang / Sesi\",\"isPopular\":true,\"description\":\"Eksplorasi mendalam seni perfumery lilin aromaterapi. Buat 2 kreasi sekaligus: lilin jar kaca eksklusif dan botanical wax sachet gantung beraroma mewah.\",\"features\":[\"Teori piramida aroma (top, heart/middle, dan base notes)\",\"Teknik formulasi custom fragrance throw agar wangi tahan lama\",\"Akses ke 12+ premium essential & fragrance oils studio\",\"Teknik crackling double wooden wick untuk suasana hangat\",\"Dekorasi botanical mewah: bunga edelweiss & kristal alam\",\"Peminjaman seluruh tools & apron kanvas studio\",\"Welcome Drink spesial & Artisan Snack Box\"],\"takeHome\":[{\"title\":\"2 Karya: 1 Lilin Jar Kaca 150g + 1 Botanical Wax Sachet\",\"image_url\":\"https://glmipnvibbgpowueubjq.supabase.co/storage/v1/object/public/gallery/gallery-1789620637897-1lv9rm.webp\"},{\"title\":\"Luxury Hardbox Hampers dengan pita satin rose gold\",\"image_url\":\"https://glmipnvibbgpowueubjq.supabase.co/storage/v1/object/public/gallery/gallery-1789620646021-2bwn89.webp\"},{\"title\":\"Sertifikat Resmi Kelulusan Workshop CraftByHanifa\",\"image_url\":\"https://glmipnvibbgpowueubjq.supabase.co/storage/v1/object/public/gallery/gallery-1789620657399-grvted.webp\"}],\"buttonLabel\":\"Daftar Paket Premium\",\"waMessage\":\"Halo Kak Hanifa, saya ingin mendaftar Paket Workshop Premium (Rp 325.000). Boleh tahu slot jadwal weekend terdekat?\"},{\"id\":\"group\",\"name\":\"Paket Group / Corporate / Private Event\",\"badge\":\"Custom Sesi\",\"tagline\":\"Ideal untuk bridesmaid party, arisan, team building kantor, & gathering\",\"price\":\"Mulai Rp 220.000\",\"duration\":\"2.5 - 3.5 Jam\",\"capacity\":\"Min. 5 hingga 30+ Peserta\",\"isPopular\":false,\"description\":\"Sesi privat eksklusif untuk grup Anda. Bisa diadakan di studio kami di Magetan atau kami hadir ke kantor, hotel, maupun kafe pilihan Anda di wilayah Magetan, Madiun, Solo, dan sekitarnya.\",\"features\":[\"Sesi kelas privat eksklusif (tidak digabung peserta lain)\",\"Custom stiker label lilin sesuai tema acara / logo perusahaan\",\"Mentor dedicated & tim fasilitator pendamping\",\"Bahan baku premium lengkap dibawa langsung ke lokasi\",\"Booklet modul panduan materi pembuatan lilin\",\"Dokumentasi foto high-resolution selama kegiatan\",\"Jadwal, waktu, dan konsep acara dapat disesuaikan fleksibel\"],\"takeHome\":[\"Lilin aromaterapi custom souvenir buatan setiap peserta\",\"Packaging box eksklusif sesuai tema event\",\"Goodie bag & sertifikat untuk masing-masing peserta\"],\"buttonLabel\":\"Konsultasi Paket Group\",\"waMessage\":\"Halo Kak Hanifa, saya tertarik untuk mengadakan Workshop Lilin Aromaterapi untuk Group / Kantor / Event. Boleh minta info proposal & penawaran harganya?\"}]"
-    },
-    "workshop_curriculum": {
-      "section_key": "workshop_curriculum",
-      "title": "Kurikulum Belajar Workshop",
-      "content": "[{\"step\":\"01\",\"title\":\"Mengenal Wax Alami & Alat\",\"desc\":\"Memahami karakter 100% soy wax nabati murni yang aman dihirup tanpa jelaga hitam, perbedaannya dengan parafin, serta pengenalan titik leleh (melting point).\"},{\"step\":\"02\",\"title\":\"Seni Blending Fragrance Oil\",\"desc\":\"Mengeksplorasi piramida aroma wewangian, takaran fragrance oil yang ideal, serta rahasia agar aroma menyebar semerbak (hot & cold throw) saat dibakar.\"},{\"step\":\"03\",\"title\":\"Teknik Centering & Penuangan\",\"desc\":\"Praktik memasang sumbu kayu/kapas di titik tengah presisi dan menuangkan wax cair pada suhu optimal agar permukaan lilin mulus tanpa cekungan (cracking).\"},{\"step\":\"04\",\"title\":\"Dekorasi Bunga & Finishing\",\"desc\":\"Menata kelopak mawar kering, lavender, kayu manis, dan kristal alami di atas lilin yang mulai mengeras, diakhiri pengemasan ke dalam gift box berpita cantik.\"}]"
-    },
     "workshop_gallery": {
       "section_key": "workshop_gallery",
       "title": "Foto Dokumentasi Workshop Studio",
-      "content": "[{\"id\":\"5d83a8d9-89e9-456f-bc70-7ff9968e0265\",\"image_url\":\"/images/products/totebag-kanvas.jpg\",\"caption\":\"Totebag kanvas tebal untuk souvenir corporate & kampus\",\"sort_order\":5,\"category\":\"fabric\",\"category_label\":\"Totebag\",\"created_at\":\"2026-09-01T15:13:26.684842+00:00\"},{\"id\":\"e2af014e-fb95-48b4-a1d8-21b83557bff5\",\"image_url\":\"/images/products/mini-bouquet.jpg\",\"caption\":\"Buket mini bunga kering abadi rustic wedding\",\"sort_order\":6,\"category\":\"packaging\",\"category_label\":\"Buket Mini\",\"created_at\":\"2026-09-01T15:13:26.684842+00:00\"},{\"id\":\"4fb6bb0d-bafd-46ed-9f8b-8659174d9d96\",\"image_url\":\"/images/products/resin-casing.jpg\",\"caption\":\"Casing smartphone resin custom bunga asli\",\"sort_order\":7,\"category\":\"resin\",\"category_label\":\"Aksesoris Resin\",\"created_at\":\"2026-09-01T15:13:26.684842+00:00\"},{\"id\":\"0db16840-6d4f-4dcc-8d03-ae438a41b06c\",\"image_url\":\"/images/products/shop-cover.jpg\",\"caption\":\"Suasana workshop studio CraftByHanifa di Magetan\",\"sort_order\":8,\"category\":\"packaging\",\"category_label\":\"Studio Magetan\",\"created_at\":\"2026-09-01T15:13:26.684842+00:00\"}]",
-      "updated_at": "2026-09-17T04:51:04.901Z"
+      "content": "[{\"id\":\"gal-1\",\"image_url\":\"/images/gallery/workshop-intro.jpg\",\"caption\":\"Pengenalan teori dasar lilin aromaterapi dan keselamatan kerja\",\"sort_order\":1,\"category\":\"workshop\",\"category_label\":\"Workshop Studio\"},{\"id\":\"gal-2\",\"image_url\":\"/images/gallery/workshop-pouring.jpg\",\"caption\":\"Praktik penuangan lilin kedelai murni ke dalam wadah gelas cantik\",\"sort_order\":2,\"category\":\"workshop\",\"category_label\":\"Workshop Studio\"},{\"id\":\"gal-3\",\"image_url\":\"/images/gallery/workshop-blending.jpg\",\"caption\":\"Eksperimen meracik aroma minyak esensial bunga dan rempah pilihan\",\"sort_order\":3,\"category\":\"workshop\",\"category_label\":\"Workshop Studio\"},{\"id\":\"gal-4\",\"image_url\":\"/images/gallery/workshop-decorating.jpg\",\"caption\":\"Menghias permukaan lilin dengan bunga kering (botanical decor)\",\"sort_order\":4,\"category\":\"workshop\",\"category_label\":\"Workshop Studio\"},{\"id\":\"gal-5\",\"image_url\":\"/images/gallery/workshop-packaging.jpg\",\"caption\":\"Sesi pengemasan hampers dan pita cantik siap dibawa pulang\",\"sort_order\":5,\"category\":\"workshop\",\"category_label\":\"Workshop Studio\"},{\"id\":\"gal-6\",\"image_url\":\"/images/gallery/workshop-group.jpg\",\"caption\":\"Keseruan foto bersama peserta setelah menyelesaikan karya masing-masing\",\"sort_order\":6,\"category\":\"workshop\",\"category_label\":\"Workshop Studio\"}]",
+      "updated_at": "2026-09-17T06:17:58.961Z"
     }
   },
   "products": [
@@ -314,40 +253,52 @@
   ],
   "galleryImages": [
     {
-      "id": "5d83a8d9-89e9-456f-bc70-7ff9968e0265",
-      "image_url": "/images/products/totebag-kanvas.jpg",
-      "caption": "Totebag kanvas tebal untuk souvenir corporate & kampus",
+      "id": "gal-1",
+      "image_url": "/images/gallery/workshop-intro.jpg",
+      "caption": "Pengenalan teori dasar lilin aromaterapi dan keselamatan kerja",
+      "sort_order": 1,
+      "category": "workshop",
+      "category_label": "Workshop Studio"
+    },
+    {
+      "id": "gal-2",
+      "image_url": "/images/gallery/workshop-pouring.jpg",
+      "caption": "Praktik penuangan lilin kedelai murni ke dalam wadah gelas cantik",
+      "sort_order": 2,
+      "category": "workshop",
+      "category_label": "Workshop Studio"
+    },
+    {
+      "id": "gal-3",
+      "image_url": "/images/gallery/workshop-blending.jpg",
+      "caption": "Eksperimen meracik aroma minyak esensial bunga dan rempah pilihan",
+      "sort_order": 3,
+      "category": "workshop",
+      "category_label": "Workshop Studio"
+    },
+    {
+      "id": "gal-4",
+      "image_url": "/images/gallery/workshop-decorating.jpg",
+      "caption": "Menghias permukaan lilin dengan bunga kering (botanical decor)",
+      "sort_order": 4,
+      "category": "workshop",
+      "category_label": "Workshop Studio"
+    },
+    {
+      "id": "gal-5",
+      "image_url": "/images/gallery/workshop-packaging.jpg",
+      "caption": "Sesi pengemasan hampers dan pita cantik siap dibawa pulang",
       "sort_order": 5,
-      "category": "fabric",
-      "category_label": "Totebag",
-      "created_at": "2026-09-01T15:13:26.684842+00:00"
+      "category": "workshop",
+      "category_label": "Workshop Studio"
     },
     {
-      "id": "e2af014e-fb95-48b4-a1d8-21b83557bff5",
-      "image_url": "/images/products/mini-bouquet.jpg",
-      "caption": "Buket mini bunga kering abadi rustic wedding",
+      "id": "gal-6",
+      "image_url": "/images/gallery/workshop-group.jpg",
+      "caption": "Keseruan foto bersama peserta setelah menyelesaikan karya masing-masing",
       "sort_order": 6,
-      "category": "packaging",
-      "category_label": "Buket Mini",
-      "created_at": "2026-09-01T15:13:26.684842+00:00"
-    },
-    {
-      "id": "4fb6bb0d-bafd-46ed-9f8b-8659174d9d96",
-      "image_url": "/images/products/resin-casing.jpg",
-      "caption": "Casing smartphone resin custom bunga asli",
-      "sort_order": 7,
-      "category": "resin",
-      "category_label": "Aksesoris Resin",
-      "created_at": "2026-09-01T15:13:26.684842+00:00"
-    },
-    {
-      "id": "0db16840-6d4f-4dcc-8d03-ae438a41b06c",
-      "image_url": "/images/products/shop-cover.jpg",
-      "caption": "Suasana workshop studio CraftByHanifa di Magetan",
-      "sort_order": 8,
-      "category": "packaging",
-      "category_label": "Studio Magetan",
-      "created_at": "2026-09-01T15:13:26.684842+00:00"
+      "category": "workshop",
+      "category_label": "Workshop Studio"
     }
   ],
   "contactInfo": {

@@ -29,11 +29,10 @@ export async function getStoreData(): Promise<FullStoreData> {
   // 1. Coba baca dari Supabase jika env sudah dikonfigurasi
   if (isSupabaseConfigured && supabase) {
     try {
-      const [bannersRes, contentRes, productsRes, galleryRes, contactRes] = await Promise.all([
+      const [bannersRes, contentRes, productsRes, contactRes] = await Promise.all([
         supabase.from('banners').select('*').order('sort_order', { ascending: true }),
         supabase.from('site_content').select('*'),
         supabase.from('products').select('*').order('created_at', { ascending: true }),
-        supabase.from('gallery_images').select('*').order('sort_order', { ascending: true }),
         supabase.from('contact_info').select('*').eq('id', 'default').single(),
       ]);
 
@@ -106,7 +105,7 @@ export async function getStoreData(): Promise<FullStoreData> {
           };
         });
 
-        // Ambil data foto dokumentasi workshop (prioritas: site_content['workshop_gallery'] -> tabel gallery_images -> default)
+        // Ambil data foto dokumentasi workshop (Single source of truth: site_content['workshop_gallery'] -> default)
         let galleryImagesList: GalleryImageItem[] = [];
         if (siteContentRecord['workshop_gallery']?.content) {
           try {
@@ -117,14 +116,6 @@ export async function getStoreData(): Promise<FullStoreData> {
           } catch (e) {
             console.warn('Error parsing workshop_gallery in getStoreData:', e);
           }
-        }
-        if (
-          galleryImagesList.length === 0 &&
-          galleryRes.data &&
-          Array.isArray(galleryRes.data) &&
-          galleryRes.data.length > 0
-        ) {
-          galleryImagesList = galleryRes.data as GalleryImageItem[];
         }
         if (galleryImagesList.length === 0) {
           galleryImagesList = DEFAULT_WORKSHOP_GALLERY;

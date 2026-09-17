@@ -377,11 +377,15 @@ export default function AdminProdukPage() {
         body: JSON.stringify({ products: updatedProducts }),
       });
 
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setProducts(updatedProducts);
+        if (data.data?.products && Array.isArray(data.data.products)) {
+          setProducts(data.data.products);
+        } else {
+          setProducts(updatedProducts);
+        }
         showNotification('Data produk berhasil diperbarui!');
       } else {
-        const data = await res.json().catch(() => ({}));
         alert(data.error || 'Gagal menyimpan produk.');
       }
     } catch {
@@ -469,9 +473,31 @@ export default function AdminProdukPage() {
   };
 
   const handleDeleteProduct = async (id: string, name: string) => {
-    if (!confirm(`Hapus produk "${name}"?`)) return;
-    const updated = products.filter((p) => p.id !== id);
-    await handleSaveProductsList(updated);
+    if (!confirm(`Hapus produk "${name}"? Tindakan ini tidak dapat dibatalkan.`)) return;
+    try {
+      setSaving(true);
+      const res = await fetch('/api/store', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deletedProductIds: [id] }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        if (data.data?.products && Array.isArray(data.data.products)) {
+          setProducts(data.data.products);
+        } else {
+          setProducts((prev) => prev.filter((p) => p.id !== id));
+        }
+        showNotification(`Produk "${name}" berhasil dihapus!`);
+      } else {
+        alert(data.error || 'Gagal menghapus produk.');
+      }
+    } catch {
+      alert('Terjadi kesalahan koneksi saat menghapus produk.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Custom Options Management

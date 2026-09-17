@@ -213,13 +213,24 @@ export default function AdminWorkshopPage() {
         }),
       });
 
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setSiteContent(updatedSiteContent);
+        if (data.data?.siteContent) {
+          setSiteContent(data.data.siteContent);
+        } else {
+          setSiteContent(updatedSiteContent);
+        }
+        if (data.data?.galleryImages && Array.isArray(data.data.galleryImages)) {
+          setGalleryImages(data.data.galleryImages);
+        }
+        if (data.data?.workshopNews && Array.isArray(data.data.workshopNews)) {
+          setWorkshopNews(data.data.workshopNews);
+        }
         showNotification(
           'Perubahan Workshop & Berita berhasil disimpan ke database & live website!'
         );
       } else {
-        alert('Gagal menyimpan perubahan ke server.');
+        alert(data.error || 'Gagal menyimpan perubahan ke server.');
       }
     } catch (err) {
       console.error(err);

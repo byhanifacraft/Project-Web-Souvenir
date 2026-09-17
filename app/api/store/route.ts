@@ -13,7 +13,6 @@ import {
   BannerItem,
   ProductItem,
   ContactInfoItem,
-  GalleryImageItem,
 } from '@/types/store';
 import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 
@@ -86,6 +85,8 @@ export async function POST(request: Request) {
       contactInfo,
       siteConfig,
       hero,
+      deletedBannerIds,
+      deletedProductIds,
     } = body;
 
     // Baca data lokal saat ini
@@ -123,11 +124,41 @@ export async function POST(request: Request) {
         : {}),
     };
 
+    // 1. Update Produk Lokal (Non-destruktif: Upsert & Explicit Delete)
+    let updatedProducts = currentData.products || [];
+    if (deletedProductIds && Array.isArray(deletedProductIds) && deletedProductIds.length > 0) {
+      updatedProducts = updatedProducts.filter((p) => !deletedProductIds.includes(p.id));
+    }
+    if (products && Array.isArray(products)) {
+      const incomingMap = new Map((products as ProductItem[]).map((p) => [p.id, p]));
+      updatedProducts = updatedProducts.map((p) => incomingMap.get(p.id) || p);
+      for (const p of products as ProductItem[]) {
+        if (!updatedProducts.some((item) => item.id === p.id)) {
+          updatedProducts.push(p);
+        }
+      }
+    }
+
+    // 2. Update Banners Lokal (Non-destruktif: Upsert & Explicit Delete)
+    let updatedBanners = currentData.banners || [];
+    if (deletedBannerIds && Array.isArray(deletedBannerIds) && deletedBannerIds.length > 0) {
+      updatedBanners = updatedBanners.filter((b) => !deletedBannerIds.includes(b.id));
+    }
+    if (banners && Array.isArray(banners)) {
+      const incomingMap = new Map((banners as BannerItem[]).map((b) => [b.id, b]));
+      updatedBanners = updatedBanners.map((b) => incomingMap.get(b.id) || b);
+      for (const b of banners as BannerItem[]) {
+        if (!updatedBanners.some((item) => item.id === b.id)) {
+          updatedBanners.push(b);
+        }
+      }
+    }
+
     const updatedLocalData: FullStoreData = {
       ...currentData,
-      ...(banners ? { banners } : {}),
+      banners: updatedBanners,
       ...(Object.keys(mergedSiteContent).length > 0 ? { siteContent: mergedSiteContent } : {}),
-      ...(products ? { products } : {}),
+      products: updatedProducts,
       ...(galleryImages ? { galleryImages } : {}),
       ...(workshopNews ? { workshopNews } : {}),
       ...(contactInfo ? { contactInfo } : {}),
@@ -147,13 +178,13 @@ export async function POST(request: Request) {
       console.warn('Local fs write skipped (serverless filesystem):', fsErr);
     }
 
-    // B. Simpan ke Supabase PostgreSQL via Server Client (Bulk Upsert)
+    // B. Simpan ke Supabase PostgreSQL via Server Client (Bulk Upsert & Explicit Delete)
     const supabaseServer = createServerClient();
     if (supabaseServer) {
       const errors: string[] = [];
       try {
-        // 1. Simpan Banners (Bulk Upsert)
-        if (banners && Array.isArray(banners)) {
+        // 1. Simpan Banners (Upsert SAJA — Tanpa blind delete!)
+        if (banners && Array.isArray(banners) && banners.length > 0) {
           const bannerList = banners as BannerItem[];
 
           const bannerPayloads = bannerList.map((b) => {
@@ -174,27 +205,12 @@ export async function POST(request: Request) {
             };
           });
 
-          const currentIds = bannerPayloads.map((b) => b.id).filter(Boolean);
-          if (currentIds.length > 0) {
-            const { data: existingBanners } = await supabaseServer.from('banners').select('id');
-            if (existingBanners && Array.isArray(existingBanners)) {
-              const toDelete = existingBanners
-                .map((eb) => eb.id)
-                .filter((id) => !currentIds.includes(id));
-              if (toDelete.length > 0) {
-                await supabaseServer.from('banners').delete().in('id', toDelete);
-              }
-            }
-          }
-
-          if (bannerPayloads.length > 0) {
-            const { error: bannerErr } = await supabaseServer
-              .from('banners')
-              .upsert(bannerPayloads, { onConflict: 'id' });
-            if (bannerErr) {
-              console.error('Bulk upsert banners error:', bannerErr);
-              errors.push(`Banners: ${bannerErr.message}`);
-            }
+          const { error: bannerErr } = await supabaseServer
+            .from('banners')
+            .upsert(bannerPayloads, { onConflict: 'id' });
+          if (bannerErr) {
+            console.error('Bulk upsert banners error:', bannerErr);
+            errors.push(`Banners: ${bannerErr.message}`);
           }
         }
 
@@ -220,21 +236,9 @@ export async function POST(request: Request) {
           }
         }
 
-        // 3. Simpan Products (Bulk Upsert)
-        if (products && Array.isArray(products)) {
+        // 3. Simpan Products (Upsert SAJA — Tanpa blind delete!)
+        if (products && Array.isArray(products) && products.length > 0) {
           const prodList = products as ProductItem[];
-          const currentIds = prodList.map((p) => p.id);
-          if (currentIds.length > 0) {
-            const { data: existingProds } = await supabaseServer.from('products').select('id');
-            if (existingProds && Array.isArray(existingProds)) {
-              const toDelete = existingProds
-                .map((ep) => ep.id)
-                .filter((id) => !currentIds.includes(id));
-              if (toDelete.length > 0) {
-                await supabaseServer.from('products').delete().in('id', toDelete);
-              }
-            }
-          }
 
           const productPayloads = prodList.map((p) => {
             const gallery =
@@ -267,65 +271,39 @@ export async function POST(request: Request) {
             };
           });
 
-          if (productPayloads.length > 0) {
-            let { error: prodErr } = await supabaseServer
+          let { error: prodErr } = await supabaseServer
+            .from('products')
+            .upsert(productPayloads, { onConflict: 'id' });
+
+          // Graceful fallback: Jika kolom baru seperti 'options' atau 'original_price' belum ditambahkan di tabel Supabase
+          if (prodErr && prodErr.message && prodErr.message.includes('schema cache')) {
+            console.warn(
+              'Supabase products table schema mismatch (kolom options/original_price belum ada). Melakukan fallback tanpa kolom baru:',
+              prodErr.message
+            );
+            const fallbackPayloads = productPayloads.map(
+              ({ options: _options, original_price: _original_price, ...rest }) => rest
+            );
+            const { error: retryErr } = await supabaseServer
               .from('products')
-              .upsert(productPayloads, { onConflict: 'id' });
+              .upsert(fallbackPayloads, { onConflict: 'id' });
 
-            // Graceful fallback: Jika kolom baru seperti 'options' atau 'original_price' belum ditambahkan di tabel Supabase
-            if (prodErr && prodErr.message && prodErr.message.includes('schema cache')) {
-              console.warn(
-                'Supabase products table schema mismatch (kolom options/original_price belum ada). Melakukan fallback tanpa kolom baru:',
-                prodErr.message
-              );
-              const fallbackPayloads = productPayloads.map(
-                ({ options: _options, original_price: _original_price, ...rest }) => rest
-              );
-              const { error: retryErr } = await supabaseServer
-                .from('products')
-                .upsert(fallbackPayloads, { onConflict: 'id' });
-
-              if (!retryErr) {
-                console.log('Berhasil menyimpan produk ke Supabase via legacy schema fallback.');
-                prodErr = null;
-              } else {
-                prodErr = retryErr;
-              }
+            if (!retryErr) {
+              console.log('Berhasil menyimpan produk ke Supabase via legacy schema fallback.');
+              prodErr = null;
+            } else {
+              prodErr = retryErr;
             }
+          }
 
-            if (prodErr) {
-              console.error('Bulk upsert products error:', prodErr);
-              errors.push(`Products: ${prodErr.message}`);
-            }
+          if (prodErr) {
+            console.error('Bulk upsert products error:', prodErr);
+            errors.push(`Products: ${prodErr.message}`);
           }
         }
 
-        // 4. Simpan Gallery Images (Bulk Upsert)
-        if (galleryImages && Array.isArray(galleryImages)) {
-          const galList = galleryImages as GalleryImageItem[];
-          const galPayloads = galList.map((g) => {
-            const isUUID =
-              g.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(g.id);
-            return {
-              id: isUUID ? g.id : randomUUID(),
-              image_url: g.image_url,
-              caption: g.caption || null,
-              sort_order: g.sort_order || 1,
-              category: g.category || 'workshop',
-              category_label: g.category_label || 'Workshop Studio',
-            };
-          });
-
-          if (galPayloads.length > 0) {
-            const { error: galErr } = await supabaseServer
-              .from('gallery_images')
-              .upsert(galPayloads, { onConflict: 'id' });
-            if (galErr) {
-              console.error('Bulk upsert gallery_images error:', galErr);
-              errors.push(`Gallery Images: ${galErr.message}`);
-            }
-          }
-        }
+        // 4. Foto dokumentasi workshop kini 100% menggunakan site_content['workshop_gallery']
+        // sebagai single source of truth, menghindari pembuatan baris baru dengan UUID acak di tabel gallery_images.
 
         // 5. Simpan Contact Info
         if (contactInfo && typeof contactInfo === 'object') {
@@ -348,6 +326,29 @@ export async function POST(request: Request) {
           if (contactErr) {
             console.error('Upsert contact_info error:', contactErr);
             errors.push(`Contact Info: ${contactErr.message}`);
+          }
+        }
+
+        // 6. Explicit Deletions (Dijalankan SETELAH upsert — Mencegah data terhapus jika upsert error)
+        if (deletedBannerIds && Array.isArray(deletedBannerIds) && deletedBannerIds.length > 0) {
+          const { error: delBannerErr } = await supabaseServer
+            .from('banners')
+            .delete()
+            .in('id', deletedBannerIds);
+          if (delBannerErr) {
+            console.error('Delete banners error:', delBannerErr);
+            errors.push(`Delete Banners: ${delBannerErr.message}`);
+          }
+        }
+
+        if (deletedProductIds && Array.isArray(deletedProductIds) && deletedProductIds.length > 0) {
+          const { error: delProdErr } = await supabaseServer
+            .from('products')
+            .delete()
+            .in('id', deletedProductIds);
+          if (delProdErr) {
+            console.error('Delete products error:', delProdErr);
+            errors.push(`Delete Products: ${delProdErr.message}`);
           }
         }
 
@@ -388,7 +389,10 @@ export async function POST(request: Request) {
       console.warn('Next.js revalidatePath warning:', revalErr);
     }
 
-    return NextResponse.json({ success: true, data: fullLocalPayload });
+    // Ambil data kanonikal terbaru dari sumber data utama untuk disinkronkan ke React state admin
+    const canonicalData = await getStoreData();
+
+    return NextResponse.json({ success: true, data: canonicalData });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Gagal menyimpan data';
     console.error('Error saving store data:', error);
