@@ -155,7 +155,26 @@ export async function POST(request: Request) {
         // 1. Simpan Banners (Bulk Upsert)
         if (banners && Array.isArray(banners)) {
           const bannerList = banners as BannerItem[];
-          const currentIds = bannerList.map((b) => b.id).filter(Boolean);
+
+          const bannerPayloads = bannerList.map((b) => {
+            const isUUID =
+              b.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(b.id);
+            const validId = isUUID ? b.id : randomUUID();
+            b.id = validId;
+
+            return {
+              id: validId,
+              image_url: b.image_url,
+              title: b.title,
+              subtitle: b.subtitle,
+              cta_text: b.cta_text || null,
+              cta_link: b.cta_link || null,
+              sort_order: b.sort_order,
+              is_active: b.is_active ?? true,
+            };
+          });
+
+          const currentIds = bannerPayloads.map((b) => b.id).filter(Boolean);
           if (currentIds.length > 0) {
             const { data: existingBanners } = await supabaseServer.from('banners').select('id');
             if (existingBanners && Array.isArray(existingBanners)) {
@@ -168,28 +187,10 @@ export async function POST(request: Request) {
             }
           }
 
-          const bannerPayloads = bannerList.map((b) => {
-            const isUUID =
-              b.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(b.id);
-            const payload: Record<string, unknown> = {
-              image_url: b.image_url,
-              title: b.title,
-              subtitle: b.subtitle,
-              cta_text: b.cta_text || null,
-              cta_link: b.cta_link || null,
-              sort_order: b.sort_order,
-              is_active: b.is_active ?? true,
-            };
-            if (isUUID) {
-              payload.id = b.id;
-            }
-            return payload;
-          });
-
           if (bannerPayloads.length > 0) {
             const { error: bannerErr } = await supabaseServer
               .from('banners')
-              .upsert(bannerPayloads);
+              .upsert(bannerPayloads, { onConflict: 'id' });
             if (bannerErr) {
               console.error('Bulk upsert banners error:', bannerErr);
               errors.push(`Banners: ${bannerErr.message}`);

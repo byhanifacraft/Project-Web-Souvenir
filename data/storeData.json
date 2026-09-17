@@ -12,21 +12,10 @@
       "created_at": "2026-09-01T15:13:26.684842+00:00"
     },
     {
-      "id": "94ff9c13-c1fc-4fdd-9e09-9a2bb727d359",
-      "image_url": "/images/products/gift-box.jpg",
-      "title": "Exclusive Hampers & Gift Box Set",
-      "subtitle": "Kemasan Rustic Cantik Berpita Siap Dibagikan",
-      "cta_text": "Jelajahi Produk",
-      "cta_link": "/produk",
-      "sort_order": 2,
-      "is_active": true,
-      "created_at": "2026-09-01T15:13:26.684842+00:00"
-    },
-    {
       "id": "7608960a-0505-4597-bc1f-8e75089e9ebb",
-      "image_url": "/images/products/resin-keychain.jpg",
-      "title": "Gantungan Kunci Resin & Lilin Botol",
-      "subtitle": "Koleksi Terlaris 50.000+ Pcs Terkirim",
+      "image_url": "https://glmipnvibbgpowueubjq.supabase.co/storage/v1/object/public/banners/banners-1789610370001-lloe43.jpg",
+      "title": "Gantungan Kunci Resin Custom free Nama",
+      "subtitle": "Koleksi Terlaris 5.000+ Pcs Terkirim",
       "cta_text": "Tentang Kami",
       "cta_link": "/tentang-kami",
       "sort_order": 3,

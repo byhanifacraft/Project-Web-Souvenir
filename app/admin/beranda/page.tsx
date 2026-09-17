@@ -318,8 +318,12 @@ export default function AdminBerandaPage() {
         <button
           type="button"
           onClick={() => {
+            const newBannerId =
+              typeof crypto !== 'undefined' && crypto.randomUUID
+                ? crypto.randomUUID()
+                : `banner-${Date.now()}`;
             setEditingBanner({
-              id: `banner-${Date.now()}`,
+              id: newBannerId,
               image_url: '/images/products/hero-banner.jpg',
               title: '',
               subtitle: '',
