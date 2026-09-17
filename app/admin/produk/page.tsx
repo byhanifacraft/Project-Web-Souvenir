@@ -20,6 +20,7 @@ import {
 import { ProductItem } from '@/types/store';
 import { ProductSchema } from '@/lib/validations/product.schema';
 import { formatRupiah } from '@/lib/utils';
+import { compressImage } from '@/lib/imageCompressor';
 
 const PRESET_CATEGORIES = [
   { id: 'candle', label: 'Lilin Aromaterapi' },
@@ -76,14 +77,15 @@ export default function AdminProdukPage() {
 
   const handleUploadFile = async (file: File, onSuccess: (url: string) => void) => {
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
-        return;
-      }
-
       setUploading(true);
+      // Auto-kompres foto produk ke WebP ringan (~150KB-300KB) resolusi tajam
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.85,
+      });
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       formData.append('bucket', 'products');
 
       const res = await fetch('/api/upload', {

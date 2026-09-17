@@ -42,6 +42,7 @@ import {
   DEFAULT_WORKSHOP_GALLERY,
 } from '@/lib/workshopDefaults';
 import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
+import { compressImage } from '@/lib/imageCompressor';
 
 export default function AdminWorkshopPage() {
   const [activeTab, setActiveTab] = useState<
@@ -306,14 +307,15 @@ export default function AdminWorkshopPage() {
   // --- GALLERY ACTIONS ---
   const handleUploadGalleryPhoto = async (file: File) => {
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
-        return;
-      }
-
       setUploadingGallery(true);
+      // Auto-kompres foto dokumentasi studio ke WebP (~150KB-300KB)
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.85,
+      });
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       formData.append('bucket', 'gallery');
 
       const res = await fetch('/api/upload', {
@@ -385,14 +387,15 @@ export default function AdminWorkshopPage() {
   const handleUploadNewsImage = async (file: File) => {
     if (!editingNews) return;
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
-        return;
-      }
-
       setUploadingNewsPhoto(true);
+      // Auto-kompres foto berita / promosi workshop ke WebP
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.85,
+      });
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       formData.append('bucket', 'gallery');
 
       const res = await fetch('/api/upload', {

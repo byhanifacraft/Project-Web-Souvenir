@@ -20,6 +20,7 @@ import {
 import { BannerItem, SiteContentItem } from '@/types/store';
 import { BannerSchema } from '@/lib/validations/banner.schema';
 import { FeatureItem } from '@/components/Features';
+import { compressImage } from '@/lib/imageCompressor';
 
 const AVAILABLE_ICONS = [
   { id: 'Sparkles', label: 'Sparkles (Sentuhan Tangan / Estetik)' },
@@ -123,14 +124,15 @@ export default function AdminBerandaPage() {
 
   const handleUploadFile = async (file: File, onSuccess: (url: string) => void) => {
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
-        return;
-      }
-
       setUploading(true);
+      // Auto-kompres foto resolusi tinggi ke WebP ringan (~150KB-300KB)
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1920,
+        maxHeight: 1080,
+        quality: 0.85,
+      });
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       formData.append('bucket', 'banners');
 
       const res = await fetch('/api/upload', {

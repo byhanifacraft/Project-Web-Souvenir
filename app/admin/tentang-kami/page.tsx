@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Info, Sparkles, Save, CheckCircle2, Loader2, User, Upload } from 'lucide-react';
 import { SiteContentItem } from '@/types/store';
+import { compressImage } from '@/lib/imageCompressor';
 
 export default function AdminTentangKamiPage() {
   const [siteContent, setSiteContent] = useState<Record<string, SiteContentItem>>({});
@@ -56,14 +57,15 @@ export default function AdminTentangKamiPage() {
 
   const handleUploadOwnerPhoto = async (file: File) => {
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
-        return;
-      }
-
       setUploading(true);
+      // Auto-kompres foto profil owner ke WebP (~150KB)
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.85,
+      });
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       formData.append('bucket', 'site');
 
       const res = await fetch('/api/upload', {
@@ -99,14 +101,15 @@ export default function AdminTentangKamiPage() {
 
   const handleUploadStoryPhoto = async (file: File) => {
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Ukuran foto terlalu besar. Maksimal 10MB.');
-        return;
-      }
-
       setUploadingStory(true);
+      // Auto-kompres foto studio brand ke WebP (~200KB)
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1600,
+        maxHeight: 1200,
+        quality: 0.85,
+      });
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressedFile);
       formData.append('bucket', 'site');
 
       const res = await fetch('/api/upload', {
