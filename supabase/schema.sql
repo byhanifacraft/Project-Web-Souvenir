@@ -49,7 +49,12 @@ CREATE TABLE IF NOT EXISTS public.products (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Tabel Gallery Images (Grid Foto Galeri & Behind The Scenes)
+-- 4. Tabel Gallery Images [DEPRECATED - Tidak dipakai lagi dalam kode aktif]
+-- CATATAN ARSITEKTUR:
+-- Galeri workshop kini 100% menggunakan site_content (section_key: 'workshop_gallery')
+-- sebagai single source of truth untuk mencegah penumpukan baris dengan UUID acak.
+-- Tabel ini disimpan sebagai riwayat skema lama. Jika ingin dibersihkan di Supabase SQL Editor:
+-- DROP TABLE IF EXISTS public.gallery_images CASCADE;
 CREATE TABLE IF NOT EXISTS public.gallery_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     image_url TEXT NOT NULL,
@@ -311,7 +316,7 @@ VALUES
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Seed Gallery Images
+-- Seed Gallery Images [DEPRECATED - Data aktif kini tersimpan di site_content section_key 'workshop_gallery']
 INSERT INTO public.gallery_images (image_url, caption, sort_order, category, category_label)
 VALUES
 ('/images/products/aromatherapy-candle.jpg', 'Lilin aromaterapi soy wax aroma lavender & vanilla', 1, 'candle', 'Lilin Aromaterapi'),

@@ -123,6 +123,11 @@ export interface Database {
           created_at?: string;
         };
       };
+      /**
+       * @deprecated Tabel gallery_images sudah tidak digunakan oleh kode aktif.
+       * Galeri workshop studio kini menggunakan site_content (section_key: 'workshop_gallery')
+       * sebagai single source of truth. Tabel ini dapat di-DROP di Supabase jika diinginkan.
+       */
       gallery_images: {
         Row: {
           id: string;
