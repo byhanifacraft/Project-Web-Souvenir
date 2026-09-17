@@ -257,9 +257,31 @@ export async function POST(request: Request) {
           }));
 
           if (productPayloads.length > 0) {
-            const { error: prodErr } = await supabaseServer
+            let { error: prodErr } = await supabaseServer
               .from('products')
               .upsert(productPayloads, { onConflict: 'id' });
+
+            // Graceful fallback: Jika kolom baru seperti 'options' atau 'original_price' belum ditambahkan di tabel Supabase
+            if (prodErr && prodErr.message && prodErr.message.includes('schema cache')) {
+              console.warn(
+                'Supabase products table schema mismatch (kolom options/original_price belum ada). Melakukan fallback tanpa kolom baru:',
+                prodErr.message
+              );
+              const fallbackPayloads = productPayloads.map(
+                ({ options, original_price, ...rest }) => rest
+              );
+              const { error: retryErr } = await supabaseServer
+                .from('products')
+                .upsert(fallbackPayloads, { onConflict: 'id' });
+
+              if (!retryErr) {
+                console.log('Berhasil menyimpan produk ke Supabase via legacy schema fallback.');
+                prodErr = null;
+              } else {
+                prodErr = retryErr;
+              }
+            }
+
             if (prodErr) {
               console.error('Bulk upsert products error:', prodErr);
               errors.push(`Products: ${prodErr.message}`);
