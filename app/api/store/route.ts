@@ -14,7 +14,6 @@ import {
   ProductItem,
   ContactInfoItem,
 } from '@/types/store';
-import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 
 const dataFilePath = path.join(process.cwd(), 'data', 'storeData.json');
 
@@ -95,14 +94,14 @@ export async function POST(request: Request) {
       siteContent: {},
       products: [],
       galleryImages: [],
-      workshopNews: DEFAULT_WORKSHOP_NEWS,
+      workshopNews: [],
       contactInfo: defaultFallbackContact,
     };
 
     // Sinkronkan workshopNews & workshop_gallery ke siteContent jika diberikan
     const mergedSiteContent: Record<string, SiteContentItem> = {
       ...(siteContent || {}),
-      ...(workshopNews
+      ...(workshopNews !== undefined
         ? {
             workshop_news: {
               section_key: 'workshop_news',
@@ -112,7 +111,7 @@ export async function POST(request: Request) {
             },
           }
         : {}),
-      ...(galleryImages
+      ...(galleryImages !== undefined
         ? {
             workshop_gallery: {
               section_key: 'workshop_gallery',
@@ -159,8 +158,8 @@ export async function POST(request: Request) {
       banners: updatedBanners,
       ...(Object.keys(mergedSiteContent).length > 0 ? { siteContent: mergedSiteContent } : {}),
       products: updatedProducts,
-      ...(galleryImages ? { galleryImages } : {}),
-      ...(workshopNews ? { workshopNews } : {}),
+      ...(galleryImages !== undefined ? { galleryImages } : {}),
+      ...(workshopNews !== undefined ? { workshopNews } : {}),
       ...(contactInfo ? { contactInfo } : {}),
     };
 

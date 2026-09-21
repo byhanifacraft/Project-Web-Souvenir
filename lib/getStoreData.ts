@@ -10,8 +10,6 @@ import {
   GalleryImageItem,
   WorkshopNewsItem,
 } from '@/types/store';
-import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
-import { DEFAULT_WORKSHOP_GALLERY } from '@/lib/workshopDefaults';
 
 const defaultContactInfo: ContactInfoItem = {
   name: 'CraftByHanifa',
@@ -105,28 +103,25 @@ export async function getStoreData(): Promise<FullStoreData> {
           };
         });
 
-        // Ambil data foto dokumentasi workshop (Single source of truth: site_content['workshop_gallery'] -> default)
+        // Ambil data foto dokumentasi workshop (Single source of truth: site_content['workshop_gallery'])
         let galleryImagesList: GalleryImageItem[] = [];
         if (siteContentRecord['workshop_gallery']?.content) {
           try {
             const parsed = JSON.parse(siteContentRecord['workshop_gallery'].content);
-            if (Array.isArray(parsed) && parsed.length > 0) {
+            if (Array.isArray(parsed)) {
               galleryImagesList = parsed;
             }
           } catch (e) {
             console.warn('Error parsing workshop_gallery in getStoreData:', e);
           }
         }
-        if (galleryImagesList.length === 0) {
-          galleryImagesList = DEFAULT_WORKSHOP_GALLERY;
-        }
 
-        // Ambil data berita & event workshop
-        let workshopNews: WorkshopNewsItem[] = DEFAULT_WORKSHOP_NEWS;
+        // Ambil data berita & event workshop (Single source of truth: site_content['workshop_news'])
+        let workshopNews: WorkshopNewsItem[] = [];
         if (siteContentRecord['workshop_news']?.content) {
           try {
             const parsed = JSON.parse(siteContentRecord['workshop_news'].content);
-            if (Array.isArray(parsed) && parsed.length > 0) {
+            if (Array.isArray(parsed)) {
               workshopNews = parsed;
             }
           } catch (e) {
@@ -159,11 +154,8 @@ export async function getStoreData(): Promise<FullStoreData> {
       const parsed = JSON.parse(content);
       return {
         ...parsed,
-        galleryImages:
-          parsed.galleryImages && parsed.galleryImages.length > 0
-            ? parsed.galleryImages
-            : DEFAULT_WORKSHOP_GALLERY,
-        workshopNews: parsed.workshopNews || DEFAULT_WORKSHOP_NEWS,
+        galleryImages: Array.isArray(parsed.galleryImages) ? parsed.galleryImages : [],
+        workshopNews: Array.isArray(parsed.workshopNews) ? parsed.workshopNews : [],
         source: 'local',
       };
     }
@@ -175,8 +167,8 @@ export async function getStoreData(): Promise<FullStoreData> {
     banners: [],
     siteContent: {},
     products: [],
-    galleryImages: DEFAULT_WORKSHOP_GALLERY,
-    workshopNews: DEFAULT_WORKSHOP_NEWS,
+    galleryImages: [],
+    workshopNews: [],
     contactInfo: defaultContactInfo,
     source: 'local',
   };

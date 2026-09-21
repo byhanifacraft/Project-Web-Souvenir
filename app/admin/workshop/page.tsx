@@ -44,9 +44,7 @@ import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
   DEFAULT_RESERVATION_STEPS,
-  DEFAULT_WORKSHOP_GALLERY,
 } from '@/lib/workshopDefaults';
-import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 import { compressImage } from '@/lib/imageCompressor';
 
 export default function AdminWorkshopPage() {
@@ -62,8 +60,8 @@ export default function AdminWorkshopPage() {
   const [curriculum, setCurriculum] = useState<CurriculumStep[]>(DEFAULT_CURRICULUM_STEPS);
   const [reservationSteps, setReservationSteps] =
     useState<ReservationStep[]>(DEFAULT_RESERVATION_STEPS);
-  const [galleryImages, setGalleryImages] = useState<GalleryImageItem[]>(DEFAULT_WORKSHOP_GALLERY);
-  const [workshopNews, setWorkshopNews] = useState<WorkshopNewsItem[]>(DEFAULT_WORKSHOP_NEWS);
+  const [galleryImages, setGalleryImages] = useState<GalleryImageItem[]>([]);
+  const [workshopNews, setWorkshopNews] = useState<WorkshopNewsItem[]>([]);
   const [siteContent, setSiteContent] = useState<Record<string, SiteContentItem>>({});
 
   // 2. Modal States for Package Editing / Adding
@@ -121,32 +119,28 @@ export default function AdminWorkshopPage() {
           }
         }
 
-        // Parse Workshop Gallery
+        // Parse Workshop Gallery (dukung galeri kosong jika dihapus bersih)
         if (data.siteContent?.['workshop_gallery']?.content) {
           try {
             const parsed = JSON.parse(data.siteContent['workshop_gallery'].content);
-            if (Array.isArray(parsed) && parsed.length > 0) setGalleryImages(parsed);
+            if (Array.isArray(parsed)) setGalleryImages(parsed);
           } catch (e) {
             console.warn('Error parsing workshop_gallery:', e);
           }
-        } else if (
-          data.galleryImages &&
-          Array.isArray(data.galleryImages) &&
-          data.galleryImages.length > 0
-        ) {
+        } else if (data.galleryImages && Array.isArray(data.galleryImages)) {
           setGalleryImages(data.galleryImages);
         }
 
-        // Parse Workshop News
-        if (data.workshopNews && Array.isArray(data.workshopNews) && data.workshopNews.length > 0) {
-          setWorkshopNews(data.workshopNews);
-        } else if (data.siteContent?.['workshop_news']?.content) {
+        // Parse Workshop News (dukung berita kosong jika dihapus bersih)
+        if (data.siteContent?.['workshop_news']?.content) {
           try {
             const parsed = JSON.parse(data.siteContent['workshop_news'].content);
-            if (Array.isArray(parsed) && parsed.length > 0) setWorkshopNews(parsed);
+            if (Array.isArray(parsed)) setWorkshopNews(parsed);
           } catch (e) {
             console.warn('Error parsing workshop_news:', e);
           }
+        } else if (data.workshopNews && Array.isArray(data.workshopNews)) {
+          setWorkshopNews(data.workshopNews);
         }
       })
       .catch((err) => console.error('Error fetching workshop data:', err))
@@ -168,11 +162,11 @@ export default function AdminWorkshopPage() {
   ) => {
     try {
       setSaving(true);
-      const pkgsToSave = customPackages || packages;
-      const currToSave = customCurriculum || curriculum;
-      const resToSave = customReservation || reservationSteps;
-      const galToSave = customGallery || galleryImages;
-      const newsToSave = customNews || workshopNews;
+      const pkgsToSave = customPackages !== undefined ? customPackages : packages;
+      const currToSave = customCurriculum !== undefined ? customCurriculum : curriculum;
+      const resToSave = customReservation !== undefined ? customReservation : reservationSteps;
+      const galToSave = customGallery !== undefined ? customGallery : galleryImages;
+      const newsToSave = customNews !== undefined ? customNews : workshopNews;
 
       const updatedSiteContent = {
         ...siteContent,

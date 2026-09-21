@@ -15,9 +15,7 @@ import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
   DEFAULT_RESERVATION_STEPS,
-  DEFAULT_WORKSHOP_GALLERY,
 } from '@/lib/workshopDefaults';
-import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 import WorkshopNewsModal from '@/components/WorkshopNewsModal';
 
 function SafeImage({
@@ -88,14 +86,9 @@ export default function WorkshopPageContent({
     initialReservationSteps && initialReservationSteps.length > 0
       ? initialReservationSteps
       : DEFAULT_RESERVATION_STEPS;
-  const newsList =
-    initialWorkshopNews && initialWorkshopNews.length > 0
-      ? initialWorkshopNews
-      : DEFAULT_WORKSHOP_NEWS;
-
+  const newsList = initialWorkshopNews || [];
   const activeNews = newsList.filter((n) => n.is_active !== false);
-  const galleryList: GalleryImageItem[] =
-    galleryImages && galleryImages.length > 0 ? galleryImages : DEFAULT_WORKSHOP_GALLERY;
+  const galleryList: GalleryImageItem[] = galleryImages || [];
 
   const [selectedPackage, setSelectedPackage] = useState<string>(packages[0]?.id || 'premium');
   const [selectedNews, setSelectedNews] = useState<WorkshopNewsItem | null>(null);
@@ -636,7 +629,7 @@ export default function WorkshopPageContent({
         </div>
 
         {/* 1. BAGIAN EVENT & BERITA PROMOSI WORKSHOP */}
-        {(galleryTab === 'all' || galleryTab === 'news') && (
+        {(galleryTab === 'all' || galleryTab === 'news') && activeNews.length > 0 && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -755,8 +748,25 @@ export default function WorkshopPageContent({
           </div>
         )}
 
-        {/* ELEMEN PEMISAH ESTETIK (DIVIDER) JIKA KEDUANYA TAMPIL */}
-        {galleryTab === 'all' && (
+        {/* State Kosong untuk Tab Event & Berita */}
+        {galleryTab === 'news' && activeNews.length === 0 && (
+          <div className="py-16 text-center bg-white rounded-3xl border border-[#ebdcd5] p-8 max-w-lg mx-auto shadow-2xs">
+            <Icon
+              icon="solar:bullhorn-bold-duotone"
+              className="w-10 h-10 text-[#df829b] mx-auto mb-3 opacity-60"
+            />
+            <h3 className="font-serif font-bold text-base text-zinc-900 mb-1">
+              Belum Ada Agenda Event
+            </h3>
+            <p className="text-xs text-zinc-600 leading-relaxed">
+              Saat ini belum ada pengumuman kelas atau event promosi baru. Pantau terus halaman ini
+              atau hubungi studio kami via WhatsApp!
+            </p>
+          </div>
+        )}
+
+        {/* ELEMEN PEMISAH ESTETIK (DIVIDER) HANYA JIKA KEDUANYA ADA */}
+        {galleryTab === 'all' && activeNews.length > 0 && galleryList.length > 0 && (
           <div className="my-14 relative flex items-center justify-center">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
               <div className="w-full border-t border-[#e4d4cd]" />
@@ -769,7 +779,7 @@ export default function WorkshopPageContent({
         )}
 
         {/* 2. BAGIAN FOTO DOKUMENTASI WORKSHOP */}
-        {(galleryTab === 'all' || galleryTab === 'gallery') && (
+        {(galleryTab === 'all' || galleryTab === 'gallery') && galleryList.length > 0 && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -837,6 +847,38 @@ export default function WorkshopPageContent({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* State Kosong untuk Tab Galeri */}
+        {galleryTab === 'gallery' && galleryList.length === 0 && (
+          <div className="py-16 text-center bg-white rounded-3xl border border-[#ebdcd5] p-8 max-w-lg mx-auto shadow-2xs">
+            <Icon
+              icon="solar:gallery-bold-duotone"
+              className="w-10 h-10 text-[#df829b] mx-auto mb-3 opacity-60"
+            />
+            <h3 className="font-serif font-bold text-base text-zinc-900 mb-1">
+              Belum Ada Foto Dokumentasi
+            </h3>
+            <p className="text-xs text-zinc-600 leading-relaxed">
+              Foto dokumentasi workshop akan segera diunggah oleh studio.
+            </p>
+          </div>
+        )}
+
+        {/* State Kosong untuk Tab Semua jika Keduanya Kosong */}
+        {galleryTab === 'all' && activeNews.length === 0 && galleryList.length === 0 && (
+          <div className="py-16 text-center bg-white rounded-3xl border border-[#ebdcd5] p-8 max-w-lg mx-auto shadow-2xs">
+            <Icon
+              icon="solar:camera-bold-duotone"
+              className="w-10 h-10 text-[#df829b] mx-auto mb-3 opacity-60"
+            />
+            <h3 className="font-serif font-bold text-base text-zinc-900 mb-1">
+              Galeri Dokumentasi Belum Tersedia
+            </h3>
+            <p className="text-xs text-zinc-600 leading-relaxed">
+              Belum ada foto kegiatan maupun pengumuman workshop saat ini.
+            </p>
           </div>
         )}
 

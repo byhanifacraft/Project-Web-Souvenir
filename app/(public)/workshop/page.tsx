@@ -31,7 +31,7 @@ export default async function WorkshopPage() {
   if (siteContent['workshop_gallery']?.content) {
     try {
       const parsed = JSON.parse(siteContent['workshop_gallery'].content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         galleryImages = parsed;
       }
     } catch {
@@ -39,11 +39,11 @@ export default async function WorkshopPage() {
     }
   }
 
-  let workshopNews = storeData?.workshopNews;
+  let workshopNews = storeData?.workshopNews || [];
   if (siteContent['workshop_news']?.content) {
     try {
       const parsed = JSON.parse(siteContent['workshop_news'].content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         workshopNews = parsed;
       }
     } catch {
