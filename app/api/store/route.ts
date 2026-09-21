@@ -7,6 +7,10 @@ import { randomUUID } from 'crypto';
 import { verifyAdminSessionToken, COOKIE_NAME, isValidOrigin } from '@/lib/auth/session';
 import { createServerClient } from '@/lib/supabase/server';
 import { getStoreData } from '@/lib/getStoreData';
+import { BannerSchema } from '@/lib/validations/banner.schema';
+import { ProductSchema } from '@/lib/validations/product.schema';
+import { ContactSchema } from '@/lib/validations/contact.schema';
+import { SiteContentSchema } from '@/lib/validations/content.schema';
 import {
   FullStoreData,
   SiteContentItem,
@@ -59,7 +63,7 @@ export async function GET() {
   }
 }
 
-// 2. POST Handler - Terproteksi Sesi Admin & Menggunakan Bulk Upsert + ISR Revalidation
+// 2. POST Handler - Terproteksi Sesi Admin, Zod Validated, & Menggunakan Bulk Upsert + ISR Revalidation
 export async function POST(request: Request) {
   // 0. Validasi Origin untuk mencegah Cross-Site Request Forgery (CSRF)
   if (!isValidOrigin(request)) {
@@ -95,6 +99,75 @@ export async function POST(request: Request) {
       deletedBannerIds,
       deletedProductIds,
     } = body;
+
+    // --- B. VALIDASI INPUT ZOD (FAIL-FAST SEBELUM MENULIS KE DB) ---
+    if (banners !== undefined && Array.isArray(banners)) {
+      const parseBanners = BannerSchema.array().safeParse(banners);
+      if (!parseBanners.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              'Validasi data banner gagal: ' +
+              (parseBanners.error.issues[0]?.message || 'Data tidak sesuai format'),
+            details: parseBanners.error.flatten(),
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (products !== undefined && Array.isArray(products)) {
+      const parseProducts = ProductSchema.array().safeParse(products);
+      if (!parseProducts.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              'Validasi data produk gagal: ' +
+              (parseProducts.error.issues[0]?.message || 'Data tidak sesuai format'),
+            details: parseProducts.error.flatten(),
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (contactInfo !== undefined && contactInfo !== null && typeof contactInfo === 'object') {
+      const parseContact = ContactSchema.safeParse(contactInfo);
+      if (!parseContact.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              'Validasi kontak gagal: ' +
+              (parseContact.error.issues[0]?.message || 'Data tidak sesuai format'),
+            details: parseContact.error.flatten(),
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (siteContent !== undefined && typeof siteContent === 'object' && siteContent !== null) {
+      for (const [key, item] of Object.entries(siteContent)) {
+        if (item && typeof item === 'object') {
+          const parseContent = SiteContentSchema.safeParse(item);
+          if (!parseContent.success) {
+            return NextResponse.json(
+              {
+                success: false,
+                error:
+                  `Validasi konten (${key}) gagal: ` +
+                  (parseContent.error.issues[0]?.message || 'Data tidak sesuai format'),
+                details: parseContent.error.flatten(),
+              },
+              { status: 400 }
+            );
+          }
+        }
+      }
+    }
 
     // Baca data lokal saat ini
     const currentData = getLocalStoreData() || {

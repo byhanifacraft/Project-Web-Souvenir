@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 
@@ -129,13 +131,13 @@ export default function Hero({ config, hero }: HeroProps) {
 
             {/* Action CTAs - Expressive Pills with WhatsApp Green */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3">
-              <a
+              <Link
                 href="/produk"
                 className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#1d1d1f] text-white font-medium text-xs sm:text-sm hover:bg-zinc-800 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px]"
               >
                 <Icon icon="solar:bag-3-bold-duotone" className="w-4 h-4 text-white" />
                 <span>Jelajahi Produk</span>
-              </a>
+              </Link>
 
               <a
                 href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent('Halo Kak Hanifa (' + brandName + '), saya ingin konsultasi ide souvenir untuk acara kami.')}`}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase/client';
+import { createServerClient } from '@/lib/supabase/server';
 import {
   createAdminSessionToken,
   COOKIE_NAME,
@@ -8,13 +9,84 @@ import {
   timingSafeCompare,
 } from '@/lib/auth/session';
 
-// In-memory rate limiter untuk proteksi brute force
-const failedAttempts = new Map<string, { count: number; lockedUntil: number }>();
+interface RateLimitRecord {
+  count: number;
+  lockedUntil: number;
+}
+
+// In-memory rate limiter cache L1
+const failedAttempts = new Map<string, RateLimitRecord>();
 
 function getClientIp(req: Request): string {
   const forwarded = req.headers.get('x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0].trim();
   return 'unknown-ip';
+}
+
+async function getRateLimitStatus(ip: string): Promise<RateLimitRecord> {
+  const now = Date.now();
+  const cached = failedAttempts.get(ip);
+  if (cached && cached.lockedUntil > now) {
+    return cached;
+  }
+
+  const sbServer = createServerClient();
+  if (sbServer) {
+    try {
+      const key = `rl_${ip.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      const { data } = await sbServer
+        .from('site_content')
+        .select('content')
+        .eq('section_key', key)
+        .maybeSingle();
+
+      if (data?.content) {
+        const parsed: RateLimitRecord = JSON.parse(data.content);
+        if (parsed && typeof parsed.count === 'number') {
+          failedAttempts.set(ip, parsed);
+          return parsed;
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return cached || { count: 0, lockedUntil: 0 };
+}
+
+async function recordFailedAttempt(ip: string, newCount: number, lockedUntil: number) {
+  const record: RateLimitRecord = { count: newCount, lockedUntil };
+  failedAttempts.set(ip, record);
+
+  const sbServer = createServerClient();
+  if (sbServer) {
+    try {
+      const key = `rl_${ip.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      await sbServer.from('site_content').upsert({
+        section_key: key,
+        title: 'Login Rate Limit IP',
+        content: JSON.stringify(record),
+        updated_at: new Date().toISOString(),
+      });
+    } catch {
+      // ignore
+    }
+  }
+}
+
+async function resetFailedAttempts(ip: string) {
+  failedAttempts.delete(ip);
+
+  const sbServer = createServerClient();
+  if (sbServer) {
+    try {
+      const key = `rl_${ip.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      await sbServer.from('site_content').delete().eq('section_key', key);
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export async function POST(request: Request) {
@@ -29,14 +101,14 @@ export async function POST(request: Request) {
   const ip = getClientIp(request);
   const now = Date.now();
 
-  // 1. Cek status lockout rate limit
-  const rateLimit = failedAttempts.get(ip);
+  // 1. Cek status lockout rate limit (Cross-Instance Persistent)
+  const rateLimit = await getRateLimitStatus(ip);
   if (rateLimit && rateLimit.lockedUntil > now) {
     const remainingSec = Math.ceil((rateLimit.lockedUntil - now) / 1000);
     return NextResponse.json(
       {
         success: false,
-        error: `Terlalu banyak percobaan gagal. Silakan tunggu ${remainingSec} detik lagi.`,
+        error: `Terlalu banyak percobaan gagal. Akun dikunci sementara. Silakan tunggu ${remainingSec} detik lagi.`,
       },
       { status: 429 }
     );
@@ -100,9 +172,9 @@ export async function POST(request: Request) {
       }
     }
 
-    // 4. Jika kredensial salah -> Catat kegagalan & rate limit
+    // 4. Jika kredensial salah -> Catat kegagalan & rate limit persisten
     if (!isValid) {
-      const current = failedAttempts.get(ip) || { count: 0, lockedUntil: 0 };
+      const current = await getRateLimitStatus(ip);
       const newCount = current.count + 1;
       let lockedUntil = 0;
 
@@ -110,7 +182,7 @@ export async function POST(request: Request) {
         lockedUntil = now + 5 * 60 * 1000; // Kunci 5 menit jika 5x berturut-turut salah
       }
 
-      failedAttempts.set(ip, { count: newCount, lockedUntil });
+      await recordFailedAttempt(ip, newCount, lockedUntil);
 
       return NextResponse.json(
         {
@@ -125,7 +197,7 @@ export async function POST(request: Request) {
     }
 
     // 5. Berhasil -> Reset counter kegagalan
-    failedAttempts.delete(ip);
+    await resetFailedAttempts(ip);
 
     // 6. Buat Signed HMAC Session Token
     const sessionToken = createAdminSessionToken(email);

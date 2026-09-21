@@ -14,13 +14,6 @@ import {
   Calendar,
   Images,
   Edit2,
-  ArrowUp,
-  ArrowDown,
-  Upload,
-  Clock,
-  Users,
-  Gift,
-  Check,
   X,
   Megaphone,
   Flame,
@@ -28,24 +21,19 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
-import {
-  WorkshopPackage,
-  CurriculumStep,
-  ReservationStep,
-  normalizeTakeHomeItem,
-} from '@/types/workshop';
-import {
-  GalleryImageItem,
-  SiteContentItem,
-  WorkshopNewsItem,
-  WorkshopNewsStatus,
-} from '@/types/store';
+import { WorkshopPackage, CurriculumStep, ReservationStep } from '@/types/workshop';
+import { GalleryImageItem, SiteContentItem, WorkshopNewsItem } from '@/types/store';
 import {
   DEFAULT_WORKSHOP_PACKAGES,
   DEFAULT_CURRICULUM_STEPS,
   DEFAULT_RESERVATION_STEPS,
 } from '@/lib/workshopDefaults';
-import { compressImage } from '@/lib/imageCompressor';
+import CurriculumEditor from '@/components/admin/workshop/CurriculumEditor';
+import ReservationStepsEditor from '@/components/admin/workshop/ReservationStepsEditor';
+import PackageCardItem from '@/components/admin/workshop/PackageCardItem';
+import PackageFormModal from '@/components/admin/workshop/PackageFormModal';
+import WorkshopNewsEditorModal from '@/components/admin/workshop/WorkshopNewsEditorModal';
+import WorkshopGallerySection from '@/components/admin/workshop/WorkshopGallerySection';
 
 export default function AdminWorkshopPage() {
   const [activeTab, setActiveTab] = useState<
@@ -64,22 +52,11 @@ export default function AdminWorkshopPage() {
   const [workshopNews, setWorkshopNews] = useState<WorkshopNewsItem[]>([]);
   const [siteContent, setSiteContent] = useState<Record<string, SiteContentItem>>({});
 
-  // 2. Modal States for Package Editing / Adding
+  // 2. Modal States
   const [editingPackage, setEditingPackage] = useState<WorkshopPackage | null>(null);
   const [isAddingPackage, setIsAddingPackage] = useState(false);
-  const [uploadingTakeHomeIndex, setUploadingTakeHomeIndex] = useState<number | null>(null);
-
-  // 3. Modal / Upload State for Gallery Photo
-  const [uploadingGallery, setUploadingGallery] = useState(false);
-  const [editingGalleryItem, setEditingGalleryItem] = useState<GalleryImageItem | null>(null);
-  const [newGalleryCaption, setNewGalleryCaption] = useState('');
-  const newGalleryCategory = 'workshop';
-  const [newGalleryCategoryLabel, setNewGalleryCategoryLabel] = useState('Workshop Studio');
-
-  // 4. Modal / Upload State for Workshop News & Promotion
   const [editingNews, setEditingNews] = useState<WorkshopNewsItem | null>(null);
   const [isAddingNews, setIsAddingNews] = useState(false);
-  const [uploadingNewsPhoto, setUploadingNewsPhoto] = useState(false);
 
   useEffect(() => {
     fetch('/api/store', { cache: 'no-store' })
@@ -88,7 +65,6 @@ export default function AdminWorkshopPage() {
         if (data.siteContent) {
           setSiteContent(data.siteContent);
 
-          // Parse Packages
           if (data.siteContent['workshop_packages']?.content) {
             try {
               const parsed = JSON.parse(data.siteContent['workshop_packages'].content);
@@ -98,7 +74,6 @@ export default function AdminWorkshopPage() {
             }
           }
 
-          // Parse Curriculum
           if (data.siteContent['workshop_curriculum']?.content) {
             try {
               const parsed = JSON.parse(data.siteContent['workshop_curriculum'].content);
@@ -108,7 +83,6 @@ export default function AdminWorkshopPage() {
             }
           }
 
-          // Parse Reservation Steps
           if (data.siteContent['workshop_reservation_steps']?.content) {
             try {
               const parsed = JSON.parse(data.siteContent['workshop_reservation_steps'].content);
@@ -119,7 +93,6 @@ export default function AdminWorkshopPage() {
           }
         }
 
-        // Parse Workshop Gallery (dukung galeri kosong jika dihapus bersih)
         if (data.siteContent?.['workshop_gallery']?.content) {
           try {
             const parsed = JSON.parse(data.siteContent['workshop_gallery'].content);
@@ -131,7 +104,6 @@ export default function AdminWorkshopPage() {
           setGalleryImages(data.galleryImages);
         }
 
-        // Parse Workshop News (dukung berita kosong jika dihapus bersih)
         if (data.siteContent?.['workshop_news']?.content) {
           try {
             const parsed = JSON.parse(data.siteContent['workshop_news'].content);
@@ -245,14 +217,14 @@ export default function AdminWorkshopPage() {
     setPackages(updated);
     setEditingPackage(null);
     setIsAddingPackage(false);
-    await handleSaveAll(updated, undefined, undefined, undefined);
+    await handleSaveAll(updated, undefined, undefined, undefined, undefined);
   };
 
   const handleDeletePackage = async (id: string) => {
     if (confirm('Hapus paket workshop ini? Tindakan ini tidak dapat dibatalkan.')) {
       const updated = packages.filter((p) => p.id !== id);
       setPackages(updated);
-      await handleSaveAll(updated, undefined, undefined, undefined);
+      await handleSaveAll(updated, undefined, undefined, undefined, undefined);
     }
   };
 
@@ -264,192 +236,10 @@ export default function AdminWorkshopPage() {
     clone[index] = clone[targetIdx];
     clone[targetIdx] = temp;
     setPackages(clone);
-    await handleSaveAll(clone, undefined, undefined, undefined);
+    await handleSaveAll(clone, undefined, undefined, undefined, undefined);
   };
 
-  const handleUploadTakeHomePhoto = async (index: number, file: File) => {
-    if (!editingPackage) return;
-    try {
-      setUploadingTakeHomeIndex(index);
-      const compressed = await compressImage(file, {
-        maxWidth: 1200,
-        maxHeight: 1200,
-        quality: 0.85,
-      });
-      const formData = new FormData();
-      formData.append('file', compressed);
-      formData.append('bucket', 'gallery');
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
-        current[index] = {
-          ...current[index],
-          image_url: data.url,
-        };
-        setEditingPackage({
-          ...editingPackage,
-          takeHome: current,
-        });
-        showNotification('Foto karya berhasil diunggah!');
-      } else {
-        alert(data.error || 'Gagal mengunggah foto karya');
-      }
-    } catch {
-      alert('Terjadi kesalahan jaringan saat upload foto');
-    } finally {
-      setUploadingTakeHomeIndex(null);
-    }
-  };
-
-  const handleUpdateTakeHomeItem = (
-    index: number,
-    field: 'title' | 'description' | 'image_url',
-    val: string
-  ) => {
-    if (!editingPackage) return;
-    const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
-    current[index] = {
-      ...current[index],
-      [field]: val,
-    };
-    setEditingPackage({
-      ...editingPackage,
-      takeHome: current,
-    });
-  };
-
-  const handleRemoveTakeHomeItem = (index: number) => {
-    if (!editingPackage) return;
-    const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
-    current.splice(index, 1);
-    setEditingPackage({
-      ...editingPackage,
-      takeHome: current,
-    });
-  };
-
-  const handleAddTakeHomeItem = () => {
-    if (!editingPackage) return;
-    const current = editingPackage.takeHome.map(normalizeTakeHomeItem);
-    setEditingPackage({
-      ...editingPackage,
-      takeHome: [
-        ...current,
-        {
-          title: 'Karya Bawa Pulang Baru',
-          description: '',
-          image_url: '',
-        },
-      ],
-    });
-  };
-
-  // --- CURRICULUM ACTIONS ---
-  const handleCurriculumChange = (index: number, field: keyof CurriculumStep, value: string) => {
-    const updated = [...curriculum];
-    updated[index] = { ...updated[index], [field]: value };
-    setCurriculum(updated);
-  };
-
-  const handleAddCurriculumStep = () => {
-    const newStep: CurriculumStep = {
-      step: `0${curriculum.length + 1}`,
-      title: 'Langkah Baru Praktik Lilin',
-      desc: 'Deskripsi materi dan teknik yang dipelajari peserta.',
-    };
-    const updated = [...curriculum, newStep];
-    setCurriculum(updated);
-  };
-
-  const handleDeleteCurriculumStep = (index: number) => {
-    if (confirm('Hapus langkah kurikulum ini?')) {
-      const updated = curriculum.filter((_, i) => i !== index);
-      setCurriculum(updated);
-    }
-  };
-
-  // --- RESERVATION STEP ACTIONS ---
-  const handleReservationChange = (index: number, field: keyof ReservationStep, value: string) => {
-    const updated = [...reservationSteps];
-    updated[index] = { ...updated[index], [field]: value };
-    setReservationSteps(updated);
-  };
-
-  const handleAddReservationStep = () => {
-    const newStep: ReservationStep = {
-      step: `${reservationSteps.length + 1}`,
-      title: 'Langkah Baru',
-      desc: 'Penjelasan langkah yang perlu dilakukan calon peserta.',
-    };
-    const updated = [...reservationSteps, newStep];
-    setReservationSteps(updated);
-  };
-
-  const handleDeleteReservationStep = (index: number) => {
-    if (confirm('Hapus langkah pendaftaran ini?')) {
-      const updated = reservationSteps.filter((_, i) => i !== index);
-      setReservationSteps(updated);
-    }
-  };
-
-  // --- GALLERY ACTIONS ---
-  const handleUploadGalleryPhoto = async (file: File) => {
-    try {
-      setUploadingGallery(true);
-      // Auto-kompres foto dokumentasi studio ke WebP (~150KB-300KB)
-      const compressedFile = await compressImage(file, {
-        maxWidth: 1600,
-        maxHeight: 1600,
-        quality: 0.85,
-      });
-      const formData = new FormData();
-      formData.append('file', compressedFile);
-      formData.append('bucket', 'gallery');
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (res.ok && data.url) {
-        const newItem: GalleryImageItem = {
-          id: `gal-${Date.now()}`,
-          image_url: data.url,
-          caption: newGalleryCaption || 'Suasana kegiatan workshop studio CraftByHanifa',
-          sort_order: galleryImages.length + 1,
-          category: newGalleryCategory || 'workshop',
-          category_label: newGalleryCategoryLabel || 'Workshop Studio',
-        };
-        const updated = [...galleryImages, newItem];
-        setGalleryImages(updated);
-        setNewGalleryCaption('');
-        await handleSaveAll(undefined, undefined, undefined, updated);
-        showNotification('Foto dokumentasi studio berhasil diunggah!');
-      } else {
-        alert(data.error || 'Gagal mengunggah foto.');
-      }
-    } catch {
-      alert('Terjadi kesalahan jaringan saat upload foto.');
-    } finally {
-      setUploadingGallery(false);
-    }
-  };
-
-  const handleDeleteGalleryImage = async (id: string) => {
-    if (confirm('Hapus foto ini dari galeri dokumentasi workshop?')) {
-      const updated = galleryImages.filter((g) => g.id !== id);
-      setGalleryImages(updated);
-      await handleSaveAll(undefined, undefined, undefined, updated);
-    }
-  };
-
-  // --- NEWS & EVENT ACTIONS ---
+  // --- NEWS ACTIONS ---
   const handleSaveNewsModal = async (newsItem: WorkshopNewsItem) => {
     let updated: WorkshopNewsItem[];
     if (isAddingNews) {
@@ -475,39 +265,6 @@ export default function AdminWorkshopPage() {
     const updated = workshopNews.map((n) => (n.id === id ? { ...n, is_active: !n.is_active } : n));
     setWorkshopNews(updated);
     await handleSaveAll(undefined, undefined, undefined, undefined, updated);
-  };
-
-  const handleUploadNewsImage = async (file: File) => {
-    if (!editingNews) return;
-    try {
-      setUploadingNewsPhoto(true);
-      // Auto-kompres foto berita / promosi workshop ke WebP
-      const compressedFile = await compressImage(file, {
-        maxWidth: 1600,
-        maxHeight: 1600,
-        quality: 0.85,
-      });
-      const formData = new FormData();
-      formData.append('file', compressedFile);
-      formData.append('bucket', 'gallery');
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setEditingNews((prev) => (prev ? { ...prev, image_url: data.url } : null));
-        showNotification('Foto promosi berhasil diunggah!');
-      } else {
-        alert(data.error || 'Gagal mengunggah foto.');
-      }
-    } catch {
-      alert('Terjadi kesalahan jaringan saat upload foto.');
-    } finally {
-      setUploadingNewsPhoto(false);
-    }
   };
 
   if (loading) {
@@ -570,7 +327,7 @@ export default function AdminWorkshopPage() {
         </div>
       </div>
 
-      {/* Tabs Navigation - Smooth Horizontal Swipe on Mobile */}
+      {/* Tabs Navigation */}
       <div className="flex items-center gap-2 p-1.5 bg-white border border-[#f3d7df] rounded-2xl shadow-2xs overflow-x-auto scrollbar-none w-full">
         <button
           onClick={() => setActiveTab('packages')}
@@ -680,135 +437,18 @@ export default function AdminWorkshopPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {packages.map((pkg, idx) => (
-              <div
+              <PackageCardItem
                 key={pkg.id}
-                className="bg-white rounded-3xl p-6 border border-[#ebdcd5] shadow-2xs flex flex-col justify-between relative hover:border-[#c45a76]/40 transition-all"
-              >
-                {pkg.badge && (
-                  <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-gradient-to-r from-[#c45a76] to-[#df829b] text-white text-[10px] font-bold uppercase tracking-wider shadow-xs">
-                    {pkg.badge}
-                  </div>
-                )}
-
-                <div>
-                  <div className="flex items-start justify-between gap-2 mb-2 pt-1">
-                    <div>
-                      <h3 className="font-serif font-bold text-lg text-zinc-900 leading-tight">
-                        {pkg.name}
-                      </h3>
-                      <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2">{pkg.tagline}</p>
-                    </div>
-                  </div>
-
-                  <div className="py-3 my-3 border-y border-zinc-100 bg-[#faf6f2]/60 -mx-6 px-6">
-                    <div className="flex items-baseline gap-1">
-                      <span className="font-serif font-bold text-2xl text-[#c45a76]">
-                        {pkg.price}
-                      </span>
-                      <span className="text-[11px] text-zinc-400">/ orang</span>
-                    </div>
-                    <div className="flex items-center gap-3 mt-1.5 text-[11px] text-zinc-500">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-[#c45a76]" />
-                        {pkg.duration}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="w-3 h-3 text-zinc-400" />
-                        {pkg.capacity}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 text-xs mb-4">
-                    <div>
-                      <span className="font-bold text-zinc-700 block mb-1">
-                        Materi & Fasilitas ({pkg.features.length}):
-                      </span>
-                      <ul className="space-y-1 text-zinc-600 max-h-28 overflow-y-auto pr-1">
-                        {pkg.features.map((f, i) => (
-                          <li key={i} className="flex items-start gap-1.5">
-                            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                            <span className="line-clamp-1">{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="pt-2 border-t border-zinc-100">
-                      <span className="font-bold text-[#c45a76] block mb-1">
-                        Karya Bawa Pulang ({pkg.takeHome.length}):
-                      </span>
-                      <ul className="space-y-1.5 text-zinc-600">
-                        {pkg.takeHome.map((rawTh, i) => {
-                          const th = normalizeTakeHomeItem(rawTh);
-                          return (
-                            <li key={i} className="flex items-center gap-2">
-                              {th.image_url ? (
-                                <Image
-                                  src={th.image_url}
-                                  alt={th.title}
-                                  width={24}
-                                  height={24}
-                                  className="w-6 h-6 rounded-md object-cover border border-[#ebdcd5] shrink-0"
-                                />
-                              ) : (
-                                <Gift className="w-3.5 h-3.5 text-[#c45a76] shrink-0" />
-                              )}
-                              <span className="line-clamp-1 truncate">{th.title}</span>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-
-                    <div className="pt-2 border-t border-zinc-100 text-[11px] text-zinc-500">
-                      <span className="font-semibold text-zinc-700">Tombol:</span> {pkg.buttonLabel}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card Actions */}
-                <div className="pt-4 border-t border-zinc-100 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleMovePackage(idx, 'up')}
-                      disabled={idx === 0}
-                      className="w-7 h-7 rounded-lg border border-zinc-200 text-zinc-600 flex items-center justify-center hover:bg-zinc-50 disabled:opacity-30 cursor-pointer"
-                      title="Geser ke kiri"
-                    >
-                      <ArrowUp className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleMovePackage(idx, 'down')}
-                      disabled={idx === packages.length - 1}
-                      className="w-7 h-7 rounded-lg border border-zinc-200 text-zinc-600 flex items-center justify-center hover:bg-zinc-50 disabled:opacity-30 cursor-pointer"
-                      title="Geser ke kanan"
-                    >
-                      <ArrowDown className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setIsAddingPackage(false);
-                        setEditingPackage(pkg);
-                      }}
-                      className="px-3 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleDeletePackage(pkg.id)}
-                      className="w-7 h-7 rounded-lg text-rose-600 hover:bg-rose-50 flex items-center justify-center cursor-pointer transition-colors"
-                      title="Hapus Paket"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+                pkg={pkg}
+                index={idx}
+                totalPackages={packages.length}
+                onEdit={(item) => {
+                  setIsAddingPackage(false);
+                  setEditingPackage(item);
+                }}
+                onDelete={handleDeletePackage}
+                onMove={handleMovePackage}
+              />
             ))}
           </div>
         </div>
@@ -817,83 +457,10 @@ export default function AdminWorkshopPage() {
       {/* ================= TAB 2: KURIKULUM BELAJAR ================= */}
       {activeTab === 'curriculum' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-zinc-900">Kurikulum Praktik Workshop</h2>
-              <p className="text-xs text-zinc-500">
-                Atur langkah-langkah materi yang dipelajari peserta pada bagian &quot;Kurikulum
-                Praktik: Apa Saja yang Dipelajari?&quot;.
-              </p>
-            </div>
-            <button
-              onClick={handleAddCurriculumStep}
-              className="px-4 py-2 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Tambah Langkah Materi</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {curriculum.map((step, idx) => (
-              <div
-                key={idx}
-                className="bg-white p-6 rounded-3xl border border-[#ebdcd5] shadow-2xs space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-zinc-400">Kode Langkah:</span>
-                    <input
-                      type="text"
-                      value={step.step}
-                      onChange={(e) => handleCurriculumChange(idx, 'step', e.target.value)}
-                      className="w-16 px-2 py-1 text-center font-serif font-bold text-base bg-[#faf6f2] border border-[#ebdcd5] rounded-xl text-[#c45a76]"
-                      placeholder="01"
-                    />
-                  </div>
-                  {curriculum.length > 1 && (
-                    <button
-                      onClick={() => handleDeleteCurriculumStep(idx)}
-                      className="text-zinc-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
-                      title="Hapus langkah ini"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-zinc-700 mb-1">
-                    Judul Langkah:
-                  </label>
-                  <input
-                    type="text"
-                    value={step.title}
-                    onChange={(e) => handleCurriculumChange(idx, 'title', e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] bg-white font-medium"
-                    placeholder="Contoh: Seni Blending Fragrance Oil"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-zinc-700 mb-1">
-                    Deskripsi Materi:
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={step.desc}
-                    onChange={(e) => handleCurriculumChange(idx, 'desc', e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] bg-white leading-relaxed"
-                    placeholder="Jelaskan apa yang dipelajari pada langkah ini..."
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
+          <CurriculumEditor steps={curriculum} onChange={(updated) => setCurriculum(updated)} />
           <div className="pt-4 flex justify-end">
             <button
-              onClick={() => handleSaveAll()}
+              onClick={() => handleSaveAll(undefined, curriculum, undefined, undefined, undefined)}
               disabled={saving}
               className="px-6 py-3 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold transition-all shadow-md shadow-[#c45a76]/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
@@ -907,83 +474,15 @@ export default function AdminWorkshopPage() {
       {/* ================= TAB 3: LANGKAH RESERVASI ================= */}
       {activeTab === 'reservation' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-zinc-900">Alur Reservasi Workshop</h2>
-              <p className="text-xs text-zinc-500">
-                Atur tahapan proses pendaftaran peserta pada bagian &quot;4 Langkah Mudah Reservasi
-                Workshop&quot;.
-              </p>
-            </div>
-            <button
-              onClick={handleAddReservationStep}
-              className="px-4 py-2 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Tambah Tahapan</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {reservationSteps.map((step, idx) => (
-              <div
-                key={idx}
-                className="bg-white p-6 rounded-3xl border border-[#ebdcd5] shadow-2xs space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-zinc-400">Nomor Tahap:</span>
-                    <input
-                      type="text"
-                      value={step.step}
-                      onChange={(e) => handleReservationChange(idx, 'step', e.target.value)}
-                      className="w-14 px-2 py-1 text-center font-serif font-bold text-base bg-[#faf6f2] border border-[#ebdcd5] rounded-xl text-[#c45a76]"
-                      placeholder="1"
-                    />
-                  </div>
-                  {reservationSteps.length > 1 && (
-                    <button
-                      onClick={() => handleDeleteReservationStep(idx)}
-                      className="text-zinc-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
-                      title="Hapus langkah ini"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-zinc-700 mb-1">
-                    Judul Tahapan:
-                  </label>
-                  <input
-                    type="text"
-                    value={step.title}
-                    onChange={(e) => handleReservationChange(idx, 'title', e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] bg-white font-medium"
-                    placeholder="Contoh: Chat WhatsApp Admin"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-zinc-700 mb-1">
-                    Deskripsi Tahapan:
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={step.desc}
-                    onChange={(e) => handleReservationChange(idx, 'desc', e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] bg-white leading-relaxed"
-                    placeholder="Jelaskan apa yang harus dilakukan peserta..."
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
+          <ReservationStepsEditor
+            steps={reservationSteps}
+            onChange={(updated) => setReservationSteps(updated)}
+          />
           <div className="pt-4 flex justify-end">
             <button
-              onClick={() => handleSaveAll()}
+              onClick={() =>
+                handleSaveAll(undefined, undefined, reservationSteps, undefined, undefined)
+              }
               disabled={saving}
               className="px-6 py-3 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold transition-all shadow-md shadow-[#c45a76]/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
@@ -997,109 +496,14 @@ export default function AdminWorkshopPage() {
       {/* ================= TAB 4: FOTO DOKUMENTASI STUDIO ================= */}
       {activeTab === 'gallery' && (
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-3xl border border-[#ebdcd5] shadow-2xs space-y-4">
-            <h2 className="text-base font-bold text-zinc-900">
-              Upload Foto Dokumentasi Studio Baru
-            </h2>
-            <p className="text-xs text-zinc-500">
-              Upload foto kegiatan workshop lilin aromaterapi, hasil karya, atau meja kerja studio
-              (disimpan ke Supabase storage bucket <code>gallery</code>).
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-zinc-700 mb-1">
-                  Caption / Keterangan Foto:
-                </label>
-                <input
-                  type="text"
-                  value={newGalleryCaption}
-                  onChange={(e) => setNewGalleryCaption(e.target.value)}
-                  placeholder="Contoh: Sesi penuangan lilin soy wax oleh peserta"
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-zinc-700 mb-1">
-                  Label Tag Foto:
-                </label>
-                <input
-                  type="text"
-                  value={newGalleryCategoryLabel}
-                  onChange={(e) => setNewGalleryCategoryLabel(e.target.value)}
-                  placeholder="Contoh: Workshop Studio, Hasil Karya, Group Session"
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold cursor-pointer transition-colors shadow-xs">
-                {uploadingGallery ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Upload className="w-4 h-4" />
-                )}
-                <span>{uploadingGallery ? 'Mengunggah ke Supabase...' : 'Pilih File Gambar'}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  disabled={uploadingGallery}
-                  onClick={(e) => {
-                    (e.currentTarget as HTMLInputElement).value = '';
-                  }}
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      handleUploadGalleryPhoto(e.target.files[0]);
-                    }
-                  }}
-                />
-              </label>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryImages.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white rounded-2xl overflow-hidden border border-[#ebdcd5] shadow-2xs group relative flex flex-col justify-between"
-              >
-                <div className="relative aspect-[4/3] w-full bg-zinc-100">
-                  <Image
-                    src={item.image_url}
-                    alt={item.caption || 'Foto'}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                    <button
-                      onClick={() => setEditingGalleryItem({ ...item })}
-                      className="w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-[#c45a76] transition-colors cursor-pointer shadow-xs"
-                      title="Edit keterangan foto"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteGalleryImage(item.id)}
-                      className="w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-rose-600 transition-colors cursor-pointer shadow-xs"
-                      title="Hapus foto"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-                <div className="p-3">
-                  <span className="inline-block text-[10px] font-bold text-[#c45a76] bg-[#fde8ee] px-2 py-0.5 rounded-full mb-1">
-                    {item.category_label || 'Workshop'}
-                  </span>
-                  <p className="text-xs text-zinc-700 line-clamp-2 leading-relaxed font-medium">
-                    {item.caption || 'Tanpa keterangan'}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <WorkshopGallerySection
+            images={galleryImages}
+            onChange={async (updated) => {
+              setGalleryImages(updated);
+              await handleSaveAll(undefined, undefined, undefined, updated, undefined);
+            }}
+            showNotification={showNotification}
+          />
         </div>
       )}
 
@@ -1252,7 +656,9 @@ export default function AdminWorkshopPage() {
 
           <div className="pt-4 flex justify-end">
             <button
-              onClick={() => handleSaveAll()}
+              onClick={() =>
+                handleSaveAll(undefined, undefined, undefined, undefined, workshopNews)
+              }
               disabled={saving}
               className="px-6 py-3 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold transition-all shadow-md shadow-[#c45a76]/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
@@ -1265,610 +671,22 @@ export default function AdminWorkshopPage() {
 
       {/* ================= MODAL EDIT / TAMBAH PAKET ================= */}
       {editingPackage && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-4 sm:p-8 shadow-2xl border border-[#ebdcd5] my-auto max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-zinc-100 mb-4 sm:mb-6">
-              <h3 className="font-serif font-bold text-base sm:text-lg text-zinc-900 pr-2">
-                {isAddingPackage ? 'Tambah Paket Workshop Baru' : `Edit ${editingPackage.name}`}
-              </h3>
-              <button
-                onClick={() => setEditingPackage(null)}
-                className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center cursor-pointer transition-colors shrink-0"
-                aria-label="Tutup"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">Nama Paket:</label>
-                <input
-                  type="text"
-                  value={editingPackage.name}
-                  onChange={(e) => setEditingPackage({ ...editingPackage, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] font-semibold"
-                  placeholder="Contoh: Paket Basic (Intro to Candle Making)"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">Harga Tampil:</label>
-                  <input
-                    type="text"
-                    value={editingPackage.price}
-                    onChange={(e) =>
-                      setEditingPackage({ ...editingPackage, price: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="Rp 150.000"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">Durasi Sesi:</label>
-                  <input
-                    type="text"
-                    value={editingPackage.duration}
-                    onChange={(e) =>
-                      setEditingPackage({ ...editingPackage, duration: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="1.5 - 2 Jam"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">Kapasitas Peserta:</label>
-                  <input
-                    type="text"
-                    value={editingPackage.capacity}
-                    onChange={(e) =>
-                      setEditingPackage({ ...editingPackage, capacity: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="1 - 8 Orang"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">
-                    Badge Atas (Opsional):
-                  </label>
-                  <input
-                    type="text"
-                    value={editingPackage.badge || ''}
-                    onChange={(e) =>
-                      setEditingPackage({ ...editingPackage, badge: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="Contoh: Paling Populer, Custom Sesi"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">
-                    Teks Tombol Reservasi:
-                  </label>
-                  <input
-                    type="text"
-                    value={editingPackage.buttonLabel}
-                    onChange={(e) =>
-                      setEditingPackage({ ...editingPackage, buttonLabel: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="Contoh: Daftar Paket Basic"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">Tagline Ringkas:</label>
-                <input
-                  type="text"
-                  value={editingPackage.tagline}
-                  onChange={(e) =>
-                    setEditingPackage({ ...editingPackage, tagline: e.target.value })
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                  placeholder="Sempurna untuk pemula, self-healing, atau me-time akhir pekan"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Materi & Fasilitas (1 Poin per Baris):
-                </label>
-                <textarea
-                  rows={5}
-                  value={editingPackage.features.join('\n')}
-                  onChange={(e) =>
-                    setEditingPackage({
-                      ...editingPackage,
-                      features: e.target.value.split('\n').filter((f) => f.trim().length > 0),
-                    })
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] leading-relaxed"
-                  placeholder="100% natural soy wax nabati murni&#10;Pilihan jenis sumbu&#10;Eksplorasi 6 aroma signature..."
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <label className="block font-bold text-zinc-700">
-                      Karya Dibawa Pulang (Dengan Foto Visual):
-                    </label>
-                    <p className="text-[11px] text-zinc-500">
-                      Tambahkan foto visual dan deskripsi singkat karya yang akan dibawa pulang
-                      peserta.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleAddTakeHomeItem}
-                    className="px-3 py-1.5 rounded-lg bg-[#fde8ee] hover:bg-[#fbd1dd] text-[#c45a76] text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Tambah Karya</span>
-                  </button>
-                </div>
-
-                <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
-                  {editingPackage.takeHome.map((rawTh, thIdx) => {
-                    const th = normalizeTakeHomeItem(rawTh);
-                    const isUploadingThis = uploadingTakeHomeIndex === thIdx;
-
-                    return (
-                      <div
-                        key={thIdx}
-                        className="p-3 rounded-2xl border border-[#ebdcd5] bg-[#fffaf8] flex items-start gap-3 relative hover:border-[#c45a76]/40 transition-colors"
-                      >
-                        {/* Thumbnail / Upload Trigger */}
-                        {th.image_url ? (
-                          <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#ebdcd5] bg-white shrink-0 group">
-                            <Image src={th.image_url} alt="" fill className="object-cover" />
-                            <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer text-white transition-opacity text-[10px] font-bold">
-                              {isUploadingThis ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <Upload className="w-3.5 h-3.5" />
-                                  <span>Ganti</span>
-                                </>
-                              )}
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                disabled={isUploadingThis}
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) handleUploadTakeHomePhoto(thIdx, file);
-                                }}
-                              />
-                            </label>
-                          </div>
-                        ) : (
-                          <label className="w-14 h-14 rounded-xl border-2 border-dashed border-[#ebdcd5] hover:border-[#c45a76] bg-white flex flex-col items-center justify-center shrink-0 cursor-pointer text-zinc-400 hover:text-[#c45a76] transition-colors">
-                            {isUploadingThis ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-[#c45a76]" />
-                            ) : (
-                              <>
-                                <Upload className="w-4 h-4" />
-                                <span className="text-[9px] font-bold mt-0.5">+ Foto</span>
-                              </>
-                            )}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              disabled={isUploadingThis}
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) handleUploadTakeHomePhoto(thIdx, file);
-                              }}
-                            />
-                          </label>
-                        )}
-
-                        {/* Title & Description Inputs */}
-                        <div className="flex-1 min-w-0 space-y-1.5">
-                          <input
-                            type="text"
-                            value={th.title}
-                            onChange={(e) =>
-                              handleUpdateTakeHomeItem(thIdx, 'title', e.target.value)
-                            }
-                            placeholder="Nama karya (misal: 1 Jar Lilin Aromaterapi Soy Wax)"
-                            className="w-full px-3 py-1.5 rounded-lg border border-[#ebdcd5] text-xs font-semibold focus:outline-hidden focus:border-[#c45a76] bg-white"
-                          />
-                          <input
-                            type="text"
-                            value={th.description || ''}
-                            onChange={(e) =>
-                              handleUpdateTakeHomeItem(thIdx, 'description', e.target.value)
-                            }
-                            placeholder="Keterangan singkat (opsional, misal: Pilihan 6 aroma signature)"
-                            className="w-full px-3 py-1 rounded-lg border border-[#ebdcd5] text-[11px] text-zinc-600 focus:outline-hidden focus:border-[#c45a76] bg-white"
-                          />
-                        </div>
-
-                        {/* Delete Item */}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTakeHomeItem(thIdx)}
-                          className="w-7 h-7 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center shrink-0 transition-colors cursor-pointer mt-1"
-                          title="Hapus item karya ini"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    );
-                  })}
-
-                  {editingPackage.takeHome.length === 0 && (
-                    <div className="p-4 rounded-xl border border-dashed border-zinc-200 text-center text-xs text-zinc-400">
-                      Belum ada karya bawa pulang. Klik tombol &quot;+ Tambah Karya&quot; di atas.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Template Pesan WhatsApp Otomatis:
-                </label>
-                <textarea
-                  rows={2}
-                  value={editingPackage.waMessage}
-                  onChange={(e) =>
-                    setEditingPackage({ ...editingPackage, waMessage: e.target.value })
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                  placeholder="Halo Kak Hanifa, saya ingin mendaftar..."
-                />
-              </div>
-            </div>
-
-            <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setEditingPackage(null)}
-                className="px-4 py-2.5 rounded-xl border border-zinc-200 text-zinc-600 font-semibold hover:bg-zinc-50 cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSavePackageModal(editingPackage)}
-                className="px-6 py-2.5 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white font-bold transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
-              >
-                <Save className="w-4 h-4" />
-                <span>Simpan Paket</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <PackageFormModal
+          initialData={editingPackage}
+          isAdding={isAddingPackage}
+          onClose={() => setEditingPackage(null)}
+          onSave={handleSavePackageModal}
+        />
       )}
 
       {/* ================= MODAL EDIT / TAMBAH BERITA & EVENT ================= */}
       {editingNews && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-4 sm:p-8 shadow-2xl border border-[#ebdcd5] my-auto max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-zinc-100 mb-4 sm:mb-6">
-              <h3 className="font-serif font-bold text-base sm:text-lg text-zinc-900 pr-2 flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-[#e05d82]" />
-                <span>
-                  {isAddingNews
-                    ? 'Tambah Berita & Event Baru'
-                    : `Edit Berita: ${editingNews.title}`}
-                </span>
-              </h3>
-              <button
-                onClick={() => setEditingNews(null)}
-                className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center cursor-pointer transition-colors shrink-0"
-                aria-label="Tutup"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">Judul Berita / Event:</label>
-                <input
-                  type="text"
-                  value={editingNews.title}
-                  onChange={(e) => setEditingNews({ ...editingNews, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] font-semibold"
-                  placeholder="Contoh: Coming Soon: Kelas Spesial Pembuatan Lilin Aromaterapi"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">Status Acara:</label>
-                  <select
-                    value={editingNews.status}
-                    onChange={(e) => {
-                      const val = e.target.value as WorkshopNewsStatus;
-                      const labelMap: Record<WorkshopNewsStatus, string> = {
-                        coming_soon: 'Segera Hadir',
-                        open_registration: 'Pendaftaran Dibuka',
-                        completed: 'Dokumentasi',
-                        special_event: 'Event Spesial',
-                      };
-                      setEditingNews({
-                        ...editingNews,
-                        status: val,
-                        status_label: labelMap[val] || 'Info Acara',
-                      });
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] bg-white font-medium"
-                  >
-                    <option value="coming_soon">⏳ Coming Soon (Segera Hadir)</option>
-                    <option value="open_registration">
-                      ✅ Pendaftaran Dibuka (Open Registration)
-                    </option>
-                    <option value="completed">📸 Dokumentasi Acara Selesai</option>
-                    <option value="special_event">✨ Event Spesial / Kolaborasi</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">Label Status Kustom:</label>
-                  <input
-                    type="text"
-                    value={editingNews.status_label}
-                    onChange={(e) =>
-                      setEditingNews({ ...editingNews, status_label: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="Contoh: Segera Hadir, Slot Terbatas"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">
-                    Jadwal / Waktu Pelaksanaan:
-                  </label>
-                  <input
-                    type="text"
-                    value={editingNews.date}
-                    onChange={(e) => setEditingNews({ ...editingNews, date: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="Contoh: Minggu, 28 Oktober 2026 • 10.00 WIB"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-zinc-700 mb-1">
-                    Lokasi / Venue Studio:
-                  </label>
-                  <input
-                    type="text"
-                    value={editingNews.location}
-                    onChange={(e) => setEditingNews({ ...editingNews, location: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                    placeholder="Contoh: Studio CraftByHanifa, Magetan"
-                  />
-                </div>
-              </div>
-
-              {/* Image upload & preview */}
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Foto Banner / Poster Berita:
-                </label>
-                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                  <div className="relative aspect-[16/9] w-36 bg-zinc-100 rounded-xl overflow-hidden border border-[#ebdcd5] shrink-0">
-                    <Image
-                      src={editingNews.image_url || '/images/products/studio-workshop.jpg'}
-                      alt="Preview"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="space-y-2 flex-1 w-full">
-                    <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white text-xs font-bold cursor-pointer transition-colors shadow-xs">
-                      {uploadingNewsPhoto ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Upload className="w-3.5 h-3.5" />
-                      )}
-                      <span>{uploadingNewsPhoto ? 'Mengunggah...' : 'Upload Foto Baru'}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        disabled={uploadingNewsPhoto}
-                        onClick={(e) => {
-                          (e.currentTarget as HTMLInputElement).value = '';
-                        }}
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            handleUploadNewsImage(e.target.files[0]);
-                          }
-                        }}
-                      />
-                    </label>
-                    <input
-                      type="text"
-                      value={editingNews.image_url}
-                      onChange={(e) =>
-                        setEditingNews({ ...editingNews, image_url: e.target.value })
-                      }
-                      className="w-full px-3 py-1.5 rounded-lg border border-[#ebdcd5] text-[11px] text-zinc-600 focus:outline-hidden focus:border-[#c45a76]"
-                      placeholder="Atau masukkan URL gambar..."
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Ringkasan Berita (Tampil di Slider & Cuplikan):
-                </label>
-                <textarea
-                  rows={2}
-                  value={editingNews.summary}
-                  onChange={(e) => setEditingNews({ ...editingNews, summary: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] leading-relaxed"
-                  placeholder="Ringkasan singkat 1-2 kalimat..."
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Isi Lengkap Berita & Pengumuman:
-                </label>
-                <textarea
-                  rows={6}
-                  value={editingNews.content}
-                  onChange={(e) => setEditingNews({ ...editingNews, content: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76] leading-relaxed"
-                  placeholder="Tuliskan isi berita selengkapnya, penjelasan materi, benefit, dsb (dukung multi paragraf)..."
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Template Pesan WhatsApp Otomatis:
-                </label>
-                <textarea
-                  rows={2}
-                  value={editingNews.wa_message || ''}
-                  onChange={(e) => setEditingNews({ ...editingNews, wa_message: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                  placeholder="Halo Kak Hanifa, saya tertarik mendaftar workshop ini..."
-                />
-              </div>
-
-              <div className="flex items-center gap-6 pt-1">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={editingNews.is_active}
-                    onChange={(e) =>
-                      setEditingNews({ ...editingNews, is_active: e.target.checked })
-                    }
-                    className="w-4 h-4 rounded text-[#c45a76] focus:ring-[#c45a76] accent-[#c45a76]"
-                  />
-                  <span className="font-bold text-zinc-700">Tampilkan di Website (Aktif)</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setEditingNews(null)}
-                className="px-4 py-2.5 rounded-xl border border-zinc-200 text-zinc-600 font-semibold hover:bg-zinc-50 cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSaveNewsModal(editingNews)}
-                className="px-6 py-2.5 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white font-bold transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
-              >
-                <Save className="w-4 h-4" />
-                <span>Simpan Berita</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* ================= MODAL EDIT FOTO DOKUMENTASI ================= */}
-      {editingGalleryItem && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-[#ebdcd5] my-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 mb-4">
-              <h3 className="font-serif font-bold text-base text-zinc-900 flex items-center gap-2">
-                <Images className="w-4 h-4 text-[#e05d82]" />
-                <span>Edit Keterangan Foto Dokumentasi</span>
-              </h3>
-              <button
-                onClick={() => setEditingGalleryItem(null)}
-                className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center cursor-pointer transition-colors"
-                aria-label="Tutup"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-zinc-100 mb-3 border border-[#ebdcd5]">
-                <Image
-                  src={editingGalleryItem.image_url}
-                  alt={editingGalleryItem.caption || 'Foto'}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">
-                  Caption / Keterangan Foto:
-                </label>
-                <textarea
-                  rows={3}
-                  value={editingGalleryItem.caption || ''}
-                  onChange={(e) =>
-                    setEditingGalleryItem({ ...editingGalleryItem, caption: e.target.value })
-                  }
-                  className="w-full px-3.5 py-2 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                  placeholder="Keterangan foto suasana atau hasil karya studio..."
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-zinc-700 mb-1">Label Tag Kategori:</label>
-                <input
-                  type="text"
-                  value={editingGalleryItem.category_label || ''}
-                  onChange={(e) =>
-                    setEditingGalleryItem({
-                      ...editingGalleryItem,
-                      category_label: e.target.value,
-                    })
-                  }
-                  className="w-full px-3.5 py-2 rounded-xl border border-[#ebdcd5] focus:outline-hidden focus:border-[#c45a76]"
-                  placeholder="Contoh: Suasana Studio, Hasil Karya Peserta"
-                />
-              </div>
-            </div>
-
-            <div className="pt-4 mt-4 border-t border-zinc-100 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setEditingGalleryItem(null)}
-                className="px-4 py-2 rounded-xl border border-zinc-200 text-zinc-600 font-semibold hover:bg-zinc-50 cursor-pointer text-xs"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  const updated = galleryImages.map((g) =>
-                    g.id === editingGalleryItem.id ? editingGalleryItem : g
-                  );
-                  setGalleryImages(updated);
-                  setEditingGalleryItem(null);
-                  await handleSaveAll(undefined, undefined, undefined, updated);
-                  showNotification('Keterangan foto dokumentasi berhasil diperbarui!');
-                }}
-                className="px-5 py-2 rounded-xl bg-[#c45a76] hover:bg-[#a8445e] text-white font-bold transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer text-xs"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>Simpan Perubahan</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <WorkshopNewsEditorModal
+          initialData={editingNews}
+          isAdding={isAddingNews}
+          onClose={() => setEditingNews(null)}
+          onSave={handleSaveNewsModal}
+        />
       )}
     </div>
   );
