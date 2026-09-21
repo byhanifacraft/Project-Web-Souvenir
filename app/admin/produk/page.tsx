@@ -116,7 +116,11 @@ export default function AdminProdukPage() {
             : editingProduct.image_url
               ? [editingProduct.image_url]
               : [];
-        const updatedImages = [...existing, ...uploadedUrls];
+        const isOnlyDummy =
+          existing.length === 1 &&
+          existing[0] === '/images/products/aromatherapy-candle.jpg' &&
+          isNewProduct;
+        const updatedImages = isOnlyDummy ? uploadedUrls : [...existing, ...uploadedUrls];
         setEditingProduct({
           ...editingProduct,
           images: updatedImages,
@@ -169,6 +173,11 @@ export default function AdminProdukPage() {
 
   const handleAddManualImage = () => {
     if (!editingProduct || !newManualImageUrl.trim()) return;
+    let url = newManualImageUrl.trim();
+    if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+      url = '/' + url;
+    }
+
     const currentImages = [
       ...(editingProduct.images && editingProduct.images.length > 0
         ? editingProduct.images
@@ -176,13 +185,18 @@ export default function AdminProdukPage() {
           ? [editingProduct.image_url]
           : []),
     ];
-    currentImages.push(newManualImageUrl.trim());
+    const isOnlyDummy =
+      currentImages.length === 1 &&
+      currentImages[0] === '/images/products/aromatherapy-candle.jpg' &&
+      isNewProduct;
+    const updatedImages = isOnlyDummy ? [url] : [...currentImages, url];
     setEditingProduct({
       ...editingProduct,
-      images: currentImages,
-      image_url: currentImages[0],
+      images: updatedImages,
+      image_url: updatedImages[0],
     });
     setNewManualImageUrl('');
+    showNotification('Foto produk berhasil ditambahkan ke galeri!');
   };
 
   // Shopee-Style Variant Management
@@ -652,8 +666,8 @@ export default function AdminProdukPage() {
               price: 15000,
               original_price: null,
               stock: 100,
-              image_url: '/images/products/aromatherapy-candle.jpg',
-              images: ['/images/products/aromatherapy-candle.jpg'],
+              image_url: '',
+              images: [],
               variants: [],
               is_active: true,
               category: 'candle',
@@ -768,7 +782,16 @@ export default function AdminProdukPage() {
             >
               <div>
                 <div className="relative aspect-[4/3] w-full bg-[#fde8ee]">
-                  <Image src={p.image_url} alt={p.name} fill className="object-cover" />
+                  <Image
+                    src={p.image_url || '/images/products/aromatherapy-candle.jpg'}
+                    alt={p.name}
+                    fill
+                    className="object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        '/images/products/aromatherapy-candle.jpg';
+                    }}
+                  />
                   <span className="absolute top-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-[#e05d82]">
                     {p.category_label || p.category}
                   </span>
@@ -1251,6 +1274,10 @@ export default function AdminProdukPage() {
                           alt={`Foto Produk ${idx + 1}`}
                           fill
                           className="object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              '/images/products/aromatherapy-candle.jpg';
+                          }}
                         />
 
                         {/* Cover Badge */}
@@ -1450,6 +1477,10 @@ export default function AdminProdukPage() {
                                   alt={variant.name}
                                   fill
                                   className="object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src =
+                                      '/images/products/aromatherapy-candle.jpg';
+                                  }}
                                 />
                               </div>
                               <div className="flex-1 w-full text-center sm:text-left">

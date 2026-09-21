@@ -232,6 +232,10 @@ export default function ProductCatalog({
                       className={`object-cover transition-all duration-500 group-hover:scale-105 ${
                         hasMultipleImages ? 'group-hover:opacity-0' : ''
                       }`}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          '/images/products/aromatherapy-candle.jpg';
+                      }}
                     />
                     {hasMultipleImages && (
                       <Image
@@ -239,6 +243,10 @@ export default function ProductCatalog({
                         alt={`${p.name} - Galeri`}
                         fill
                         className="object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            '/images/products/aromatherapy-candle.jpg';
+                        }}
                       />
                     )}
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">

@@ -32,10 +32,14 @@ export default function ProductModal({
     product.variants?.[0] ||
     null;
 
-  // Daftar galeri foto produk (multi-foto)
-  const imageList: string[] =
-    product.images && product.images.length > 0 ? product.images : [product.image];
-  const activeImage = imageList[activeImageIndex] || product.image;
+  // Daftar galeri foto produk (multi-foto + foto varian unik)
+  const baseImages = product.images && product.images.length > 0 ? product.images : [product.image];
+  const variantImages = (product.variants || [])
+    .map((v) => v.image_url)
+    .filter((url): url is string => Boolean(url && !baseImages.includes(url)));
+  const imageList: string[] = [...baseImages, ...variantImages];
+  const activeImage =
+    imageList[activeImageIndex] || product.image || '/images/products/aromatherapy-candle.jpg';
 
   const handleSelectChoice = (optionLabel: string, choice: string) => {
     setSelectedChoices((prev) => ({
@@ -123,7 +127,16 @@ export default function ProductModal({
           <div className="md:col-span-5 relative bg-[#fff7f9] flex flex-col border-b md:border-b-0 md:border-r border-[#f3d7df]">
             {/* Foto Utama Besar */}
             <div className="relative aspect-[4/3] md:aspect-square w-full bg-zinc-100 overflow-hidden">
-              <Image src={activeImage} alt={product.name} fill className="object-cover" priority />
+              <Image
+                src={activeImage}
+                alt={product.name}
+                fill
+                className="object-cover"
+                priority
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/products/aromatherapy-candle.jpg';
+                }}
+              />
 
               {product.badge && (
                 <span className="absolute top-4 left-4 z-10 text-xs font-bold px-3 py-1 rounded-full bg-[#df829b] text-white shadow-md">
@@ -187,7 +200,16 @@ export default function ProductModal({
                           : 'border-transparent opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <Image src={img} alt="" fill className="object-cover" />
+                      <Image
+                        src={img}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            '/images/products/aromatherapy-candle.jpg';
+                        }}
+                      />
                     </button>
                   );
                 })}
@@ -311,7 +333,16 @@ export default function ProductModal({
                         >
                           {variant.image_url && (
                             <div className="relative w-6 h-6 rounded-lg overflow-hidden shrink-0 border border-black/5">
-                              <Image src={variant.image_url} alt="" fill className="object-cover" />
+                              <Image
+                                src={variant.image_url}
+                                alt=""
+                                fill
+                                className="object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src =
+                                    '/images/products/aromatherapy-candle.jpg';
+                                }}
+                              />
                             </div>
                           )}
                           <div>
