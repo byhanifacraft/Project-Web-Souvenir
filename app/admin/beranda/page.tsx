@@ -361,7 +361,7 @@ export default function AdminBerandaPage() {
                 : `banner-${Date.now()}`;
             setEditingBanner({
               id: newBannerId,
-              image_url: '/images/products/hero-banner.jpg',
+              image_url: '',
               title: '',
               subtitle: '',
               sort_order: banners.length + 1,

@@ -199,7 +199,7 @@ export default function AdminProdukPage() {
     showNotification('Foto produk berhasil ditambahkan ke galeri!');
   };
 
-  // Shopee-Style Variant Management
+  // Variant Management
   const handleAddVariant = (
     defaultName = '',
     defaultPrice = 0,
@@ -1087,7 +1087,7 @@ export default function AdminProdukPage() {
                     className="w-full px-3 py-1.5 rounded-xl border border-[#f3d7df] bg-white text-sm text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#e05d82]"
                   />
                   <span className="text-[10px] text-[#755562] block mt-0.5">
-                    Harga normal (coret ala Shopee)
+                    Harga normal / sebelum diskon (coret)
                   </span>
                 </div>
 
@@ -1122,7 +1122,7 @@ export default function AdminProdukPage() {
                   </span>
                 </div>
 
-                {/* Live Preview Diskon Shopee */}
+                {/* Live Preview Diskon Coret */}
                 {editingProduct.original_price &&
                   editingProduct.original_price > editingProduct.price && (
                     <div className="col-span-full bg-[#fef0ed] border border-[#fcd5cd] p-2.5 rounded-xl flex items-center justify-between text-xs">
@@ -1326,13 +1326,13 @@ export default function AdminProdukPage() {
                 </p>
               </div>
 
-              {/* Varian Produk Bertingkat Harga (Shopee Style) */}
+              {/* Varian Produk Bertingkat Harga */}
               <div className="bg-[#fff7f9] p-4 sm:p-5 rounded-2xl border border-[#f3d7df] space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h4 className="font-bold text-[#2e1c24] flex items-center gap-1.5 text-xs sm:text-sm">
                       <ShoppingBag className="w-4 h-4 text-[#e05d82]" />
-                      <span>Varian Produk & Harga Bertingkat (Ala Shopee)</span>
+                      <span>Varian Produk & Harga Bertingkat</span>
                     </h4>
                     <p className="text-[11px] text-[#755562] mt-0.5 leading-relaxed">
                       Atur pilihan variasi dengan foto & harga berbeda (contoh: Huruf Saja Rp 8.500
@@ -1353,7 +1353,7 @@ export default function AdminProdukPage() {
                 {/* Preset Buttons */}
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   <span className="text-[10px] text-[#755562] font-semibold">
-                    Template Varian Shopee:
+                    Template Pilihan Varian:
                   </span>
                   <button
                     type="button"
@@ -1427,9 +1427,8 @@ export default function AdminProdukPage() {
                     <p className="text-xs text-[#755562]">
                       Produk ini saat ini menggunakan <strong>Harga Tunggal</strong> (
                       {formatRupiah(editingProduct.price)}). Jika Anda ingin membuat varian dengan
-                      harga berbeda seperti Shopee, klik tombol{' '}
-                      <strong>+ Tambah Varian Baru</strong> atau gunakan salah satu{' '}
-                      <strong>Template Varian Shopee</strong> di atas.
+                      harga berbeda, klik tombol <strong>+ Tambah Varian Baru</strong> atau gunakan
+                      salah satu <strong>Template Pilihan Varian</strong> di atas.
                     </p>
                   </div>
                 ) : (
