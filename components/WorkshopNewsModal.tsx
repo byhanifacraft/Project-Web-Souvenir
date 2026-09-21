@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { WorkshopNewsItem } from '@/types/store';
@@ -16,6 +16,15 @@ export default function WorkshopNewsModal({
   onClose,
   whatsappNum = '6281234567890',
 }: WorkshopNewsModalProps) {
+  const [prevImageUrl, setPrevImageUrl] = useState<string | undefined>(news?.image_url);
+  const [imgSrc, setImgSrc] = useState<string>(
+    news?.image_url || '/images/products/studio-workshop.jpg'
+  );
+
+  if (news?.image_url && news.image_url !== prevImageUrl) {
+    setPrevImageUrl(news.image_url);
+    setImgSrc(news.image_url);
+  }
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -93,7 +102,18 @@ export default function WorkshopNewsModal({
         <div className="overflow-y-auto flex-1">
           {/* Cover Banner Image */}
           <div className="relative aspect-[16/9] w-full bg-zinc-900">
-            <Image src={news.image_url} alt={news.title} fill className="object-cover" priority />
+            <Image
+              src={imgSrc}
+              alt={news.title}
+              fill
+              className="object-cover"
+              priority
+              onError={() => {
+                if (imgSrc !== '/images/products/studio-workshop.jpg') {
+                  setImgSrc('/images/products/studio-workshop.jpg');
+                }
+              }}
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
             <div className="absolute bottom-4 left-4 right-4 text-white z-10">

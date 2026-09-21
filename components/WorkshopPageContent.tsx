@@ -20,6 +20,45 @@ import {
 import { DEFAULT_WORKSHOP_NEWS } from '@/lib/defaultWorkshopNews';
 import WorkshopNewsModal from '@/components/WorkshopNewsModal';
 
+function SafeImage({
+  src,
+  alt,
+  fill,
+  className,
+  fallback = '/images/products/studio-workshop.jpg',
+  priority,
+}: {
+  src: string;
+  alt: string;
+  fill?: boolean;
+  className?: string;
+  fallback?: string;
+  priority?: boolean;
+}) {
+  const [prevSrc, setPrevSrc] = useState(src);
+  const [imgSrc, setImgSrc] = useState(src || fallback);
+
+  if (src !== prevSrc) {
+    setPrevSrc(src);
+    setImgSrc(src || fallback);
+  }
+
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill={fill}
+      className={className}
+      priority={priority}
+      onError={() => {
+        if (imgSrc !== fallback) {
+          setImgSrc(fallback);
+        }
+      }}
+    />
+  );
+}
+
 interface WorkshopPageContentProps {
   whatsappNum: string;
   brandName: string;
@@ -408,7 +447,7 @@ export default function WorkshopPageContent({
                                   className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[#f3d7df] bg-white cursor-pointer shadow-2xs hover:ring-2 hover:ring-[#c45a76]/50 transition-all"
                                   title="Klik untuk perbesar foto karya"
                                 >
-                                  <Image
+                                  <SafeImage
                                     src={item.image_url!}
                                     alt={item.title}
                                     fill
@@ -648,7 +687,7 @@ export default function WorkshopPageContent({
                   >
                     <div>
                       <div className="relative aspect-[16/10] w-full bg-zinc-100 overflow-hidden">
-                        <Image
+                        <SafeImage
                           src={item.image_url}
                           alt={item.title}
                           fill
@@ -756,7 +795,7 @@ export default function WorkshopPageContent({
                 >
                   <div>
                     <div className="relative aspect-[16/10] w-full bg-zinc-100 overflow-hidden">
-                      <Image
+                      <SafeImage
                         src={photo.image_url}
                         alt={photo.caption || 'Foto Dokumentasi Studio'}
                         fill
