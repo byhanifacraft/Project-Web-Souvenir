@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
               required
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
-              placeholder="craftbyhanifa@gmail.com"
+              placeholder="Masukkan email admin"
               className="w-full px-4 py-2.5 rounded-xl border border-[#f3d7df] bg-[#fff7f9] text-sm text-[#2e1c24] focus:outline-none focus:ring-2 focus:ring-[#e05d82]"
             />
           </div>
