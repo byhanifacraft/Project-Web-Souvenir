@@ -258,177 +258,211 @@ export async function POST(request: Request) {
       console.warn('Local fs write skipped (serverless filesystem):', fsErr);
     }
 
-    // B. Simpan ke Supabase PostgreSQL via Server Client (Bulk Upsert & Explicit Delete)
+    // B. Simpan ke Supabase PostgreSQL via Server Client
     const supabaseServer = createServerClient();
     if (supabaseServer) {
       const errors: string[] = [];
       try {
-        // 1. Simpan Banners (Upsert SAJA — Tanpa blind delete!)
-        if (banners && Array.isArray(banners) && banners.length > 0) {
-          const bannerList = banners as BannerItem[];
+        // Siapkan payload terformat untuk semua entitas
+        const bannerList = (banners && Array.isArray(banners) ? banners : []) as BannerItem[];
+        const bannerPayloads = bannerList.map((b) => {
+          const isUUID =
+            b.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(b.id);
+          const validId = isUUID ? b.id : randomUUID();
+          b.id = validId;
+          return {
+            id: validId,
+            image_url: b.image_url,
+            title: b.title,
+            subtitle: b.subtitle,
+            cta_text: b.cta_text || null,
+            cta_link: b.cta_link || null,
+            sort_order: b.sort_order,
+            is_active: b.is_active ?? true,
+          };
+        });
 
-          const bannerPayloads = bannerList.map((b) => {
-            const isUUID =
-              b.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(b.id);
-            const validId = isUUID ? b.id : randomUUID();
-            b.id = validId;
+        const contentPayloads =
+          Object.keys(mergedSiteContent).length > 0
+            ? Object.keys(mergedSiteContent).map((key) => {
+                const item: SiteContentItem = mergedSiteContent[key];
+                return {
+                  section_key: item.section_key || key,
+                  title: item.title,
+                  content: item.content,
+                  image_url: item.image_url || null,
+                  updated_at: new Date().toISOString(),
+                };
+              })
+            : [];
 
-            return {
-              id: validId,
-              image_url: b.image_url,
-              title: b.title,
-              subtitle: b.subtitle,
-              cta_text: b.cta_text || null,
-              cta_link: b.cta_link || null,
-              sort_order: b.sort_order,
-              is_active: b.is_active ?? true,
-            };
-          });
+        const prodList = (products && Array.isArray(products) ? products : []) as ProductItem[];
+        const productPayloads = prodList.map((p) => {
+          const gallery =
+            p.images && p.images.length > 0 ? p.images : p.image_url ? [p.image_url] : [];
+          const optionsPayload = {
+            variants: p.variants || [],
+            gallery,
+            custom_options: p.options || [],
+          };
+          return {
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            price: p.price,
+            original_price: p.original_price ?? null,
+            stock: p.stock ?? 100,
+            image_url: p.image_url,
+            is_active: p.is_active ?? true,
+            category: p.category || 'candle',
+            category_label: p.category_label || 'Lilin Aromaterapi',
+            min_order: p.min_order ?? 1,
+            lead_time: p.lead_time || '5 - 10 Hari Kerja',
+            material: p.material || null,
+            size: p.size || null,
+            options: optionsPayload,
+            shopee_url: p.shopee_url || null,
+            rating: p.rating ?? 5.0,
+            sold_count: p.sold_count ?? 0,
+          };
+        });
 
-          const { error: bannerErr } = await supabaseServer
-            .from('banners')
-            .upsert(bannerPayloads, { onConflict: 'id' });
-          if (bannerErr) {
-            console.error('Bulk upsert banners error:', bannerErr);
-            errors.push(`Banners: ${bannerErr.message}`);
-          }
-        }
-
-        // 2. Simpan Site Content (Bulk Upsert)
-        if (Object.keys(mergedSiteContent).length > 0) {
-          const contentPayloads = Object.keys(mergedSiteContent).map((key) => {
-            const item: SiteContentItem = mergedSiteContent[key];
-            return {
-              section_key: item.section_key || key,
-              title: item.title,
-              content: item.content,
-              image_url: item.image_url || null,
+        const c =
+          contactInfo && typeof contactInfo === 'object' ? (contactInfo as ContactInfoItem) : null;
+        const contactPayload = c
+          ? {
+              id: 'default',
+              name: c.name || 'CraftByHanifa',
+              tagline: c.tagline || null,
+              address: c.address,
+              phone: c.phone,
+              whatsapp: c.whatsapp,
+              whatsapp_display: c.whatsapp_display,
+              email: c.email,
+              instagram_url: c.instagram_url || null,
+              shopee_url: c.shopee_url || null,
+              map_embed_url: c.map_embed_url || null,
+              operational_hours: c.operational_hours || null,
               updated_at: new Date().toISOString(),
-            };
-          });
-
-          const { error: contentErr } = await supabaseServer
-            .from('site_content')
-            .upsert(contentPayloads, { onConflict: 'section_key' });
-          if (contentErr) {
-            console.error('Bulk upsert site_content error:', contentErr);
-            errors.push(`Site Content: ${contentErr.message}`);
-          }
-        }
-
-        // 3. Simpan Products (Upsert SAJA — Tanpa blind delete!)
-        if (products && Array.isArray(products) && products.length > 0) {
-          const prodList = products as ProductItem[];
-
-          const productPayloads = prodList.map((p) => {
-            const gallery =
-              p.images && p.images.length > 0 ? p.images : p.image_url ? [p.image_url] : [];
-            const optionsPayload = {
-              variants: p.variants || [],
-              gallery,
-              custom_options: p.options || [],
-            };
-
-            return {
-              id: p.id,
-              name: p.name,
-              description: p.description,
-              price: p.price,
-              original_price: p.original_price ?? null,
-              stock: p.stock ?? 100,
-              image_url: p.image_url,
-              is_active: p.is_active ?? true,
-              category: p.category || 'candle',
-              category_label: p.category_label || 'Lilin Aromaterapi',
-              min_order: p.min_order ?? 1,
-              lead_time: p.lead_time || '5 - 10 Hari Kerja',
-              material: p.material || null,
-              size: p.size || null,
-              options: optionsPayload,
-              shopee_url: p.shopee_url || null,
-              rating: p.rating ?? 5.0,
-              sold_count: p.sold_count ?? 0,
-            };
-          });
-
-          let { error: prodErr } = await supabaseServer
-            .from('products')
-            .upsert(productPayloads, { onConflict: 'id' });
-
-          // Graceful fallback: Jika kolom baru seperti 'options' atau 'original_price' belum ditambahkan di tabel Supabase
-          if (prodErr && prodErr.message && prodErr.message.includes('schema cache')) {
-            console.warn(
-              'Supabase products table schema mismatch (kolom options/original_price belum ada). Melakukan fallback tanpa kolom baru:',
-              prodErr.message
-            );
-            const fallbackPayloads = productPayloads.map(
-              ({ options: _options, original_price: _original_price, ...rest }) => rest
-            );
-            const { error: retryErr } = await supabaseServer
-              .from('products')
-              .upsert(fallbackPayloads, { onConflict: 'id' });
-
-            if (!retryErr) {
-              console.log('Berhasil menyimpan produk ke Supabase via legacy schema fallback.');
-              prodErr = null;
-            } else {
-              prodErr = retryErr;
             }
-          }
+          : null;
 
-          if (prodErr) {
-            console.error('Bulk upsert products error:', prodErr);
-            errors.push(`Products: ${prodErr.message}`);
-          }
-        }
+        const hasDeletes =
+          (deletedBannerIds && deletedBannerIds.length > 0) ||
+          (deletedProductIds && deletedProductIds.length > 0);
 
-        // 4. Foto dokumentasi workshop kini 100% menggunakan site_content['workshop_gallery']
-        // sebagai single source of truth, menghindari pembuatan baris baru dengan UUID acak di tabel gallery_images.
+        const hasWrites =
+          bannerPayloads.length > 0 ||
+          contentPayloads.length > 0 ||
+          productPayloads.length > 0 ||
+          contactPayload !== null ||
+          hasDeletes;
 
-        // 5. Simpan Contact Info
-        if (contactInfo && typeof contactInfo === 'object') {
-          const c = contactInfo as ContactInfoItem;
-          const { error: contactErr } = await supabaseServer.from('contact_info').upsert({
-            id: 'default',
-            name: c.name || 'CraftByHanifa',
-            tagline: c.tagline || null,
-            address: c.address,
-            phone: c.phone,
-            whatsapp: c.whatsapp,
-            whatsapp_display: c.whatsapp_display,
-            email: c.email,
-            instagram_url: c.instagram_url || null,
-            shopee_url: c.shopee_url || null,
-            map_embed_url: c.map_embed_url || null,
-            operational_hours: c.operational_hours || null,
-            updated_at: new Date().toISOString(),
+        if (hasWrites) {
+          // TAHAP 1: Coba Transaksi Atomik Menggunakan PostgreSQL RPC Stored Procedure
+          const { error: rpcErr } = await supabaseServer.rpc('save_store_data_atomic', {
+            p_banners: bannerPayloads.length > 0 ? bannerPayloads : null,
+            p_content: contentPayloads.length > 0 ? contentPayloads : null,
+            p_products: productPayloads.length > 0 ? productPayloads : null,
+            p_contact: contactPayload,
+            p_deleted_banner_ids:
+              deletedBannerIds && deletedBannerIds.length > 0 ? deletedBannerIds : null,
+            p_deleted_product_ids:
+              deletedProductIds && deletedProductIds.length > 0 ? deletedProductIds : null,
           });
-          if (contactErr) {
-            console.error('Upsert contact_info error:', contactErr);
-            errors.push(`Contact Info: ${contactErr.message}`);
-          }
-        }
 
-        // 6. Explicit Deletions (Dijalankan SETELAH upsert — Mencegah data terhapus jika upsert error)
-        if (deletedBannerIds && Array.isArray(deletedBannerIds) && deletedBannerIds.length > 0) {
-          const { error: delBannerErr } = await supabaseServer
-            .from('banners')
-            .delete()
-            .in('id', deletedBannerIds);
-          if (delBannerErr) {
-            console.error('Delete banners error:', delBannerErr);
-            errors.push(`Delete Banners: ${delBannerErr.message}`);
-          }
-        }
+          if (!rpcErr) {
+            console.log(
+              '✅ Transaksi penyimpanan multi-entitas atomik berhasil via RPC save_store_data_atomic.'
+            );
+          } else if (rpcErr.code === 'PGRST202' || rpcErr.message?.includes('not found')) {
+            // TAHAP 2: Graceful fallback jika migrasi RPC belum dieksekusi di Supabase Dashboard
+            console.warn(
+              '⚠️ RPC save_store_data_atomic belum terpasang di Supabase. Menjalankan fallback batch upsert. ' +
+                'Jalankan "supabase/migration_atomic_store_transaction.sql" untuk mengaktifkan 100% ACID transaction.'
+            );
 
-        if (deletedProductIds && Array.isArray(deletedProductIds) && deletedProductIds.length > 0) {
-          const { error: delProdErr } = await supabaseServer
-            .from('products')
-            .delete()
-            .in('id', deletedProductIds);
-          if (delProdErr) {
-            console.error('Delete products error:', delProdErr);
-            errors.push(`Delete Products: ${delProdErr.message}`);
+            try {
+              // 1. Simpan Banners
+              if (bannerPayloads.length > 0) {
+                const { error: bannerErr } = await supabaseServer
+                  .from('banners')
+                  .upsert(bannerPayloads, { onConflict: 'id' });
+                if (bannerErr) {
+                  console.error('Bulk upsert banners error:', bannerErr);
+                  errors.push(`Banners: ${bannerErr.message}`);
+                }
+              }
+
+              // 2. Simpan Site Content
+              if (contentPayloads.length > 0 && errors.length === 0) {
+                const { error: contentErr } = await supabaseServer
+                  .from('site_content')
+                  .upsert(contentPayloads, { onConflict: 'section_key' });
+                if (contentErr) {
+                  console.error('Bulk upsert site_content error:', contentErr);
+                  errors.push(`Site Content: ${contentErr.message}`);
+                }
+              }
+
+              // 3. Simpan Products
+              if (productPayloads.length > 0 && errors.length === 0) {
+                let { error: prodErr } = await supabaseServer
+                  .from('products')
+                  .upsert(productPayloads, { onConflict: 'id' });
+
+                if (prodErr && prodErr.message && prodErr.message.includes('schema cache')) {
+                  const fallbackPayloads = productPayloads.map(
+                    ({ options: _options, original_price: _original_price, ...rest }) => rest
+                  );
+                  const { error: retryErr } = await supabaseServer
+                    .from('products')
+                    .upsert(fallbackPayloads, { onConflict: 'id' });
+                  prodErr = retryErr;
+                }
+
+                if (prodErr) {
+                  console.error('Bulk upsert products error:', prodErr);
+                  errors.push(`Products: ${prodErr.message}`);
+                }
+              }
+
+              // 4. Simpan Contact Info
+              if (contactPayload && errors.length === 0) {
+                const { error: contactErr } = await supabaseServer
+                  .from('contact_info')
+                  .upsert(contactPayload);
+                if (contactErr) {
+                  console.error('Upsert contact_info error:', contactErr);
+                  errors.push(`Contact Info: ${contactErr.message}`);
+                }
+              }
+
+              // 5. Explicit Deletions (hanya dieksekusi jika tidak ada error sebelumnya)
+              if (errors.length === 0) {
+                if (deletedBannerIds && deletedBannerIds.length > 0) {
+                  const { error: delBannerErr } = await supabaseServer
+                    .from('banners')
+                    .delete()
+                    .in('id', deletedBannerIds);
+                  if (delBannerErr) errors.push(`Delete Banners: ${delBannerErr.message}`);
+                }
+
+                if (deletedProductIds && deletedProductIds.length > 0) {
+                  const { error: delProdErr } = await supabaseServer
+                    .from('products')
+                    .delete()
+                    .in('id', deletedProductIds);
+                  if (delProdErr) errors.push(`Delete Products: ${delProdErr.message}`);
+                }
+              }
+            } catch (err: unknown) {
+              console.error('Fatal fallback error:', err);
+              errors.push(err instanceof Error ? err.message : 'Kesalahan internal database.');
+            }
+          } else {
+            // RPC gagal karena validasi / constraint PostgreSQL -> Seluruh transaksi otomatis di-rollback!
+            console.error('PostgreSQL RPC transaction error (rolled back):', rpcErr);
           }
         }
 
