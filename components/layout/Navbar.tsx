@@ -58,6 +58,7 @@ export default function Navbar({ config }: NavbarProps) {
               src="/images/products/avatar.jpg"
               alt={brandName}
               fill
+              sizes="36px"
               className="object-cover"
               priority
             />

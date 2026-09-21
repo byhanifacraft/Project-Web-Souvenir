@@ -66,6 +66,7 @@ export default function Footer({ config }: FooterProps) {
                   src="/images/products/avatar.jpg"
                   alt={brandName}
                   fill
+                  sizes="32px"
                   className="object-cover"
                 />
               </div>

@@ -22,6 +22,7 @@ function SafeImage({
   src,
   alt,
   fill,
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
   className,
   fallback = '/images/products/studio-workshop.jpg',
   priority,
@@ -29,6 +30,7 @@ function SafeImage({
   src: string;
   alt: string;
   fill?: boolean;
+  sizes?: string;
   className?: string;
   fallback?: string;
   priority?: boolean;
@@ -46,6 +48,7 @@ function SafeImage({
       src={imgSrc}
       alt={alt}
       fill={fill}
+      sizes={sizes}
       className={className}
       priority={priority}
       onError={() => {
@@ -283,6 +286,7 @@ export default function WorkshopPageContent({
                     src="/images/products/studio-workshop.jpg"
                     alt="Suasana Workshop Lilin Studio CraftByHanifa Magetan"
                     fill
+                    sizes="(max-width: 1024px) 100vw, 480px"
                     className="object-cover"
                     priority
                   />
@@ -486,6 +490,7 @@ export default function WorkshopPageContent({
                                     src={item.image_url!}
                                     alt={item.title}
                                     fill
+                                    sizes="48px"
                                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                                   />
                                   <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
@@ -986,6 +991,7 @@ export default function WorkshopPageContent({
                 src={previewTakeHome.image_url}
                 alt={previewTakeHome.title}
                 fill
+                sizes="(max-width: 640px) 100vw, 512px"
                 className="object-cover"
                 priority
               />

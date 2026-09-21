@@ -106,6 +106,7 @@ export default function WorkshopNewsModal({
               src={imgSrc}
               alt={news.title}
               fill
+              sizes="(max-width: 768px) 100vw, 672px"
               className="object-cover"
               priority
               onError={() => {
