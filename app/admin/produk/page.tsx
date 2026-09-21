@@ -208,7 +208,6 @@ export default function AdminProdukPage() {
   ) => {
     if (!editingProduct) return;
     const currentVariants = editingProduct.variants || [];
-    const baseImg = defaultImg || editingProduct.images?.[0] || editingProduct.image_url || '';
     const basePrice = defaultPrice > 0 ? defaultPrice : editingProduct.price;
 
     const newVariant: ProductVariant = {
@@ -216,7 +215,7 @@ export default function AdminProdukPage() {
       name: defaultName || `Varian ${currentVariants.length + 1}`,
       price: basePrice,
       original_price: defaultOriginalPrice,
-      image_url: baseImg,
+      image_url: defaultImg || '',
       stock: 100,
     };
 
@@ -249,7 +248,6 @@ export default function AdminProdukPage() {
 
   const handleApplyVariantPreset = (presetType: 'resin' | 'candle' | 'hampers') => {
     if (!editingProduct) return;
-    const currentImg = editingProduct.images?.[0] || editingProduct.image_url || '';
 
     if (presetType === 'resin') {
       setEditingProduct({
@@ -260,7 +258,7 @@ export default function AdminProdukPage() {
             name: 'Huruf Saja (Polos)',
             price: 8500,
             original_price: 10000,
-            image_url: currentImg,
+            image_url: '',
             stock: 200,
           },
           {
@@ -268,7 +266,7 @@ export default function AdminProdukPage() {
             name: 'Huruf + Pita & Thank You Tag',
             price: 12000,
             original_price: 15000,
-            image_url: currentImg,
+            image_url: '',
             stock: 150,
           },
           {
@@ -276,7 +274,7 @@ export default function AdminProdukPage() {
             name: 'Paket Box Mika Eksklusif Berpita',
             price: 16500,
             original_price: 20000,
-            image_url: currentImg,
+            image_url: '',
             stock: 100,
           },
         ],
@@ -291,7 +289,7 @@ export default function AdminProdukPage() {
             name: 'Jar Amber 60ml (Compact)',
             price: 15000,
             original_price: 25000,
-            image_url: currentImg,
+            image_url: '',
             stock: 150,
           },
           {
@@ -299,7 +297,7 @@ export default function AdminProdukPage() {
             name: 'Jar Amber 100ml (Best Value)',
             price: 24000,
             original_price: 32000,
-            image_url: currentImg,
+            image_url: '',
             stock: 100,
           },
           {
@@ -307,7 +305,7 @@ export default function AdminProdukPage() {
             name: 'Set Hardbox + Korek Api Kayu',
             price: 35000,
             original_price: 45000,
-            image_url: currentImg,
+            image_url: '',
             stock: 50,
           },
         ],
@@ -322,7 +320,7 @@ export default function AdminProdukPage() {
             name: 'Paket Basic (1 Lilin + Pouch)',
             price: 35000,
             original_price: 45000,
-            image_url: currentImg,
+            image_url: '',
             stock: 80,
           },
           {
@@ -330,7 +328,7 @@ export default function AdminProdukPage() {
             name: 'Paket Deluxe (Lilin + Resin + Pouch)',
             price: 55000,
             original_price: 65000,
-            image_url: currentImg,
+            image_url: '',
             stock: 60,
           },
           {
@@ -338,7 +336,7 @@ export default function AdminProdukPage() {
             name: 'Paket Luxury Hardbox (Komplit)',
             price: 85000,
             original_price: 100000,
-            image_url: currentImg,
+            image_url: '',
             stock: 40,
           },
         ],
@@ -1437,11 +1435,9 @@ export default function AdminProdukPage() {
                       const galleryImages =
                         editingProduct.images && editingProduct.images.length > 0
                           ? editingProduct.images
-                          : [editingProduct.image_url];
-                      const currentVariantImg =
-                        variant.image_url ||
-                        galleryImages[0] ||
-                        '/images/products/aromatherapy-candle.jpg';
+                          : editingProduct.image_url
+                            ? [editingProduct.image_url]
+                            : [];
 
                       return (
                         <div
@@ -1470,44 +1466,72 @@ export default function AdminProdukPage() {
                           <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                             {/* Mini Variant Image Preview & Selector */}
                             <div className="sm:col-span-3 flex sm:flex-col items-center gap-2">
-                              <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#f3d7df] bg-[#fff7f9] shrink-0">
-                                <Image
-                                  src={currentVariantImg}
-                                  alt={variant.name}
-                                  fill
-                                  className="object-cover"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src =
-                                      '/images/products/aromatherapy-candle.jpg';
-                                  }}
-                                />
+                              <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#f3d7df] bg-[#fff7f9] shrink-0 flex items-center justify-center">
+                                {variant.image_url ? (
+                                  <Image
+                                    src={variant.image_url}
+                                    alt={variant.name}
+                                    fill
+                                    className="object-cover"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src =
+                                        '/images/products/aromatherapy-candle.jpg';
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="flex flex-col items-center justify-center text-zinc-400 p-1 text-center">
+                                    <ImagePlus className="w-5 h-5 text-zinc-300" />
+                                    <span className="text-[9px] text-zinc-400 leading-tight mt-0.5">
+                                      Tanpa foto
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                               <div className="flex-1 w-full text-center sm:text-left">
                                 <select
-                                  value={variant.image_url || galleryImages[0]}
+                                  value={variant.image_url || ''}
                                   onChange={(e) =>
                                     handleUpdateVariant(vIdx, { image_url: e.target.value })
                                   }
-                                  className="w-full text-[10px] px-2 py-1 rounded-lg border border-[#f3d7df] bg-[#fff7f9] text-[#2e1c24] truncate"
+                                  className="w-full text-[10px] px-2 py-1 rounded-lg border border-[#f3d7df] bg-[#fff7f9] text-[#2e1c24] truncate cursor-pointer"
                                 >
-                                  {galleryImages.map((img, imgI) => (
+                                  <option value="">Tanpa Foto Khusus</option>
+                                  {galleryImages.filter(Boolean).map((img, imgI) => (
                                     <option key={imgI} value={img}>
                                       {imgI === 0 ? '⭐ Foto Cover' : `Foto Galeri #${imgI + 1}`}
                                     </option>
                                   ))}
+                                  {variant.image_url &&
+                                    !galleryImages.includes(variant.image_url) && (
+                                      <option value={variant.image_url}>
+                                        🖼️ Foto Khusus Varian
+                                      </option>
+                                    )}
                                 </select>
-                                <label className="text-[10px] text-[#e05d82] hover:underline cursor-pointer block mt-0.5 font-semibold">
-                                  + Upload foto varian
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => {
-                                      const f = e.target.files?.[0];
-                                      if (f) handleUploadVariantFile(vIdx, f);
-                                    }}
-                                  />
-                                </label>
+                                <div className="flex items-center justify-center sm:justify-start gap-2 mt-0.5">
+                                  <label className="text-[10px] text-[#e05d82] hover:underline cursor-pointer font-semibold">
+                                    + Upload
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const f = e.target.files?.[0];
+                                        if (f) handleUploadVariantFile(vIdx, f);
+                                      }}
+                                    />
+                                  </label>
+                                  {variant.image_url && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleUpdateVariant(vIdx, { image_url: '' })}
+                                      className="text-[10px] text-zinc-400 hover:text-rose-600 cursor-pointer"
+                                      title="Hapus foto varian ini"
+                                    >
+                                      Hapus
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             </div>
 
