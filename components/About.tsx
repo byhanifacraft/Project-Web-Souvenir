@@ -91,6 +91,7 @@ export default function About({ content, config }: AboutProps) {
                 src={storyImage}
                 alt="Workshop CraftByHanifa Magetan"
                 fill
+                sizes="(max-width: 1024px) 100vw, 550px"
                 className="object-cover"
                 priority
               />
@@ -177,7 +178,13 @@ export default function About({ content, config }: AboutProps) {
             {/* Founder Portrait */}
             <div className="md:col-span-4 flex flex-col items-center text-center">
               <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden relative border border-zinc-200/80 bg-zinc-100 mb-3.5 shadow-2xs">
-                <Image src={ownerImage} alt={brandOwner} fill className="object-cover" />
+                <Image
+                  src={ownerImage}
+                  alt={brandOwner}
+                  fill
+                  sizes="(max-width: 640px) 144px, 176px"
+                  className="object-cover"
+                />
               </div>
               <h4 className="font-semibold text-lg text-zinc-900">{brandOwner}</h4>
               <p className="text-xs text-zinc-500 mt-0.5">{ownerTitle}</p>

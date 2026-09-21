@@ -229,6 +229,7 @@ export default function ProductCatalog({
                       src={imageUrl}
                       alt={p.name}
                       fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       className={`object-cover transition-all duration-500 group-hover:scale-105 ${
                         hasMultipleImages ? 'group-hover:opacity-0' : ''
                       }`}
@@ -242,6 +243,7 @@ export default function ProductCatalog({
                         src={secondaryImage}
                         alt={`${p.name} - Galeri`}
                         fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                         className="object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =

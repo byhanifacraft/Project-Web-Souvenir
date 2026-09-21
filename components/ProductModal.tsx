@@ -131,6 +131,7 @@ export default function ProductModal({
                 src={activeImage}
                 alt={product.name}
                 fill
+                sizes="(max-width: 768px) 100vw, 450px"
                 className="object-cover"
                 priority
                 onError={(e) => {
@@ -204,6 +205,7 @@ export default function ProductModal({
                         src={img}
                         alt=""
                         fill
+                        sizes="56px"
                         className="object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
@@ -337,6 +339,7 @@ export default function ProductModal({
                                 src={variant.image_url}
                                 alt=""
                                 fill
+                                sizes="24px"
                                 className="object-cover"
                                 onError={(e) => {
                                   (e.target as HTMLImageElement).src =

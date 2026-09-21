@@ -161,6 +161,7 @@ export default function WorkshopNewsEditorModal({
                   src={formData.image_url || '/images/products/studio-workshop.jpg'}
                   alt="Preview"
                   fill
+                  sizes="144px"
                   className="object-cover"
                 />
               </div>

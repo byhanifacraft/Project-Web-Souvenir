@@ -572,7 +572,13 @@ export default function AdminWorkshopPage() {
                   <div>
                     {/* Thumbnail Image */}
                     <div className="relative aspect-[16/9] w-full bg-zinc-100 overflow-hidden">
-                      <Image src={item.image_url} alt={item.title} fill className="object-cover" />
+                      <Image
+                        src={item.image_url}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 320px"
+                        className="object-cover"
+                      />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
                         <span
                           className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs uppercase tracking-wider ${

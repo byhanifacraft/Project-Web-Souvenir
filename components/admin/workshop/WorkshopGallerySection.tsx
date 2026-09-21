@@ -151,6 +151,7 @@ export default function WorkshopGallerySection({
                 src={item.image_url}
                 alt={item.caption || 'Foto'}
                 fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover"
               />
               <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
@@ -209,6 +210,7 @@ export default function WorkshopGallerySection({
                   src={editingItem.image_url}
                   alt={editingItem.caption || 'Foto'}
                   fill
+                  sizes="(max-width: 640px) 100vw, 500px"
                   className="object-cover"
                 />
               </div>

@@ -47,6 +47,7 @@ export default function ProductCardItem({
             src={p.image_url || '/images/products/aromatherapy-candle.jpg'}
             alt={p.name}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/images/products/aromatherapy-candle.jpg';

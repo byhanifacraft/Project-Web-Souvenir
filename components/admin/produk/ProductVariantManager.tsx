@@ -173,6 +173,7 @@ export default function ProductVariantManager({
                         src={variant.image_url}
                         alt={variant.name}
                         fill
+                        sizes="56px"
                         className="object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =

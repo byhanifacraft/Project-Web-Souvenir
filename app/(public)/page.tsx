@@ -83,6 +83,7 @@ export default async function HomePage() {
                   src={siteContent['tentang_kami']?.image_url || '/images/products/shop-cover.jpg'}
                   alt="Studio CraftByHanifa"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 450px"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-70" />
@@ -187,6 +188,7 @@ export default async function HomePage() {
                       src={product.image_url}
                       alt={product.name}
                       fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <span className="absolute top-3 left-3 text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#fdf0f3] text-[#c45a76] shadow-2xs">
@@ -311,6 +313,7 @@ export default async function HomePage() {
                     src={photo.image_url}
                     alt={photo.caption || 'Dokumentasi Workshop'}
                     fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5 text-white">

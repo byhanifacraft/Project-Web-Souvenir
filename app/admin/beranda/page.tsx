@@ -395,7 +395,13 @@ export default function AdminBerandaPage() {
             >
               <div>
                 <div className="relative aspect-[16/9] w-full bg-[#fde8ee]">
-                  <Image src={b.image_url} alt={b.title} fill className="object-cover" />
+                  <Image
+                    src={b.image_url}
+                    alt={b.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 320px"
+                    className="object-cover"
+                  />
                   <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white backdrop-blur-xs">
                     Urutan #{b.sort_order}
                   </span>
@@ -814,6 +820,7 @@ export default function AdminBerandaPage() {
                       src={editingBanner.image_url}
                       alt="Preview Banner Slider"
                       fill
+                      sizes="320px"
                       className="object-cover"
                     />
                     <span className="absolute bottom-1.5 left-1.5 text-[10px] font-bold bg-black/65 text-white rounded-md px-2 py-0.5 backdrop-blur-xs">

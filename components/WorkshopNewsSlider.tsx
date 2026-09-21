@@ -113,6 +113,7 @@ export default function WorkshopNewsSlider({
                   src={item.image_url}
                   alt={item.title}
                   fill
+                  sizes="(max-width: 1152px) 100vw, 1152px"
                   className="object-cover"
                   priority={idx === 0}
                 />

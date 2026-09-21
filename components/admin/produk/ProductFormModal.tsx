@@ -324,6 +324,7 @@ export default function ProductFormModal({
                       src={imgUrl}
                       alt={`Foto Produk ${idx + 1}`}
                       fill
+                      sizes="(max-width: 640px) 50vw, 120px"
                       className="object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =

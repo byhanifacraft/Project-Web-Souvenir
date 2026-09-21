@@ -175,6 +175,7 @@ export default function Hero({ config, hero }: HeroProps) {
                     src={slide.image}
                     alt={slide.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 550px"
                     className="object-cover"
                     priority={idx === 0}
                   />

@@ -260,7 +260,7 @@ export default function AdminDashboardPage() {
               className="p-3.5 rounded-2xl bg-[#fff7f9] border border-[#f3d7df] flex items-center gap-3"
             >
               <div className="w-12 h-12 rounded-xl bg-[#fde8ee] relative overflow-hidden shrink-0">
-                <Image src={p.image_url} alt={p.name} fill className="object-cover" />
+                <Image src={p.image_url} alt={p.name} fill sizes="48px" className="object-cover" />
               </div>
               <div className="min-w-0">
                 <h4 className="text-xs font-bold text-[#2e1c24] truncate">{p.name}</h4>

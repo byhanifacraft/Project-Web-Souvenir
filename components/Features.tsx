@@ -168,6 +168,7 @@ export default function Features({ features, title, subtitle }: FeaturesProps) {
                           src={feature.icon}
                           alt={feature.title}
                           fill
+                          sizes="28px"
                           className="object-contain"
                         />
                       </div>

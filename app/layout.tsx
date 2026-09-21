@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${inter.variable} scroll-smooth`}>
+    <html lang="id" className={`${inter.variable} scroll-smooth`} data-scroll-behavior="smooth">
       <body className="font-sans antialiased text-[#1d1d1f] bg-[#fbfbfd] selection:bg-[#1d1d1f] selection:text-white">
         {children}
       </body>

@@ -85,6 +85,7 @@ export default function ProductDetailClient({
             src={activeImage}
             alt={product.name}
             fill
+            sizes="(max-width: 1024px) 100vw, 550px"
             className="object-cover"
             priority
             onError={(e) => {
@@ -139,7 +140,7 @@ export default function ProductDetailClient({
                       : 'border-zinc-200/80 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <Image src={img} alt="" fill className="object-cover" />
+                  <Image src={img} alt="" fill sizes="64px" className="object-cover" />
                 </button>
               );
             })}

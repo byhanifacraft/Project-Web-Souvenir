@@ -112,6 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   src="/images/products/avatar.jpg"
                   alt="CraftByHanifa"
                   fill
+                  sizes="32px"
                   className="object-cover"
                 />
               </div>
@@ -197,6 +198,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               src="/images/products/avatar.jpg"
               alt="CraftByHanifa"
               fill
+              sizes="32px"
               className="object-cover"
             />
           </div>
@@ -239,6 +241,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       src="/images/products/avatar.jpg"
                       alt="CraftByHanifa"
                       fill
+                      sizes="36px"
                       className="object-cover"
                     />
                   </div>

@@ -210,7 +210,13 @@ export default function AdminTentangKamiPage() {
             <div className="md:col-span-4 space-y-3">
               <label className="block text-xs font-bold text-[#2e1c24]">Foto Profil Owner</label>
               <div className="w-32 h-32 rounded-2xl overflow-hidden relative border-2 border-[#fce7ed] bg-[#fde8ee] shadow-sm">
-                <Image src={ownerPhotoUrl} alt="Foto Owner" fill className="object-cover" />
+                <Image
+                  src={ownerPhotoUrl}
+                  alt="Foto Owner"
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                />
               </div>
               <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#e05d82]/10 text-[#e05d82] hover:bg-[#e05d82]/20 text-xs font-bold cursor-pointer transition-colors">
                 <Upload className="w-3.5 h-3.5" />
@@ -369,6 +375,7 @@ export default function AdminTentangKamiPage() {
                   }
                   alt="Foto Banner Studio"
                   fill
+                  sizes="(max-width: 640px) 100vw, 240px"
                   className="object-cover"
                 />
               </div>
