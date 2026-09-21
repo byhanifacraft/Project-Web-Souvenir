@@ -64,4 +64,32 @@ export function verifyAdminSessionToken(token?: string | null): SessionPayload |
   }
 }
 
+/**
+ * Memvalidasi origin header terhadap host untuk mencegah Cross-Site Request Forgery (CSRF)
+ */
+export function isValidOrigin(request: Request): boolean {
+  const origin = request.headers.get('origin');
+  const host = request.headers.get('host');
+  if (!origin || !host) return true; // request non-browser / direct server
+  try {
+    const originHost = new URL(origin).host;
+    return originHost.toLowerCase() === host.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Constant-time string comparison menggunakan SHA-256 hash untuk mencegah timing attack
+ */
+export function timingSafeCompare(a: string, b: string): boolean {
+  try {
+    const hashA = crypto.createHash('sha256').update(a).digest();
+    const hashB = crypto.createHash('sha256').update(b).digest();
+    return crypto.timingSafeEqual(hashA, hashB);
+  } catch {
+    return false;
+  }
+}
+
 export { COOKIE_NAME };

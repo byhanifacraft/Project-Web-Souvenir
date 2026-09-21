@@ -51,13 +51,14 @@ export default async function HomePage() {
   if (siteContent['workshop_gallery']?.content) {
     try {
       const parsed = JSON.parse(siteContent['workshop_gallery'].content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         galleryImages = parsed;
       }
     } catch {
       // keep fallback
     }
   }
+
   const previewGallery = galleryImages.slice(0, 6);
 
   return (

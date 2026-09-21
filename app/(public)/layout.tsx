@@ -32,7 +32,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <Footer config={siteConfig} />
 
       {/* Shared Floating WhatsApp & Shopee CTA */}
-      <FloatingButtons />
+      <FloatingButtons config={siteConfig} />
     </div>
   );
 }

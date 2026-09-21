@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import { verifyAdminSessionToken, COOKIE_NAME } from '@/lib/auth/session';
+import { verifyAdminSessionToken, COOKIE_NAME, isValidOrigin } from '@/lib/auth/session';
 import { createServerClient } from '@/lib/supabase/server';
 import { getStoreData } from '@/lib/getStoreData';
 import {
@@ -61,6 +61,14 @@ export async function GET() {
 
 // 2. POST Handler - Terproteksi Sesi Admin & Menggunakan Bulk Upsert + ISR Revalidation
 export async function POST(request: Request) {
+  // 0. Validasi Origin untuk mencegah Cross-Site Request Forgery (CSRF)
+  if (!isValidOrigin(request)) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden: Invalid request origin.' },
+      { status: 403 }
+    );
+  }
+
   // A. Verifikasi Autentikasi Admin
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;

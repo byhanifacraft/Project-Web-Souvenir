@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import fs from 'fs';
 import path from 'path';
-import { verifyAdminSessionToken, COOKIE_NAME } from '@/lib/auth/session';
+import { verifyAdminSessionToken, COOKIE_NAME, isValidOrigin } from '@/lib/auth/session';
 import { createServerClient } from '@/lib/supabase/server';
 
 // Format gambar raster yang diizinkan (SVG dilarang keras untuk mencegah Stored XSS)
@@ -42,6 +42,11 @@ function isValidImageMagicBytes(buffer: Buffer, ext: string): boolean {
 }
 
 export async function POST(request: Request) {
+  // 0. Validasi Origin untuk mencegah Cross-Site Request Forgery (CSRF)
+  if (!isValidOrigin(request)) {
+    return NextResponse.json({ error: 'Forbidden: Invalid request origin.' }, { status: 403 });
+  }
+
   // 1. Verifikasi Autentikasi Admin
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;

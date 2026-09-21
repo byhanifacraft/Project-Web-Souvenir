@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase/client';
-import { createAdminSessionToken, COOKIE_NAME } from '@/lib/auth/session';
+import {
+  createAdminSessionToken,
+  COOKIE_NAME,
+  isValidOrigin,
+  timingSafeCompare,
+} from '@/lib/auth/session';
 
 // In-memory rate limiter untuk proteksi brute force
 const failedAttempts = new Map<string, { count: number; lockedUntil: number }>();
@@ -13,6 +18,14 @@ function getClientIp(req: Request): string {
 }
 
 export async function POST(request: Request) {
+  // 0. Validasi Origin untuk mencegah Cross-Site Request Forgery (CSRF)
+  if (!isValidOrigin(request)) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden: Invalid request origin.' },
+      { status: 403 }
+    );
+  }
+
   const ip = getClientIp(request);
   const now = Date.now();
 
@@ -59,7 +72,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 3. Verifikasi 2: Cek kredensial server di .env.local
+    // 3. Verifikasi 2: Cek kredensial server di .env.local dengan constant-time comparison
     const expectedEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
     const expectedPassword = process.env.ADMIN_PASSWORD;
 
@@ -78,7 +91,11 @@ export async function POST(request: Request) {
         );
       }
 
-      if (email === expectedEmail && password === expectedPassword) {
+      // Gunakan timingSafeCompare pada kedua parameter untuk mencegah timing side-channels
+      if (
+        timingSafeCompare(email, expectedEmail) &&
+        timingSafeCompare(password, expectedPassword)
+      ) {
         isValid = true;
       }
     }
