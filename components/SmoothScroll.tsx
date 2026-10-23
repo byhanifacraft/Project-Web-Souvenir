@@ -23,9 +23,20 @@ export default function SmoothScroll() {
       smoothWheel: true,
       wheelMultiplier: 1.0,
       touchMultiplier: 1.5,
+      prevent: (node) => {
+        return (
+          node.hasAttribute('data-lenis-prevent') ||
+          Boolean(node.closest?.('[data-lenis-prevent]')) ||
+          Boolean(node.closest?.('[role="dialog"]')) ||
+          document.body.style.overflow === 'hidden'
+        );
+      },
     });
 
     lenisRef.current = lenis;
+    if (typeof window !== 'undefined') {
+      window.lenis = lenis;
+    }
 
     // Sinkronkan Lenis dengan requestAnimationFrame
     let rafId: number;
@@ -51,11 +62,44 @@ export default function SmoothScroll() {
 
     document.addEventListener('click', handleAnchorClick);
 
+    // Pantau secara reaktif jika ada modal/dialog yang terbuka agar scroll background halaman terkunci total
+    const checkModalState = () => {
+      const hasModal =
+        document.body.style.overflow === 'hidden' ||
+        document.documentElement.style.overflow === 'hidden' ||
+        document.querySelector('[role="dialog"]') !== null;
+
+      if (hasModal) {
+        if (!lenis.isStopped) {
+          lenis.stop();
+        }
+      } else {
+        if (lenis.isStopped) {
+          lenis.start();
+        }
+      }
+    };
+
+    const modalObserver = new MutationObserver(() => {
+      checkModalState();
+    });
+
+    modalObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['style', 'class'],
+      childList: true,
+      subtree: true,
+    });
+
     return () => {
       document.removeEventListener('click', handleAnchorClick);
+      modalObserver.disconnect();
       cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisRef.current = null;
+      if (typeof window !== 'undefined') {
+        window.lenis = undefined;
+      }
     };
   }, []);
 

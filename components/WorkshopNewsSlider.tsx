@@ -116,6 +116,7 @@ export default function WorkshopNewsSlider({
                   sizes="(max-width: 1152px) 100vw, 1152px"
                   className="object-cover"
                   priority={idx === 0}
+                  loading={idx === 0 ? 'eager' : 'lazy'}
                 />
 
                 {/* Dark Gradient Overlay for optimal readability */}

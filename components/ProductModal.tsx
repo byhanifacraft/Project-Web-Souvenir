@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Product } from '@/types';
 import { Icon } from '@iconify/react';
@@ -23,6 +23,30 @@ export default function ProductModal({
     product?.variants?.[0]?.id || null
   );
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (product) {
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      if (typeof window !== 'undefined') {
+        window.lenis?.stop();
+      }
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+        if (typeof window !== 'undefined') {
+          window.lenis?.start();
+        }
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [product, onClose]);
 
   if (!product) return null;
 
@@ -103,12 +127,18 @@ export default function ProductModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-fadeIn"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-fadeIn overscroll-contain"
       onClick={onClose}
+      onWheel={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="true"
+      data-lenis-prevent
     >
       <div
-        className="relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden border border-[#f3d7df] my-auto animate-scaleUp"
+        className="relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden border border-[#f3d7df] my-auto animate-scaleUp max-h-[90vh] sm:max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+        data-lenis-prevent
       >
         {/* Close Button - 44px touch target on mobile */}
         <button
@@ -122,7 +152,10 @@ export default function ProductModal({
           />
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 max-h-[88vh] overflow-y-auto">
+        <div
+          className="grid grid-cols-1 md:grid-cols-12 overflow-y-auto overscroll-contain flex-1"
+          data-lenis-prevent
+        >
           {/* ================= SISI KIRI: MULTI-IMAGE GALLERY ================= */}
           <div className="md:col-span-5 relative bg-[#fff7f9] flex flex-col border-b md:border-b-0 md:border-r border-[#f3d7df]">
             {/* Foto Utama Besar */}
@@ -134,6 +167,7 @@ export default function ProductModal({
                 sizes="(max-width: 768px) 100vw, 450px"
                 className="object-cover"
                 priority
+                loading="eager"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/images/products/aromatherapy-candle.jpg';
                 }}

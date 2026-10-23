@@ -237,7 +237,13 @@ export default function PackageFormModal({
                     {/* Thumbnail / Upload Trigger */}
                     {th.image_url ? (
                       <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#ebdcd5] bg-white shrink-0 group">
-                        <Image src={th.image_url} alt="" fill className="object-cover" />
+                        <Image
+                          src={th.image_url}
+                          alt=""
+                          fill
+                          sizes="56px"
+                          className="object-cover"
+                        />
                         <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer text-white transition-opacity text-[10px] font-bold">
                           {isUploadingThis ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

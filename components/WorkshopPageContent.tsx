@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
@@ -26,6 +26,7 @@ function SafeImage({
   className,
   fallback = '/images/products/studio-workshop.jpg',
   priority,
+  loading,
 }: {
   src: string;
   alt: string;
@@ -34,6 +35,7 @@ function SafeImage({
   className?: string;
   fallback?: string;
   priority?: boolean;
+  loading?: 'eager' | 'lazy';
 }) {
   const [prevSrc, setPrevSrc] = useState(src);
   const [imgSrc, setImgSrc] = useState(src || fallback);
@@ -51,6 +53,7 @@ function SafeImage({
       sizes={sizes}
       className={className}
       priority={priority}
+      loading={loading}
       onError={() => {
         if (imgSrc !== fallback) {
           setImgSrc(fallback);
@@ -101,6 +104,43 @@ export default function WorkshopPageContent({
     description?: string;
   } | null>(null);
   const [galleryTab, setGalleryTab] = useState<'all' | 'news' | 'gallery'>('all');
+
+  useEffect(() => {
+    if (previewTakeHome) {
+      const prevBody = document.body.style.overflow;
+      const prevHtml = document.documentElement.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      if (typeof window !== 'undefined') {
+        window.lenis?.stop();
+      }
+      return () => {
+        document.body.style.overflow = prevBody;
+        document.documentElement.style.overflow = prevHtml;
+        if (typeof window !== 'undefined') {
+          window.lenis?.start();
+        }
+      };
+    }
+  }, [previewTakeHome]);
+
+  // Otomatis buka pop-up jika URL mengandung query parameter ?event=... dari fitur share
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get('event');
+    if (!eventId) return;
+
+    const matchedEvent = activeNews.find(
+      (item) => String(item.id).toLowerCase() === eventId.toLowerCase()
+    );
+    if (matchedEvent) {
+      const timer = setTimeout(() => {
+        setSelectedNews(matchedEvent);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [activeNews]);
 
   const handleOpenGalleryPhoto = (photo: GalleryImageItem) => {
     // Cek apakah foto ini terhubung dengan suatu berita di activeNews
@@ -289,6 +329,7 @@ export default function WorkshopPageContent({
                     sizes="(max-width: 1024px) 100vw, 480px"
                     className="object-cover"
                     priority
+                    loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
@@ -696,7 +737,7 @@ export default function WorkshopPageContent({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-              {activeNews.map((item) => {
+              {activeNews.map((item, idx) => {
                 const statusColors: Record<string, { bg: string; text: string; border: string }> = {
                   coming_soon: {
                     bg: 'bg-amber-50',
@@ -733,7 +774,10 @@ export default function WorkshopPageContent({
                           src={item.image_url}
                           alt={item.title}
                           fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          priority={idx === 0}
+                          loading={idx === 0 ? 'eager' : 'lazy'}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-75 group-hover:opacity-50 transition-opacity" />
 
@@ -858,7 +902,10 @@ export default function WorkshopPageContent({
                         src={photo.image_url}
                         alt={photo.caption || 'Foto Dokumentasi Studio'}
                         fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        priority={idx === 0}
+                        loading={idx === 0 ? 'eager' : 'lazy'}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent opacity-75 group-hover:opacity-45 transition-opacity" />
 
@@ -979,12 +1026,18 @@ export default function WorkshopPageContent({
       {/* Lightbox Zoom Modal for Take-Home Creations */}
       {previewTakeHome && (
         <div
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn overscroll-contain"
           onClick={() => setPreviewTakeHome(null)}
+          onWheel={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          data-lenis-prevent
         >
           <div
-            className="bg-white rounded-3xl max-w-md sm:max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#ebdcd5] animate-scaleUp my-auto flex flex-col"
+            className="bg-white rounded-3xl max-w-md sm:max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#ebdcd5] animate-scaleUp my-auto flex flex-col overscroll-contain"
             onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+            data-lenis-prevent
           >
             <div className="relative aspect-[4/3] w-full bg-zinc-100 shrink-0">
               <Image
@@ -994,6 +1047,7 @@ export default function WorkshopPageContent({
                 sizes="(max-width: 640px) 100vw, 512px"
                 className="object-cover"
                 priority
+                loading="eager"
               />
               <button
                 type="button"
