@@ -365,33 +365,6 @@ export default function WorkshopNewsModal({
                 dengan bimbingan personal oleh perajin studio Magetan.
               </p>
             </div>
-
-            {/* Ajak Teman / Share Invitation Card */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#fff7f9] to-[#fdf0f4] border border-[#f3d7df] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#fde8ee] text-[#c45a76] flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon icon="solar:share-bold-duotone" className="w-5 h-5 text-[#c45a76]" />
-                </div>
-                <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-zinc-900 leading-snug">
-                    Tertarik Ikutan Bareng Teman atau Pasangan?
-                  </h4>
-                  <p className="text-[11px] sm:text-xs text-zinc-600 mt-0.5 leading-relaxed">
-                    Bagikan info workshop ini ke WhatsApp atau media sosial agar bisa reservasi slot
-                    bersama.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowShareModal(true)}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#c45a76] hover:bg-[#b04863] text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
-              >
-                <Icon icon="solar:share-bold-duotone" className="w-4 h-4" />
-                <span>Bagikan Info</span>
-              </button>
-            </div>
           </div>
         </div>
 

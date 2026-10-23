@@ -71,6 +71,7 @@ interface WorkshopPageContentProps {
   initialCurriculum?: CurriculumStep[];
   initialReservationSteps?: ReservationStep[];
   initialWorkshopNews?: WorkshopNewsItem[];
+  initialEventId?: string;
 }
 
 export default function WorkshopPageContent({
@@ -81,6 +82,7 @@ export default function WorkshopPageContent({
   initialCurriculum,
   initialReservationSteps,
   initialWorkshopNews,
+  initialEventId,
 }: WorkshopPageContentProps) {
   const packages =
     initialPackages && initialPackages.length > 0 ? initialPackages : DEFAULT_WORKSHOP_PACKAGES;
@@ -97,7 +99,33 @@ export default function WorkshopPageContent({
   const galleryList: GalleryImageItem[] = galleryImages || [];
 
   const [selectedPackage, setSelectedPackage] = useState<string>(packages[0]?.id || 'premium');
-  const [selectedNews, setSelectedNews] = useState<WorkshopNewsItem | null>(null);
+  const [selectedNews, setSelectedNews] = useState<WorkshopNewsItem | null>(() => {
+    if (initialEventId) {
+      const found = newsList.find(
+        (n) => String(n.id).trim().toLowerCase() === String(initialEventId).trim().toLowerCase()
+      );
+      if (found) return found;
+    }
+    return null;
+  });
+
+  const handleOpenNews = (item: WorkshopNewsItem) => {
+    setSelectedNews(item);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('event', String(item.id));
+      window.history.replaceState(null, '', url.toString());
+    }
+  };
+
+  const handleCloseNews = () => {
+    setSelectedNews(null);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('event');
+      window.history.replaceState(null, '', url.toString());
+    }
+  };
   const [previewTakeHome, setPreviewTakeHome] = useState<{
     title: string;
     image_url: string;
@@ -765,7 +793,7 @@ export default function WorkshopPageContent({
                 return (
                   <div
                     key={`news-${item.id}`}
-                    onClick={() => setSelectedNews(item)}
+                    onClick={() => handleOpenNews(item)}
                     className="group relative rounded-3xl overflow-hidden bg-white border border-[#ebdcd5] shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer"
                   >
                     <div>
@@ -982,7 +1010,7 @@ export default function WorkshopPageContent({
         {selectedNews && (
           <WorkshopNewsModal
             news={selectedNews}
-            onClose={() => setSelectedNews(null)}
+            onClose={handleCloseNews}
             whatsappNum={whatsappNum}
           />
         )}
