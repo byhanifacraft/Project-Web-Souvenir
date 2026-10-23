@@ -115,7 +115,13 @@ export default function WorkshopNewsModal({
   // ================= SHARE HELPERS =================
   const getShareUrl = () => {
     if (typeof window === 'undefined') return 'https://craftbyhanifa.com/workshop';
-    const url = new URL('/workshop', window.location.origin);
+    // Jika sedang running di localhost/IP internal, arahkan ke live domain agar scraper crawler Facebook & IG bisa membaca metadata/OpenGraph
+    const isLocal =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname.startsWith('192.168.');
+    const origin = isLocal ? 'https://craftbyhanifa.com' : window.location.origin;
+    const url = new URL('/workshop', origin);
     if (news?.id) {
       url.searchParams.set('event', String(news.id));
     }
@@ -139,6 +145,8 @@ export default function WorkshopNewsModal({
 
   const shareFbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
     getShareUrl()
+  )}&quote=${encodeURIComponent(
+    `${news.title} | Workshop Lilin Aromaterapi CraftByHanifa Magetan`
   )}`;
 
   const handleCopyLink = async (customToast?: string) => {
@@ -158,15 +166,67 @@ export default function WorkshopNewsModal({
       }
       setToastMsg(customToast || 'Tautan agenda workshop berhasil disalin ke clipboard!');
       setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
+      setTimeout(() => setCopied(false), 3500);
     } catch (e) {
       console.warn('Failed to copy link', e);
     }
   };
 
+  const handleFacebookShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+      getShareUrl()
+    )}&quote=${encodeURIComponent(
+      `${news.title} | Workshop Lilin Aromaterapi CraftByHanifa Magetan`
+    )}`;
+
+    // Buka pop-up window standar Facebook Share (600x540) di tengah layar
+    const width = 600;
+    const height = 540;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+
+    window.open(
+      fbUrl,
+      'facebook-share-dialog',
+      `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${width},height=${height},top=${top},left=${left}`
+    );
+  };
+
   const handleInstagramShare = async () => {
-    await handleCopyLink('Tautan disalin! Buka Instagram untuk dibagikan di Story atau DM.');
-    window.open('https://instagram.com/craftbyhanifa', '_blank');
+    const shareUrl = getShareUrl();
+
+    // 1. Coba Web Share API (terutama di Android / iPhone / iPad) agar langsung bisa pilih Instagram Story / Feed / Direct Message
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: news.title,
+          text: `${getShareText()}\n`,
+          url: shareUrl,
+        });
+        return;
+      } catch (err: unknown) {
+        if ((err as Error)?.name === 'AbortError') return;
+      }
+    }
+
+    // 2. Salin teks ringkasan + tautan lengkap ke clipboard
+    await handleCopyLink(
+      'Teks dan tautan berhasil disalin! Silakan tempel (paste) di Instagram Story atau DM.'
+    );
+
+    // 3. Arahkan ke beranda Instagram (bukan profil toko)
+    const isMobile =
+      typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      window.location.href = 'instagram://app';
+      setTimeout(() => {
+        window.open('https://www.instagram.com/', '_blank');
+      }, 1000);
+    } else {
+      window.open('https://www.instagram.com/', '_blank');
+    }
   };
 
   return (
@@ -444,6 +504,7 @@ export default function WorkshopNewsModal({
                   href={shareFbUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleFacebookShare}
                   className="group flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl bg-[#eff6ff] hover:bg-[#1877F2] border border-[#bfdbfe] hover:border-[#1877F2] transition-all duration-200 text-center shadow-2xs hover:shadow-md cursor-pointer"
                 >
                   <div className="w-11 h-11 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform mb-2">
