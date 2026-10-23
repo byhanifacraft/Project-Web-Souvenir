@@ -34,14 +34,14 @@ export default function ProductModal({
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
       if (typeof window !== 'undefined') {
-        window.lenis?.stop();
+        window.dispatchEvent(new CustomEvent('lenis:stop'));
       }
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         document.body.style.overflow = prevBodyOverflow;
         document.documentElement.style.overflow = prevHtmlOverflow;
         if (typeof window !== 'undefined') {
-          window.lenis?.start();
+          window.dispatchEvent(new CustomEvent('lenis:start'));
         }
         window.removeEventListener('keydown', handleKeyDown);
       };

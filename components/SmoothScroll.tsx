@@ -34,9 +34,6 @@ export default function SmoothScroll() {
     });
 
     lenisRef.current = lenis;
-    if (typeof window !== 'undefined') {
-      window.lenis = lenis;
-    }
 
     // Sinkronkan Lenis dengan requestAnimationFrame
     let rafId: number;
@@ -45,6 +42,15 @@ export default function SmoothScroll() {
       rafId = requestAnimationFrame(raf);
     }
     rafId = requestAnimationFrame(raf);
+
+    const handleStop = () => {
+      if (!lenis.isStopped) lenis.stop();
+    };
+    const handleStart = () => {
+      if (lenis.isStopped) lenis.start();
+    };
+    window.addEventListener('lenis:stop', handleStop);
+    window.addEventListener('lenis:start', handleStart);
 
     // Tangani link anchor internal (misal #katalog, #tentang-kami, dsb)
     const handleAnchorClick = (e: MouseEvent) => {
@@ -93,13 +99,12 @@ export default function SmoothScroll() {
 
     return () => {
       document.removeEventListener('click', handleAnchorClick);
+      window.removeEventListener('lenis:stop', handleStop);
+      window.removeEventListener('lenis:start', handleStart);
       modalObserver.disconnect();
       cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisRef.current = null;
-      if (typeof window !== 'undefined') {
-        window.lenis = undefined;
-      }
     };
   }, []);
 

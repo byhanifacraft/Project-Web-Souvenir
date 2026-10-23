@@ -112,13 +112,13 @@ export default function WorkshopPageContent({
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
       if (typeof window !== 'undefined') {
-        window.lenis?.stop();
+        window.dispatchEvent(new CustomEvent('lenis:stop'));
       }
       return () => {
         document.body.style.overflow = prevBody;
         document.documentElement.style.overflow = prevHtml;
         if (typeof window !== 'undefined') {
-          window.lenis?.start();
+          window.dispatchEvent(new CustomEvent('lenis:start'));
         }
       };
     }
